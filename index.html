@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AhorraFuel Tycoon — Demo</title>
+<title>AhorraFuel Tycoon — Demo v1.1</title>
 <style>
 :root{--bg:#07130f;--panel:#10221b;--panel2:#173027;--green:#45e38a;--yellow:#ffd35a;--red:#ff6b6b;--text:#f2fff8;--muted:#9bb5aa;--line:#29473b}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d4b38 0,#07130f 48%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);min-height:100vh}
@@ -125,7 +125,7 @@ function upgrade(type){
  g.money-=c;log(`Has invertido ${euro(c)} en ${type==="pump"?"un nuevo surtidor":type==="shop"?"la tienda":type}.`,"positive");save();render()
 }
 function resetGame(){if(confirm("¿Reiniciar la partida?")){localStorage.removeItem(KEY);location.reload()}}
-const priceText=document.getElementById("priceText"),price=document.getElementById("price"),marketEl=()=>document.getElementById("market").textContent=market.toFixed(3).replace(".",",")+" €/L";
+const priceText=document.getElementById("priceText"),price=document.getElementById("price");
 render();
 </script>
 </body>
