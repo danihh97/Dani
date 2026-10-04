@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AhorraFuel Tycoon — Demo</title>
+<style>
+:root{--bg:#07130f;--panel:#10221b;--panel2:#173027;--green:#45e38a;--yellow:#ffd35a;--red:#ff6b6b;--text:#f2fff8;--muted:#9bb5aa;--line:#29473b}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#1d4b38 0,#07130f 48%);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);min-height:100vh}
+.app{max-width:520px;margin:auto;padding:14px 14px 28px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{font-weight:900;font-size:22px;letter-spacing:-.7px}.brand span{color:var(--green)}button{border:0;border-radius:14px;padding:12px 14px;font-weight:800;color:#06110c;background:var(--green);cursor:pointer;touch-action:manipulation}button:disabled{opacity:.45}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.stat{background:rgba(16,34,27,.9);border:1px solid var(--line);border-radius:14px;padding:9px 7px}.stat b{display:block;font-size:16px}.stat small{color:var(--muted);font-size:10px}
+.station{margin-top:12px;background:linear-gradient(160deg,#1a352b,#0e2019);border:1px solid #315545;border-radius:22px;padding:15px;box-shadow:0 18px 50px #0005}.station-head{display:flex;justify-content:space-between;align-items:center}.station h1{font-size:21px;margin:0}.day{color:var(--muted);font-size:12px}.scene{margin-top:12px;background:#08130f;border:1px solid var(--line);border-radius:18px;padding:14px;overflow:hidden}
+.road{height:56px;background:linear-gradient(#1b2924,#111b18);border-radius:13px;position:relative;margin-top:12px}.road:after{content:"";position:absolute;left:0;right:0;top:26px;border-top:3px dashed #b7c3bd66}
+.building{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;align-items:end}.shop{height:70px;border-radius:12px;background:#203d31;border:2px solid #416b57;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}.canopy{height:34px;background:var(--green);color:#082015;border-radius:10px 10px 5px 5px;display:flex;align-items:center;justify-content:center;font-weight:950}.pumps{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}.pump{background:#263c34;border:1px solid #426356;border-radius:10px;padding:8px;text-align:center;font-size:11px}.pump i{display:block;width:18px;height:32px;border:3px solid #dce9e3;border-radius:4px;margin:auto auto 4px}.pump.active i{border-color:var(--green)}
+.pricebox{margin-top:12px;background:#0a1813;border:1px solid var(--line);border-radius:16px;padding:12px}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.price{font-size:28px;font-weight:950}.price small{font-size:12px;color:var(--muted)}input[type=range]{width:100%;accent-color:var(--green)}.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.actions button:nth-child(2){background:#ffd35a}.actions button:nth-child(3){background:#dce9e3}.actions button:nth-child(4){background:#89b8ff}
+.section{margin-top:12px}.section h2{font-size:15px;margin:0 0 8px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:11px}.card b{font-size:13px}.card p{margin:4px 0 9px;color:var(--muted);font-size:11px;min-height:28px}.card button{width:100%;font-size:11px;padding:9px}
+.log{background:#08130f;border:1px solid var(--line);border-radius:15px;padding:10px;font-size:11px;color:#b9cec4;line-height:1.55;max-height:125px;overflow:auto}.positive{color:var(--green)}.negative{color:var(--red)}
+.rank{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}.rank:last-child{border:0}.you{color:var(--green);font-weight:900}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);opacity:0;background:#eafff3;color:#06110c;padding:12px 16px;border-radius:14px;font-weight:800;font-size:12px;transition:.25s;z-index:5}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:380px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="brand">Ahorra<span>Fuel</span> <small>TYCOON</small></div><button onclick="resetGame()" style="background:#29473b;color:#dce9e3;padding:8px 10px">Reiniciar</button></div>
+  <div class="stats">
+    <div class="stat"><b id="money">1.000 €</b><small>CAJA</small></div>
+    <div class="stat"><b id="stock">2.000 L</b><small>COMBUSTIBLE</small></div>
+    <div class="stat"><b id="rep">50%</b><small>REPUTACIÓN</small></div>
+    <div class="stat"><b id="day">Día 1</b><small>JORNADA</small></div>
+  </div>
+
+  <div class="station">
+    <div class="station-head"><div><h1>Tu gasolinera</h1><div class="day" id="status">Abierta al público</div></div><div style="font-size:28px">⛽</div></div>
+    <div class="scene">
+      <div class="building"><div class="shop">TIENDA</div><div class="canopy">AHORRAFUEL</div></div>
+      <div class="pumps"><div class="pump active"><i></i>Surtidor 1</div><div class="pump active"><i></i>Surtidor 2</div></div>
+      <div class="road"></div>
+    </div>
+    <div class="pricebox">
+      <div class="row"><span>Precio Gasolina 95</span><strong class="price" id="priceText">1,549 €<small>/L</small></strong></div>
+      <input id="price" type="range" min="1.25" max="1.95" step="0.001" value="1.549" oninput="updatePrice()">
+      <div class="hint">Precio medio de competidores: <b id="market">1,579 €/L</b></div>
+    </div>
+    <div class="actions">
+      <button onclick="buyFuel()">Comprar 1.000 L · 900 €</button>
+      <button onclick="openDay()">Cerrar jornada</button>
+      <button onclick="upgrade('pump')">+ Surtidor · 1.800 €</button>
+      <button onclick="upgrade('shop')">Mejorar tienda · 1.500 €</button>
+    </div>
+  </div>
+
+  <div class="section"><h2>Mejoras del negocio</h2>
+    <div class="cards">
+      <div class="card"><b>Lavadero</b><p>+clientes y +ingresos diarios</p><button id="wash" onclick="upgrade('wash')">Comprar · 2.500 €</button></div>
+      <div class="card"><b>Cargadores EV</b><p>Nuevo ingreso y reputación</p><button id="ev" onclick="upgrade('ev')">Comprar · 3.500 €</button></div>
+      <div class="card"><b>Paneles solares</b><p>Reduce costes operativos</p><button id="solar" onclick="upgrade('solar')">Comprar · 4.000 €</button></div>
+      <div class="card"><b>Publicidad local</b><p>Atrae más clientes mañana</p><button id="ads" onclick="upgrade('ads')">Comprar · 700 €</button></div>
+    </div>
+  </div>
+
+  <div class="section"><h2>Actividad</h2><div class="log" id="log">La gasolinera está lista. Ajusta el precio y abre la jornada.</div></div>
+
+  <div class="section"><h2>Ranking semanal</h2><div class="card">
+    <div class="rank"><span>1. IslaFuel</span><b>18.420 €</b></div>
+    <div class="rank"><span>2. GranCan Oil</span><b>16.870 €</b></div>
+    <div class="rank"><span>3. CanFuel</span><b>15.240 €</b></div>
+    <div class="rank"><span class="you">4. Tú</span><b id="score">1.000 €</b></div>
+  </div></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY="af_tycoon_demo_v1";
+let g=JSON.parse(localStorage.getItem(KEY)||"null")||{money:1000,stock:2000,rep:50,day:1,price:1.549,pumps:2,wash:false,ev:false,solar:false,ads:false,shop:1};
+let market=1.579;
+function save(){localStorage.setItem(KEY,JSON.stringify(g))}
+function euro(n){return Math.round(n).toLocaleString("es-ES")+" €"}
+function render(){
+ money.textContent=euro(g.money);stock.textContent=Math.round(g.stock).toLocaleString("es-ES")+" L";rep.textContent=Math.round(g.rep)+"%";day.textContent="Día "+g.day;
+ price.value=g.price; priceText.innerHTML=g.price.toFixed(3).replace(".",",")+" €<small>/L</small>";marketEl();
+ document.getElementById("score").textContent=euro(g.money);
+ document.querySelectorAll(".pump").forEach((x,i)=>x.style.display=i<g.pumps?"block":"none");
+ document.getElementById("wash").textContent=g.wash?"Comprado ✓":"Comprar · 2.500 €";
+ document.getElementById("ev").textContent=g.ev?"Comprado ✓":"Comprar · 3.500 €";
+ document.getElementById("solar").textContent=g.solar?"Comprado ✓":"Comprar · 4.000 €";
+ document.getElementById("ads").textContent=g.ads?"Activo ✓":"Comprar · 700 €";
+}
+function marketEl(){document.getElementById("market").textContent=market.toFixed(3).replace(".",",")+" €/L"}
+function updatePrice(){g.price=+price.value;priceText.innerHTML=g.price.toFixed(3).replace(".",",")+" €<small>/L</small>";save()}
+function log(t,cls=""){const el=document.getElementById("log");el.innerHTML=`<div class="${cls}">Día ${g.day}: ${t}</div>`+el.innerHTML}
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1600)}
+function buyFuel(){
+ if(g.money<900){toast("No tienes suficiente dinero");return}
+ g.money-=900;g.stock+=1000;log("Has comprado 1.000 L de combustible por 900 €.","positive");save();render()
+}
+function openDay(){
+ if(g.stock<100){toast("Necesitas combustible para abrir");return}
+ let competitiveness=Math.max(0,1-(g.price-market)*5);
+ let customers=Math.round((65+g.pumps*18+g.rep*.8)*(0.55+competitiveness*.75));
+ if(g.ads) customers=Math.round(customers*1.25);
+ let liters=Math.min(g.stock,customers*(g.wash?18:14));
+ let revenue=liters*g.price;
+ let margin=revenue*0.16;
+ let extras=(g.wash?customers*1.7:0)+(g.ev?customers*.7:0)+(g.shop*customers*.55);
+ let cost=g.solar?customers*.08:customers*.16;
+ let profit=Math.max(0,margin+extras-cost);
+ g.money+=profit;g.stock-=liters;
+ let repChange=g.price<=market?.9:-.7;
+ if(g.wash)repChange+=.15;if(g.ev)repChange+=.2;
+ g.rep=Math.max(1,Math.min(100,g.rep+repChange));
+ market += (Math.random()-.48)*.035; market=Math.max(1.42,Math.min(1.78,market));
+ g.day++;
+ if(Math.random()<.18){let event=Math.random()<.5?"El petróleo sube: los competidores encarecen el combustible.":"Una gasolinera cercana baja precios. Tienes que reaccionar.";log(event,event.includes("sube")?"positive":"negative")}
+ log(`Has atendido ${customers} clientes, vendido ${Math.round(liters)} L y ganado ${euro(profit)}.`,"positive");
+ save();render();toast("Jornada cerrada: +"+euro(profit))
+}
+function upgrade(type){
+ const costs={pump:1800,shop:1500,wash:2500,ev:3500,solar:4000,ads:700};let c=costs[type];
+ if(g.money<c){toast("No tienes suficiente dinero");return}
+ if(type==="wash"&&g.wash||type==="ev"&&g.ev||type==="solar"&&g.solar||type==="ads"&&g.ads){toast("Ya está comprado");return}
+ if(type==="pump"){g.pumps++; if(g.pumps>4){toast("Máximo 4 surtidores en esta demo");return}}
+ else if(type==="shop")g.shop++;
+ else g[type]=true;
+ g.money-=c;log(`Has invertido ${euro(c)} en ${type==="pump"?"un nuevo surtidor":type==="shop"?"la tienda":type}.`,"positive");save();render()
+}
+function resetGame(){if(confirm("¿Reiniciar la partida?")){localStorage.removeItem(KEY);location.reload()}}
+const priceText=document.getElementById("priceText"),price=document.getElementById("price"),marketEl=()=>document.getElementById("market").textContent=market.toFixed(3).replace(".",",")+" €/L";
+render();
+</script>
+</body>
+</html>
