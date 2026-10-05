@@ -1,13 +1,20 @@
 /* AhorraFuel · estilos de la capa visual (se carga después de styles.css) */
-.fx3d{position:absolute;left:-30px;top:-50px;width:calc(100% + 60px);height:calc(100% + 70px);pointer-events:none;z-index:0}
-.art>.pv{position:relative;z-index:1}
-.fx .hero{overflow:clip}
+.fx3d{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
 
-/* Mascota con inclinación 3D */
+/* Mascota: más grande, con brillo de neón, flotando e inclinable en 3D */
 .fx .af-mascot .mas,.fx .af-mascot:hover .mas{
+  width:clamp(120px,15vw,190px);max-width:34vw;cursor:pointer;
   transform:perspective(500px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
-  transition:transform .15s ease-out;cursor:pointer}
+  transition:transform .15s ease-out;
+  filter:drop-shadow(0 0 18px rgba(114,230,42,.55)) drop-shadow(0 10px 12px rgba(0,0,0,.3));
+  animation:fxfloat 4s ease-in-out infinite}
 .fx .af-mascot .mas:focus-visible{outline:3px solid #72e62a;outline-offset:4px;border-radius:12px}
+@keyframes fxfloat{50%{translate:0 -8px}}
+
+/* Neón en título y botón principal */
+.fx .hero h1 em{text-shadow:0 0 28px rgba(114,230,42,.45)}
+.fx .btn.p{transition:box-shadow .25s ease,transform .15s ease}
+.fx .btn.p:hover{box-shadow:0 0 28px rgba(114,230,42,.55)}
 
 /* Tarjetas: entrada escalonada + inclinación con brillo */
 .fx .grid>.card{
@@ -19,5 +26,6 @@
 
 @media (prefers-reduced-motion:reduce){
   .fx3d{display:none}
+  .fx .af-mascot .mas{animation:none}
   .fx .grid>.card{opacity:1;translate:none;transform:none}
 }

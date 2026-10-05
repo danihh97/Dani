@@ -58,70 +58,114 @@
     mas.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } });
   }
 
-  // 4) Pin 3D con lluvia de gotas (Three.js, solo en equipos capaces y cuando hay tiempo libre)
+  // 4) Escena 3D a pantalla completa guiada por el scroll: pin + monedas + partículas de neón
   function scene() {
-    const host = d.querySelector('.hero .art');
-    if (!host || !window.THREE) return;
+    if (!window.THREE) return;
     const T = THREE, c = d.createElement('canvas');
-    c.className = 'fx3d'; c.setAttribute('aria-hidden', 'true'); host.prepend(c);
+    c.className = 'fx3d'; c.setAttribute('aria-hidden', 'true'); d.body.prepend(c);
     let r;
     try { r = new T.WebGLRenderer({ canvas: c, alpha: true, antialias: true, powerPreference: 'low-power' }); }
     catch (e) { c.remove(); return; }
     r.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    const sc = new T.Scene(), cam = new T.PerspectiveCamera(40, 1, 0.1, 50);
-    cam.position.z = 7;
+    const sc = new T.Scene(), cam = new T.PerspectiveCamera(45, 1, 0.1, 100);
+    cam.position.z = 8;
     sc.add(new T.HemisphereLight(0xffffff, 0x0a3a1c, 0.9));
-    const L = new T.DirectionalLight(0xffffff, 1.1); L.position.set(3, 4, 5); sc.add(L);
+    const L = new T.DirectionalLight(0xffffff, 1.2); L.position.set(3, 4, 5); sc.add(L);
+    const L2 = new T.PointLight(0x72e62a, 2, 20); L2.position.set(-4, -2, 3); sc.add(L2);
+    const tex = (fn) => { const k = d.createElement('canvas'); k.width = k.height = 128; fn(k.getContext('2d')); return new T.CanvasTexture(k); };
+    const glow = tex((x) => {
+      const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.25, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 128, 128);
+    });
+    const coin = (bg, fg, ring) => tex((x) => {
+      x.fillStyle = bg; x.fillRect(0, 0, 128, 128);
+      if (ring) { x.strokeStyle = ring; x.lineWidth = 8; x.beginPath(); x.arc(64, 64, 56, 0, 7); x.stroke(); }
+      x.fillStyle = fg; x.font = 'bold 84px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('€', 64, 70);
+    });
 
-    const pts = [];
-    for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; pts.push(new T.Vector2(Math.sin(a) * Math.sin(a / 2), -Math.cos(a))); }
-    const g = new T.LatheGeometry(pts, 40);
-    const mat = (col, rough) => new T.MeshPhysicalMaterial({ color: col, roughness: rough, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.15, side: T.DoubleSide });
-
-    const pin = new T.Group();
-    pin.add(new T.Mesh(g, mat(0x72e62a, 0.3)));
-    const cv = d.createElement('canvas'); cv.width = cv.height = 128;
-    const x = cv.getContext('2d');
-    x.fillStyle = '#fff'; x.fillRect(0, 0, 128, 128);
-    x.fillStyle = '#06210f'; x.font = 'bold 88px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('€', 64, 70);
-    const disc = new T.Mesh(new T.CircleGeometry(0.4, 32), new T.MeshBasicMaterial({ map: new T.CanvasTexture(cv) }));
-    disc.position.set(0, 0.42, 0.8); pin.add(disc); sc.add(pin);
-
-    const dm = [mat(0xfbbf24, 0.2), mat(0x72e62a, 0.25)], ds = [];
-    for (let i = 0; i < 12; i++) {
-      const k = new T.Mesh(g, dm[i % 2]);
-      k.scale.setScalar(0.12 + Math.random() * 0.1); k.rotation.z = Math.PI;
-      k.userData = { x: Math.random(), z: -2 + Math.random() * 3, s: 0.25 + Math.random() * 0.4, p: Math.random() };
-      ds.push(k); sc.add(k);
+    // Partículas de neón
+    const N = 700, pos = new Float32Array(N * 3), col = new Float32Array(N * 3), cA = new T.Color(0x72e62a), cB = new T.Color(0xfbbf24);
+    for (let i = 0; i < N; i++) {
+      pos.set([(Math.random() - 0.5) * 30, (Math.random() - 0.5) * 40, -6 + Math.random() * 10], i * 3);
+      const k = Math.random() < 0.8 ? cA : cB; col.set([k.r, k.g, k.b], i * 3);
     }
+    const pg = new T.BufferGeometry();
+    pg.setAttribute('position', new T.BufferAttribute(pos, 3)); pg.setAttribute('color', new T.BufferAttribute(col, 3));
+    const pts = new T.Points(pg, new T.PointsMaterial({ size: 0.22, map: glow, vertexColors: true, transparent: true, depthWrite: false, blending: T.AdditiveBlending, opacity: 0.85 }));
+    sc.add(pts);
 
-    let hw = 1, hh = 1;
+    // Pin con euro
+    const prof = [];
+    for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; prof.push(new T.Vector2(Math.sin(a) * Math.sin(a / 2), -Math.cos(a))); }
+    const rig = new T.Group(), pin = new T.Group();
+    pin.add(new T.Mesh(new T.LatheGeometry(prof, 40), new T.MeshPhysicalMaterial({ color: 0x72e62a, roughness: 0.3, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.15, side: T.DoubleSide })));
+    const disc = new T.Mesh(new T.CircleGeometry(0.4, 32), new T.MeshBasicMaterial({ map: coin('#fff', '#06210f') }));
+    disc.position.set(0, 0.42, 0.8); pin.add(disc);
+    const halo = new T.Sprite(new T.SpriteMaterial({ map: glow, color: 0x72e62a, transparent: true, depthWrite: false, blending: T.AdditiveBlending, opacity: 0.7 }));
+    halo.scale.setScalar(4.4); halo.position.z = -0.8; pin.add(halo);
+    rig.add(pin);
+
+    // Anillos de neón y monedas en órbita
+    const rings = [[1.7, 0x72e62a, 1.15], [2.2, 0xfbbf24, 1.45]].map(([R, co, tx]) => {
+      const m = new T.Mesh(new T.TorusGeometry(R, 0.022, 12, 110), new T.MeshBasicMaterial({ color: co, transparent: true, opacity: 0.9 }));
+      m.rotation.x = tx; rig.add(m); return m;
+    });
+    const gold = new T.MeshStandardMaterial({ color: 0xd99a12, metalness: 0.8, roughness: 0.3 });
+    const face = new T.MeshStandardMaterial({ map: coin('#fbbf24', '#5a3a00', '#b7791f'), metalness: 0.6, roughness: 0.35 });
+    const cg = new T.CylinderGeometry(0.34, 0.34, 0.07, 32), coins = [];
+    for (let i = 0; i < 7; i++) {
+      const g = new T.Group(), m = new T.Mesh(cg, [gold, face, face]);
+      m.rotation.x = Math.PI / 2; g.add(m); g.userData = { a: i / 7 * Math.PI * 2, R: 1.9 + (i % 2) * 0.5 };
+      coins.push(g); rig.add(g);
+    }
+    sc.add(rig);
+
+    // Tamaño
+    let W = 0, H = 0;
     const rs = () => {
-      const W = c.clientWidth, H = c.clientHeight; if (!W || !H) return;
-      r.setSize(W, H, false); cam.aspect = W / H; cam.updateProjectionMatrix();
-      hh = Math.tan(20 * Math.PI / 180) * 7; hw = hh * cam.aspect;
-      pin.scale.setScalar(Math.min(hh, hw) * 0.45);
+      const w = c.clientWidth, h = c.clientHeight; if (!w || !h) return;
+      if (w === W && Math.abs(h - H) < 150) return; // barras del móvil: no reajustar
+      W = w; H = h; r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
     };
     new ResizeObserver(rs).observe(c); rs();
 
-    let on = true, dead = false, px = 0, py = 0, slow = 0, last = performance.now();
-    new IntersectionObserver((e) => { on = e[0].isIntersecting; }).observe(host);
+    // Interacción: tocar o hacer clic = giro completo + destello
+    let px = 0, py = 0, turn = 0, turnCur = 0, pulse = 0, vel = 0, lastY = scrollY, slow = 0, dead = false, last = performance.now();
     addEventListener('pointermove', (e) => { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; }, { passive: true });
-    const stop = () => { dead = true; c.remove(); r.dispose(); };
+    addEventListener('pointerdown', () => { turn += Math.PI * 2; pulse = 1; }, { passive: true });
+    const hh = Math.tan(22.5 * Math.PI / 180) * 8, sm = (v) => Math.min(1, v);
+
     (function f(t) {
       if (dead) return;
       requestAnimationFrame(f);
       const dt = t - last; last = t;
-      if (!on || d.hidden) return;
-      if (dt > 40 && ++slow > 30) { stop(); return; } // equipo lento: se desactiva solo
-      const s = t / 1000;
-      pin.rotation.y += (Math.sin(s * 0.8) * 0.5 + px * 0.8 - pin.rotation.y) * 0.06;
-      pin.rotation.x += (py * 0.4 - pin.rotation.x) * 0.06;
-      pin.position.set(hw * 0.55, hh * 0.5 + Math.sin(s * 1.2) * 0.12, 0);
-      ds.forEach((k) => {
-        const u = k.userData, y = (u.p + s * u.s * 0.12) % 1;
-        k.position.set((u.x - 0.5) * 2 * hw, hh - y * 2 * hh, u.z); k.rotation.y = s;
+      if (d.hidden) return;
+      if (dt > 40 && ++slow > 30) { dead = true; c.remove(); r.dispose(); return; } // equipo lento: se apaga solo
+      const s = t / 1000, hw = hh * cam.aspect;
+      const h = d.documentElement.scrollHeight - innerHeight, p = h > 0 ? scrollY / h : 0;
+      vel += ((scrollY - lastY) - vel) * 0.15; lastY = scrollY;
+      turnCur += (turn - turnCur) * 0.08; pulse *= 0.93;
+
+      cam.position.set(px * 0.6, -p * 14, 8); cam.lookAt(0, cam.position.y, 0);
+      pts.position.y = s * 0.15; pts.rotation.y = s * 0.02;
+
+      const tx = hw * 0.58 * Math.cos(p * Math.PI * 3), ty = cam.position.y + hh * (0.3 - 0.9 * sm(p * 6));
+      rig.position.x += (tx - rig.position.x) * 0.06; rig.position.y += (ty - rig.position.y) * 0.06;
+      const sc1 = Math.min(hh, hw * 1.2) * (0.5 - 0.25 * sm(p * 4)) * (1 + pulse * 0.12);
+      rig.scale.setScalar(sc1);
+      pin.rotation.y = Math.sin(s * 0.7) * 0.45 + px * 0.7 + p * Math.PI * 6 + turnCur;
+      pin.rotation.x = py * 0.4;
+      halo.material.opacity = 0.6 + pulse * 0.4;
+
+      const sp = 0.6 + Math.min(Math.abs(vel) * 0.03, 3);
+      rings[0].rotation.z = s * 0.5; rings[1].rotation.z = -s * 0.35;
+      coins.forEach((g) => {
+        const u = g.userData; u.a += 0.012 * sp;
+        g.position.set(Math.cos(u.a) * u.R, Math.sin(u.a) * u.R * 0.35, Math.sin(u.a) * u.R * 0.9);
+        g.rotation.y = s * 2 + u.a;
       });
+      c.style.opacity = 1 - 0.45 * sm(p * 8); // detrás del contenido: más suave al bajar
       r.render(sc, cam);
     })(last);
   }
