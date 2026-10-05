@@ -1,6 +1,4 @@
 /* AhorraFuel · estilos de la capa visual (se carga después de styles.css) */
-.fx3d{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1}
-
 /* Mascota: más grande, con brillo de neón, flotando e inclinable en 3D */
 .fx .af-mascot .mas,.fx .af-mascot:hover .mas{
   width:clamp(120px,15vw,190px);max-width:34vw;cursor:pointer;
@@ -24,8 +22,28 @@
   transition:opacity .5s ease,translate .5s ease,transform .2s ease}
 .fx .grid>.card.in{opacity:1;translate:0 0;transition-delay:calc(var(--i,0)*70ms),calc(var(--i,0)*70ms),0s}
 
+/* Esfera LED: escaparate con scroll (texto a un lado, esfera al otro) */
+.fx-show{position:relative;height:440vh}
+.fx-st{position:sticky;top:0;height:100vh;height:100svh;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden;padding-top:72px}
+.fx-cv{width:100%;height:100%;display:block;min-height:0;touch-action:pan-y;cursor:grab}
+.fx-tx{padding:8px 20px 28px;max-width:560px}
+.fx-bl{position:relative;min-height:230px}
+.fx-b{position:absolute;inset:0 0 auto 0;opacity:0;translate:0 14px;transition:opacity .45s ease,translate .45s ease;pointer-events:none}
+.fx-b.on{opacity:1;translate:0 0;pointer-events:auto}
+.fx-b h2{margin:0 0 10px;font-size:clamp(28px,6vw,52px);line-height:1.05;letter-spacing:-.03em;font-weight:800}
+.fx-b p{margin:0 0 14px;color:var(--mu);max-width:44ch}
+.fx-n b{display:block;font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--br)}
+.fx-n span{color:var(--mu);font-size:14px;font-weight:600}
+.fx-pg{display:flex;gap:6px;margin-top:18px}
+.fx-pg i{width:28px;height:4px;border-radius:2px;background:var(--ln);transition:background .3s}
+.fx-pg i.on{background:var(--br)}
+@media (min-width:900px){
+  .fx-st{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:1fr;align-items:center;max-width:1180px;margin:0 auto;padding:72px 24px 0}
+  .fx-tx{order:-1;padding:0}
+  .fx-bl{min-height:300px}
+}
+
 @media (prefers-reduced-motion:reduce){
-  .fx3d{display:none}
   .fx .af-mascot .mas{animation:none}
   .fx .grid>.card{opacity:1;translate:none;transform:none}
 }

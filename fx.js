@@ -58,114 +58,107 @@
     mas.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } });
   }
 
-  // 4) Escena 3D a pantalla completa guiada por el scroll: pin + monedas + partículas de neón
+  // 4) Esfera LED guiada por el scroll: texto a un lado, esfera al otro, contenido distinto en cada paso
   function scene() {
-    if (!window.THREE) return;
-    const T = THREE, c = d.createElement('canvas');
-    c.className = 'fx3d'; c.setAttribute('aria-hidden', 'true'); d.body.prepend(c);
+    const T = window.THREE, host = d.querySelector('main .hero');
+    if (!T || !host) return;
+    const S = [
+      ['Tu provincia o tu ubicación', 'Elige provincia y combustible, o pulsa «Cerca de mí» y buscamos en 30 km a la redonda.', '52', 'provincias y ciudades autónomas'],
+      ['Todos los precios, ordenados', 'De la más barata a la más cara, con la fecha de actualización de cada dato.', '3', 'combustibles: 95, 98 y diésel'],
+      ['Cuánto ahorras por depósito', 'La diferencia entre la más barata y la más cara, calculada para tu repostaje.', '3,00 €', 'de ahorro en un ejemplo de 50 L'],
+      ['Y llegas con un toque', 'Abre la gasolinera elegida directamente en tu aplicación de mapas.', '0 €', 'gratis y sin registro']
+    ];
+    const sec = d.createElement('section');
+    sec.className = 'fx-show web-only'; sec.setAttribute('aria-label', 'Cómo funciona AhorraFuel');
+    sec.innerHTML = '<div class="fx-st"><canvas class="fx-cv" aria-hidden="true"></canvas><div class="fx-tx"><div class="fx-bl">' +
+      S.map((s) => '<div class="fx-b"><h2>' + s[0] + '</h2><p>' + s[1] + '</p><div class="fx-n"><b>' + s[2] + '</b><span>' + s[3] + '</span></div></div>').join('') +
+      '</div><a class="btn p" href="#buscar">Buscar gasolineras</a><div class="fx-pg">' + S.map(() => '<i></i>').join('') + '</div></div></div>';
+    host.after(sec);
+    const cv = sec.querySelector('.fx-cv'), bl = [...sec.querySelectorAll('.fx-b')], pg = [...sec.querySelectorAll('.fx-pg i')];
     let r;
-    try { r = new T.WebGLRenderer({ canvas: c, alpha: true, antialias: true, powerPreference: 'low-power' }); }
-    catch (e) { c.remove(); return; }
+    try { r = new T.WebGLRenderer({ canvas: cv, alpha: true, antialias: true, powerPreference: 'low-power' }); }
+    catch (e) { sec.remove(); return; }
     r.setPixelRatio(Math.min(devicePixelRatio, 1.5));
-    const sc = new T.Scene(), cam = new T.PerspectiveCamera(45, 1, 0.1, 100);
-    cam.position.z = 8;
-    sc.add(new T.HemisphereLight(0xffffff, 0x0a3a1c, 0.9));
-    const L = new T.DirectionalLight(0xffffff, 1.2); L.position.set(3, 4, 5); sc.add(L);
-    const L2 = new T.PointLight(0x72e62a, 2, 20); L2.position.set(-4, -2, 3); sc.add(L2);
-    const tex = (fn) => { const k = d.createElement('canvas'); k.width = k.height = 128; fn(k.getContext('2d')); return new T.CanvasTexture(k); };
-    const glow = tex((x) => {
-      const g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-      g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.25, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-      x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-    });
-    const coin = (bg, fg, ring) => tex((x) => {
-      x.fillStyle = bg; x.fillRect(0, 0, 128, 128);
-      if (ring) { x.strokeStyle = ring; x.lineWidth = 8; x.beginPath(); x.arc(64, 64, 56, 0, 7); x.stroke(); }
-      x.fillStyle = fg; x.font = 'bold 84px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('€', 64, 70);
-    });
+    const sc = new T.Scene(), cam = new T.PerspectiveCamera(35, 1, 0.1, 50);
 
-    // Partículas de neón
-    const N = 700, pos = new Float32Array(N * 3), col = new Float32Array(N * 3), cA = new T.Color(0x72e62a), cB = new T.Color(0xfbbf24);
-    for (let i = 0; i < N; i++) {
-      pos.set([(Math.random() - 0.5) * 30, (Math.random() - 0.5) * 40, -6 + Math.random() * 10], i * 3);
-      const k = Math.random() < 0.8 ? cA : cB; col.set([k.r, k.g, k.b], i * 3);
-    }
-    const pg = new T.BufferGeometry();
-    pg.setAttribute('position', new T.BufferAttribute(pos, 3)); pg.setAttribute('color', new T.BufferAttribute(col, 3));
-    const pts = new T.Points(pg, new T.PointsMaterial({ size: 0.22, map: glow, vertexColors: true, transparent: true, depthWrite: false, blending: T.AdditiveBlending, opacity: 0.85 }));
-    sc.add(pts);
-
-    // Pin con euro
-    const prof = [];
-    for (let i = 0; i <= 40; i++) { const a = i / 40 * Math.PI; prof.push(new T.Vector2(Math.sin(a) * Math.sin(a / 2), -Math.cos(a))); }
-    const rig = new T.Group(), pin = new T.Group();
-    pin.add(new T.Mesh(new T.LatheGeometry(prof, 40), new T.MeshPhysicalMaterial({ color: 0x72e62a, roughness: 0.3, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.15, side: T.DoubleSide })));
-    const disc = new T.Mesh(new T.CircleGeometry(0.4, 32), new T.MeshBasicMaterial({ map: coin('#fff', '#06210f') }));
-    disc.position.set(0, 0.42, 0.8); pin.add(disc);
-    const halo = new T.Sprite(new T.SpriteMaterial({ map: glow, color: 0x72e62a, transparent: true, depthWrite: false, blending: T.AdditiveBlending, opacity: 0.7 }));
-    halo.scale.setScalar(4.4); halo.position.z = -0.8; pin.add(halo);
-    rig.add(pin);
-
-    // Anillos de neón y monedas en órbita
-    const rings = [[1.7, 0x72e62a, 1.15], [2.2, 0xfbbf24, 1.45]].map(([R, co, tx]) => {
-      const m = new T.Mesh(new T.TorusGeometry(R, 0.022, 12, 110), new T.MeshBasicMaterial({ color: co, transparent: true, opacity: 0.9 }));
-      m.rotation.x = tx; rig.add(m); return m;
-    });
-    const gold = new T.MeshStandardMaterial({ color: 0xd99a12, metalness: 0.8, roughness: 0.3 });
-    const face = new T.MeshStandardMaterial({ map: coin('#fbbf24', '#5a3a00', '#b7791f'), metalness: 0.6, roughness: 0.35 });
-    const cg = new T.CylinderGeometry(0.34, 0.34, 0.07, 32), coins = [];
-    for (let i = 0; i < 7; i++) {
-      const g = new T.Group(), m = new T.Mesh(cg, [gold, face, face]);
-      m.rotation.x = Math.PI / 2; g.add(m); g.userData = { a: i / 7 * Math.PI * 2, R: 1.9 + (i % 2) * 0.5 };
-      coins.push(g); rig.add(g);
-    }
-    sc.add(rig);
-
-    // Tamaño
-    let W = 0, H = 0;
-    const rs = () => {
-      const w = c.clientWidth, h = c.clientHeight; if (!w || !h) return;
-      if (w === W && Math.abs(h - H) < 150) return; // barras del móvil: no reajustar
-      W = w; H = h; r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+    // Pantalla LED: lienzo de 192x96 "píxeles" que la esfera muestra como puntos
+    const W = 192, H = 96;
+    const mk = () => {
+      const k = d.createElement('canvas'); k.width = W; k.height = H;
+      const t = new T.CanvasTexture(k); t.magFilter = t.minFilter = T.NearestFilter; t.generateMipmaps = false;
+      return { k, x: k.getContext('2d'), t };
     };
-    new ResizeObserver(rs).observe(c); rs();
+    const A = mk(), B = mk(), im = new Image(); im.src = '/mascota.webp';
+    const txt = (x, s, px, col, X, Y) => { x.font = 'bold ' + px + 'px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = col; x.fillText(s, X, Y); };
+    const draw = [
+      (x) => { // pin con surtidor
+        x.fillStyle = '#72e62a'; x.beginPath(); x.moveTo(48, 76); x.bezierCurveTo(20, 52, 28, 20, 48, 20); x.bezierCurveTo(68, 20, 76, 52, 48, 76); x.fill();
+        x.fillStyle = '#fff'; x.beginPath(); x.arc(48, 42, 12, 0, 7); x.fill();
+        x.fillStyle = '#06210f'; x.fillRect(42, 35, 9, 14); x.fillRect(53, 38, 2, 10);
+      },
+      (x) => { txt(x, '1,529', 17, '#72e62a', 48, 26); txt(x, '1,559', 17, '#fbbf24', 48, 48); txt(x, '1,589', 17, '#f87171', 48, 70); },
+      (x) => { txt(x, '-3,00 €', 20, '#fbbf24', 48, 40); txt(x, '50 L', 11, '#a9c0b6', 48, 60); },
+      (x) => { if (im.complete && im.naturalWidth) x.drawImage(im, 15, 9, 66, 78); else txt(x, 'GO', 24, '#72e62a', 48, 48); }
+    ];
+    const paint = (c, i) => { c.x.fillStyle = '#000'; c.x.fillRect(0, 0, W, H); draw[i](c.x); c.t.needsUpdate = true; };
 
-    // Interacción: tocar o hacer clic = giro completo + destello
-    let px = 0, py = 0, turn = 0, turnCur = 0, pulse = 0, vel = 0, lastY = scrollY, slow = 0, dead = false, last = performance.now();
-    addEventListener('pointermove', (e) => { px = e.clientX / innerWidth - 0.5; py = e.clientY / innerHeight - 0.5; }, { passive: true });
-    addEventListener('pointerdown', () => { turn += Math.PI * 2; pulse = 1; }, { passive: true });
-    const hh = Math.tan(22.5 * Math.PI / 180) * 8, sm = (v) => Math.min(1, v);
+    const u = { a: { value: A.t }, b: { value: B.t }, k: { value: 0 }, t: { value: 0 }, g: { value: new T.Vector2(W, H) } };
+    const mat = new T.ShaderMaterial({
+      uniforms: u,
+      vertexShader: 'varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv;vN=normalMatrix*normal;vec4 m=modelViewMatrix*vec4(position,1.);vV=-m.xyz;gl_Position=projectionMatrix*m;}',
+      fragmentShader: 'uniform sampler2D a,b;uniform float k,t;uniform vec2 g;varying vec2 vUv;varying vec3 vN;varying vec3 vV;' +
+        'void main(){vec2 p=vUv*g,c=floor(p),f=fract(p)-.5;vec2 q=(c+.5)/g;' +
+        'float h=fract(sin(dot(c,vec2(12.9898,78.233)))*43758.5453);' +
+        'vec3 col=(h<k?texture2D(b,q):texture2D(a,q)).rgb;' +
+        'float m=smoothstep(.5,.28,length(f));' +
+        'float fr=pow(1.-max(dot(normalize(vN),normalize(vV)),0.),2.5);' +
+        'float fl=.93+.07*sin(t*3.+c.x*.3+c.y*.2);' +
+        'gl_FragColor=vec4(vec3(.02,.05,.04)+col*m*1.25*fl+vec3(.1,.9,.3)*fr*.55,1.);}'
+    });
+    const ball = new T.Mesh(new T.SphereGeometry(1.5, 96, 64), mat); sc.add(ball);
+    const gt = d.createElement('canvas'); gt.width = gt.height = 128;
+    const gx = gt.getContext('2d'), gr = gx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(0.4, 'rgba(255,255,255,.25)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    gx.fillStyle = gr; gx.fillRect(0, 0, 128, 128);
+    const halo = new T.Sprite(new T.SpriteMaterial({ map: new T.CanvasTexture(gt), color: 0x72e62a, transparent: true, depthWrite: false, blending: T.AdditiveBlending, opacity: 0.4 }));
+    halo.scale.setScalar(6.4); halo.position.z = -1.5; sc.add(halo);
+
+    const rs = () => {
+      const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+      r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+      cam.position.z = (1.5 * h / 2 / (0.44 * Math.min(w, h))) / Math.tan(17.5 * Math.PI / 180);
+    };
+    new ResizeObserver(rs).observe(cv); rs();
+
+    // Estado, arrastre e interacción
+    let cur = -1, k = 0, yaw = 0, dr = 0, down = false, lx = 0, py = 0, on = false, slow = 0, dead = false, last = performance.now();
+    new IntersectionObserver((e) => { on = e[0].isIntersecting; }, { rootMargin: '100px' }).observe(sec);
+    cv.addEventListener('pointerdown', (e) => { down = true; lx = e.clientX; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', (e) => { if (down) { dr += (e.clientX - lx) * 0.01; lx = e.clientX; } });
+    ['pointerup', 'pointercancel'].forEach((n) => cv.addEventListener(n, () => { down = false; }));
+    addEventListener('pointermove', (e) => { py = e.clientY / innerHeight - 0.5; }, { passive: true });
+    im.onload = () => { if (cur === 3 && !k) paint(A, 3); };
+    const stage = (i) => {
+      if (k) { A.x.drawImage(B.k, 0, 0); A.t.needsUpdate = true; k = 0; }
+      if (cur < 0) paint(A, i); else { paint(B, i); k = 0.001; }
+      cur = i;
+      bl.forEach((e, j) => e.classList.toggle('on', j === i)); pg.forEach((e, j) => e.classList.toggle('on', j <= i));
+    };
 
     (function f(t) {
       if (dead) return;
       requestAnimationFrame(f);
       const dt = t - last; last = t;
-      if (d.hidden) return;
-      if (dt > 40 && ++slow > 30) { dead = true; c.remove(); r.dispose(); return; } // equipo lento: se apaga solo
-      const s = t / 1000, hw = hh * cam.aspect;
-      const h = d.documentElement.scrollHeight - innerHeight, p = h > 0 ? scrollY / h : 0;
-      vel += ((scrollY - lastY) - vel) * 0.15; lastY = scrollY;
-      turnCur += (turn - turnCur) * 0.08; pulse *= 0.93;
-
-      cam.position.set(px * 0.6, -p * 14, 8); cam.lookAt(0, cam.position.y, 0);
-      pts.position.y = s * 0.15; pts.rotation.y = s * 0.02;
-
-      const tx = hw * 0.58 * Math.cos(p * Math.PI * 3), ty = cam.position.y + hh * (0.3 - 0.9 * sm(p * 6));
-      rig.position.x += (tx - rig.position.x) * 0.06; rig.position.y += (ty - rig.position.y) * 0.06;
-      const sc1 = Math.min(hh, hw * 1.2) * (0.5 - 0.25 * sm(p * 4)) * (1 + pulse * 0.12);
-      rig.scale.setScalar(sc1);
-      pin.rotation.y = Math.sin(s * 0.7) * 0.45 + px * 0.7 + p * Math.PI * 6 + turnCur;
-      pin.rotation.x = py * 0.4;
-      halo.material.opacity = 0.6 + pulse * 0.4;
-
-      const sp = 0.6 + Math.min(Math.abs(vel) * 0.03, 3);
-      rings[0].rotation.z = s * 0.5; rings[1].rotation.z = -s * 0.35;
-      coins.forEach((g) => {
-        const u = g.userData; u.a += 0.012 * sp;
-        g.position.set(Math.cos(u.a) * u.R, Math.sin(u.a) * u.R * 0.35, Math.sin(u.a) * u.R * 0.9);
-        g.rotation.y = s * 2 + u.a;
-      });
-      c.style.opacity = 1 - 0.45 * sm(p * 8); // detrás del contenido: más suave al bajar
+      if (!on || d.hidden) return;
+      if (dt > 40 && ++slow > 30) { dead = true; sec.remove(); r.dispose(); return; } // equipo lento: se desactiva solo
+      const s = t / 1000, rc = sec.getBoundingClientRect();
+      const q = Math.max(0, Math.min(1, -rc.top / (rc.height - innerHeight))) * S.length, i = Math.min(S.length - 1, Math.floor(q));
+      if (i !== cur) stage(i);
+      if (k) { k += dt / 650; if (k >= 1) { A.x.drawImage(B.k, 0, 0); A.t.needsUpdate = true; k = 0; } }
+      if (!down) dr *= 0.96;
+      yaw += ((q - i - 0.5) * 0.7 + Math.sin(s * 0.5) * 0.1 + dr - yaw) * 0.08;
+      ball.rotation.y = yaw; ball.rotation.x = 0.1 + py * 0.25;
+      u.k.value = k; u.t.value = s;
       r.render(sc, cam);
     })(last);
   }
@@ -176,7 +169,7 @@
     const load = () => {
       const s = d.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-      s.onload = () => { try { scene(); } catch (e) { const k = d.querySelector('.fx3d'); if (k) k.remove(); } };
+      s.onload = () => { try { scene(); } catch (e) { const k = d.querySelector('.fx-show'); if (k) k.remove(); } };
       d.head.appendChild(s);
     };
     'requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 2500 }) : setTimeout(load, 1500);
