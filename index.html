@@ -1,210 +1,305 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AhorraFuel — Gas Station Tycoon</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;background:#07100c;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{min-height:100vh}
-#game{position:relative;width:100%;height:100vh;min-height:620px;overflow:hidden;background:#8fbcb0}
-canvas{display:block;width:100%;height:100%;touch-action:none}
-.hud{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}
-.stat{background:#0a1c14eF;border:1px solid #526d60;border-radius:14px;padding:8px 11px;min-width:94px;backdrop-filter:blur(8px)}
-.stat b{display:block;font-size:15px}.stat span{font-size:9px;color:#a9beb5}
-.bottom{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;align-items:end;pointer-events:none}
-.side{display:flex;flex-direction:column;gap:7px;pointer-events:auto}
-button{border:1px solid #5a7468;background:#0a1c14ed;color:#fff;border-radius:13px;padding:11px 14px;min-height:45px;font-weight:850;font-size:12px;touch-action:manipulation}
-button.green{background:#3fe482;color:#06140b;border-color:#9af6bd}
-button.yellow{background:#ffd15a;color:#151008}
-button.selected{border-color:#3fe482;background:#153c2b}
-#toast{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:#0a1c14ee;border:1px solid #526d60;border-radius:13px;padding:10px 14px;font-size:11px;max-width:45%;text-align:center;pointer-events:none}
-#pricePanel{position:absolute;left:50%;top:92px;transform:translateX(-50%);width:min(370px,72%);background:#0a1c14ee;border:1px solid #526d60;border-radius:15px;padding:10px;display:none;backdrop-filter:blur(8px)}
-#pricePanel .line{display:flex;justify-content:space-between}.price{font-size:21px;font-weight:950}
-#priceRange{width:100%;accent-color:#3fe482}
-#selected{font-size:10px;color:#a9beb5}
-@media(max-width:600px){
- .stat{min-width:calc(50% - 4px)}
- #toast{max-width:43%;font-size:9px}
- button{padding:10px 11px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <title>Gasolineras más baratas en España | AhorraFuel</title>
+  <meta name="description" content="Encuentra y compara las gasolineras más baratas de España. Consulta gasolina 95, gasolina 98 y diésel y busca las mejores opciones cerca de ti.">
+  <meta name="robots" content="index, follow">
+  <meta name="application-name" content="AhorraFuel">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#061713">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AhorraFuel">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="canonical" href="https://ahorrafuel.es/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192x192.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ahorrafuel.es/">
+  <meta property="og:title" content="Gasolineras más baratas en España | AhorraFuel">
+  <meta property="og:description" content="Compara precios de gasolina 95, gasolina 98 y diésel y encuentra las gasolineras más baratas cerca de ti.">
+  <meta property="og:image" content="https://ahorrafuel.es/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AhorraFuel: gasolineras más baratas en España">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://ahorrafuel.es/og-image.png">
+  <meta property="og:site_name" content="AhorraFuel">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://ahorrafuel.es/",
+    "name": "AhorraFuel",
+    "alternateName": "Ahorra Fuel",
+    "description": "Comparador de precios de gasolina 95, gasolina 98 y diésel en España para encontrar gasolineras más baratas.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "AhorraFuel",
+      "url": "https://ahorrafuel.es/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://ahorrafuel.es/IMG_6106.png"
+      }
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="/styles.css?v=20261014">
+<link rel="stylesheet" href="/fx.css?v=1">
+<script>if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)document.documentElement.classList.add("is-app")</script>
 </head>
+
 <body>
-<div id="game">
-<canvas id="canvas"></canvas>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+<symbol id="bars" viewBox="0 0 24 24"><path d="M4 6h16M4 12h11M4 18h6"/></symbol>
+<symbol id="eur" viewBox="0 0 24 24"><path d="M17 6.5A6 6 0 0 0 7 9.5v5a6 6 0 0 0 10 3M5 11h8M5 14h8"/></symbol>
+<symbol id="ph" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+<symbol id="rt" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.5"/></symbol>
+<symbol id="bz" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="sr" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+</defs></svg>
+<div id="cookieOverlay" class="cookie-overlay" role="dialog" aria-modal="true" aria-labelledby="cookieTitle">
+  <div id="cookieBanner" class="cookie-box">
+    <h2 id="cookieTitle" class="cookie-title">🍪 Tu privacidad importa</h2>
+    <p class="cookie-text" data-nosnippet>Usamos almacenamiento necesario para recordar tu elección de cookies y, solo si lo aceptas, Google Analytics para obtener estadísticas de uso y mejorar AhorraFuel. Puedes aceptar, rechazar o configurar las cookies de análisis.</p>
+    <div class="cookie-links"><a href="/cookies.html">Política de cookies</a> · <a href="/privacidad.html">Privacidad</a></div>
+    <div class="cookie-actions">
+      <button id="cookieReject" class="cookie-reject" type="button">Rechazar</button>
+      <button id="cookieConfig" class="cookie-config" type="button">Configurar</button>
+      <button id="cookieAccept" class="cookie-accept" type="button">Aceptar</button>
+    </div>
+  </div>
+  <div id="cookieSettings" class="cookie-box cookie-settings">
+    <h2 class="cookie-title">Configurar cookies</h2>
+    <p class="cookie-text" data-nosnippet>Las cookies necesarias permiten guardar tu decisión. Las cookies de análisis son opcionales y solo se activan si las autorizas.</p>
+    <div class="cookie-setting">
+      <div><strong>Cookies necesarias</strong><small>Guardan tu preferencia de consentimiento y permiten funciones básicas.</small></div>
+      <span class="cookie-required">SIEMPRE ACTIVAS</span>
+    </div>
+    <div class="cookie-setting">
+      <div><strong>Cookies de análisis</strong><small>Google Analytics 4: estadísticas de usuarios, sesiones y uso de la web.</small></div>
+      <button id="analyticsToggle" class="cookie-toggle" type="button" aria-label="Activar cookies de análisis" aria-pressed="false"></button>
+    </div>
+    <div class="cookie-actions">
+      <button id="settingsReject" class="cookie-reject" type="button">Rechazar todas</button>
+      <button id="settingsSave" class="cookie-save" type="button">Guardar selección</button>
+    </div>
+  </div>
+</div>
+<button id="cookieManage" class="cookie-manage" type="button">🍪 Cookies</button>
+<header><div class="wrap"><a class="logo" href="/" aria-label="AhorraFuel inicio"><img class="lg" src="/IMG_6106.png" alt="AhorraFuel" width="48" height="48"><span class="wm">Ahorra<span>Fuel</span></span></a>
+<nav id="afMenu" class="af-menu" aria-label="Menú principal"><a href="/">Inicio</a><a href="#ventajas">Ventajas</a><a href="#como">Cómo funciona</a><a href="#ciudades">Ciudades</a><a href="#faq">Preguntas</a></nav>
+<a class="btn p sm" href="#buscar">Buscar gasolineras</a><button class="af-menu-button" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="toggleAfMenu()"><span></span><span></span><span></span></button></div></header>
+<main class="app"><section class="hero"><div class="wrap"><div><span class="eye">Encuentra · Compara · Ahorra</span><h1>Gasolineras <em>más baratas</em> en España</h1>
+<p class="lead">Compara gasolina 95, 98 y diésel por provincia o cerca de ti, y ahorra en cada repostaje.</p>
+<div class="af-mascot"><div class="mas" role="img" aria-label="Mascota de AhorraFuel con una manguera de gasolina"></div><div class="af-mascot-bubble" id="afMascotBubble">👋 ¡Hola! Soy la mascota de <strong>AhorraFuel.es</strong><br>⛽ ¿Buscamos la gasolina más barata?</div></div>
+<div class="card lt search-card" id="buscar"><fieldset class="fuels"><legend class="fld">Combustible</legend><label><input type="radio" checked name="f" value="95"><span>Gasolina 95</span></label><label><input type="radio" name="f" value="98"><span>Gasolina 98</span></label><label><input type="radio" name="f" value="diesel"><span>Diésel</span></label></fieldset><select id="fuel" class="sr" tabindex="-1" aria-hidden="true">
 
-<div class="hud">
- <div class="stat"><b id="money">12.540 €</b><span>DINERO</span></div>
- <div class="stat"><b id="fuel">3.250 L</b><span>COMBUSTIBLE</span></div>
- <div class="stat"><b id="rep">72%</b><span>REPUTACIÓN</span></div>
- <div class="stat"><b id="clients">8</b><span>CLIENTES</span></div>
+        <option value="95">
+          Gasolina 95
+        </option>
+
+        <option value="98">
+          Gasolina 98
+        </option>
+
+        <option value="diesel">
+          Diésel
+        </option>
+
+      </select>
+<label class="fld" for="province">Provincia</label><select id="province" onchange="modoBusqueda='provincia'; ubicacionUsuario=null; document.getElementById('locationStatus').textContent='';">
+        <option value="" selected disabled>Selecciona tu provincia</option>
+
+        <option value="01">Álava</option>
+        <option value="02">Albacete</option>
+        <option value="03">Alicante</option>
+        <option value="04">Almería</option>
+        <option value="05">Ávila</option>
+        <option value="06">Badajoz</option>
+        <option value="07">Baleares</option>
+        <option value="08">Barcelona</option>
+        <option value="09">Burgos</option>
+        <option value="10">Cáceres</option>
+        <option value="11">Cádiz</option>
+        <option value="12">Castellón</option>
+        <option value="13">Ciudad Real</option>
+        <option value="14">Córdoba</option>
+        <option value="15">A Coruña</option>
+        <option value="16">Cuenca</option>
+        <option value="17">Girona</option>
+        <option value="18">Granada</option>
+        <option value="19">Guadalajara</option>
+        <option value="20">Guipúzcoa</option>
+        <option value="21">Huelva</option>
+        <option value="22">Huesca</option>
+        <option value="23">Jaén</option>
+        <option value="24">León</option>
+        <option value="25">Lleida</option>
+        <option value="26">La Rioja</option>
+        <option value="27">Lugo</option>
+        <option value="28">Madrid</option>
+        <option value="29">Málaga</option>
+        <option value="30">Murcia</option>
+        <option value="31">Navarra</option>
+        <option value="32">Ourense</option>
+        <option value="33">Asturias</option>
+        <option value="34">Palencia</option>
+        <option value="35">Las Palmas</option>
+        <option value="36">Pontevedra</option>
+        <option value="37">Salamanca</option>
+        <option value="38">Santa Cruz de Tenerife</option>
+        <option value="39">Cantabria</option>
+        <option value="40">Segovia</option>
+        <option value="41">Sevilla</option>
+        <option value="42">Soria</option>
+        <option value="43">Tarragona</option>
+        <option value="44">Teruel</option>
+        <option value="45">Toledo</option>
+        <option value="46">Valencia</option>
+        <option value="47">Valladolid</option>
+        <option value="48">Vizcaya</option>
+        <option value="49">Zamora</option>
+        <option value="50">Zaragoza</option>
+        <option value="51">Ceuta</option>
+        <option value="52">Melilla</option>
+
+      </select>
+<div class="acts"><button class="btn p f" id="searchButton" type="button" onclick="buscar()"><svg class="i"><use href="#sr"/></svg>Buscar gasolineras</button>
+<button class="btn s f" id="locationButton" type="button" onclick="usarUbicacion()"><svg class="i"><use href="#pin"/></svg>Cerca de mí</button></div>
+<div id="locationStatus" class="note" role="status"></div><p class="note">Los precios pueden variar en la gasolinera.</p></div>
+<ul class="trust"><li><svg class="i"><use href="#ck"/></svg>Gratis y sin registro</li><li><svg class="i"><use href="#ck"/></svg>52 provincias</li><li><svg class="i"><use href="#ck"/></svg>Ruta en tu mapa</li></ul></div>
+<div class="art" aria-hidden="true"><div class="pv"><div class="pvh"><b>Gasolina 95</b><span>Vista previa</span></div>
+<div class="pvr best"><i>1</i><div><b>Estación Norte</b><small>Av. Mayor, 12</small></div><strong class="g">1,529</strong></div>
+<div class="pvr"><i>2</i><div><b>Estación Centro</b><small>C/ San Fernando, 8</small></div><strong class="m">1,559</strong></div>
+<div class="pvr"><i>3</i><div><b>Estación Sur</b><small>Ronda Sur, 40</small></div><strong class="b">1,589</strong></div>
+<div class="pvs"><span>Ahorro en 50 L</span><span class="g">3,00 €</span></div></div>
+</div>
+</div></section>
+<div class="wrap"><div id="afPwaInstallCard" aria-live="polite">
+  <div class="af-pwa-layout">
+    <div>
+      <h2 class="af-pwa-title">Instala <span>AhorraFuel</span>,<br>tu app de gasolineras gratis</h2>
+      <p class="af-pwa-subtitle">Las gasolineras más baratas, siempre a mano desde tu móvil.</p>
+      <div class="af-pwa-benefits">
+        <span><i class="af-pwa-icon-speed" aria-hidden="true"></i> Acceso rápido</span>
+        <span><i class="af-pwa-icon-pin" aria-hidden="true"></i> Siempre a mano</span>
+        <span><i class="af-pwa-icon-chart" aria-hidden="true"></i> Precios actualizados</span>
+      </div>
+    </div>
+    <div class="af-pwa-phone-area" aria-hidden="true">
+      <div class="af-pwa-glow"></div>
+      <div class="af-pwa-arrow">↘</div>
+      <div class="af-pwa-speech">Llévala<br>contigo</div>
+      <div class="af-pwa-phone">
+        <div class="af-pwa-screen">
+          <div class="af-mini-site-head">
+            <img src="/IMG_6106.png" alt="">
+            <div class="af-mini-brand">Ahorra<span>Fuel</span></div>
+            <div class="af-mini-menu"><span></span><span></span><span></span></div>
+          </div>
+          <div class="af-mini-hero">
+            <strong>Gasolineras más baratas<br>en España</strong>
+            <small>ENCUENTRA · COMPARA · AHORRA</small>
+          </div>
+          <div class="af-mini-search-card">
+            <label>📍 PROVINCIA</label>
+            <div class="af-mini-select">Selecciona tu provincia <b>⌄</b></div>
+            <label>⛽ COMBUSTIBLE</label>
+            <div class="af-mini-select">Gasolina 95 <b>⌄</b></div>
+            <div class="af-mini-search-btn">⌕&nbsp; Buscar gasolineras</div>
+            <div class="af-mini-near-btn">⌖&nbsp; Buscar cerca de mí</div>
+          </div>
+          <div class="af-mini-cities-title">Ciudades más buscadas</div>
+          <div class="af-mini-cities">
+            <span>Madrid</span><span>Barcelona</span>
+            <span>Zaragoza</span><span>Las Palmas</span>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="af-pwa-download">⇩</div>
+    </div>
+  </div>
+  <button id="afPwaInstallButton" type="button">⇩&nbsp; Instalar AhorraFuel</button>
+
+  <div id="afPwaInstallModal" class="af-pwa-modal" aria-hidden="true">
+    <div class="af-pwa-modal-backdrop"></div>
+    <div class="af-pwa-modal-box" role="dialog" aria-modal="true" aria-labelledby="afPwaModalTitle">
+      <button id="afPwaModalClose" class="af-pwa-modal-close" type="button" aria-label="Cerrar">×</button>
+      <div id="afPwaModalContent"></div>
+    </div>
+  </div>
 </div>
 
-<div id="pricePanel">
- <div class="line"><strong>Gasolina 95</strong><strong class="price" id="priceText">1,549 €/L</strong></div>
- <input id="priceRange" type="range" min="1.25" max="1.95" step=".001" value="1.549">
- <div id="selected">Toca un surtidor para seleccionarlo</div>
-</div>
 
-<div class="bottom">
- <div class="side">
-  <button class="menu selected" data-mode="station">Gasolinera</button>
-  <button class="menu" data-mode="upgrade">Construir</button>
-  <button class="menu" data-mode="shop">Tienda</button>
- </div>
- <div class="side">
-  <button id="attend">Atender cliente</button>
-  <button id="refuel" class="green">Repostar</button>
-  <button id="buy">Comprar combustible</button>
-  <button id="day" class="yellow">Cerrar jornada</button>
- </div>
-</div>
-<div id="toast">Toca un surtidor o un coche.</div>
-</div>
+  <div
+    id="results"
+    class="results"
+   aria-live="polite"></div></div>
+<section class="stats web-only"><div class="wrap"><div><b>52</b><span>provincias y ciudades autónomas</span></div><div><b>3</b><span>combustibles</span></div><div><b>30 km</b><span>de radio en «Cerca de mí»</span></div><div><b>0 €</b><span>gratis, sin cuenta</span></div></div></section><section class="wrap sec web-only" id="ventajas"><div class="sh"><span class="eye">Ventajas</span><h2>Todo para repostar más barato</h2><p>Menos vueltas, más ahorro: precios claros y rutas a un toque.</p></div>
+<div class="grid">
+<div class="card"><div class="ic"><svg class="i"><use href="#bars"/></svg></div><h3>Comparador por provincia</h3><p>Ordena las gasolineras por precio y detecta la más barata de un vistazo.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#pin"/></svg></div><h3>Cerca de mí</h3><p>Usa tu ubicación para ver las estaciones que tienes a mano.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#eur"/></svg></div><h3>Ahorro por depósito</h3><p>Calcula cuánto te ahorras entre la más barata y la más cara.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#ph"/></svg></div><h3>Instalable como app</h3><p>Añádela a tu pantalla de inicio y ábrela como una app más.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#rt"/></svg></div><h3>Ruta con un toque</h3><p>Abre la gasolinera elegida directamente en tu aplicación de mapas.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#bz"/></svg></div><h3>Rápido y ligero</h3><p>Resultados al instante, incluso con poca cobertura.</p></div>
+</div></section><section class="alt sec web-only" id="como"><div class="wrap"><div class="sh"><span class="eye">Cómo funciona</span><h2>Ahorra en tres pasos</h2></div>
+<div class="grid">
+<div class="card"><div class="ic">1</div><h3>Elige tu zona</h3><p>Selecciona provincia y combustible, o usa tu ubicación.</p></div>
+<div class="card"><div class="ic">2</div><h3>Compara al instante</h3><p>Consulta precios y la fecha de actualización de los datos.</p></div>
+<div class="card"><div class="ic">3</div><h3>Ve a la más barata</h3><p>Abre la ruta en tu mapa y reposta pagando menos.</p></div>
+</div></div></section>
+<section class="wrap sec web-only" id="ciudades"><div class="sh"><span class="eye">Ciudades</span><h2>Busca en tu ciudad</h2></div><div class="chips"><a href="/gasolineras-baratas.html">Ver todas las ciudades →</a><a href="/gasolineras-baratas/madrid.html">Madrid</a><a href="/gasolineras-baratas/barcelona.html">Barcelona</a><a href="/gasolineras-baratas/zaragoza.html">Zaragoza</a><a href="/gasolineras-baratas/las-palmas.html">Las Palmas</a></div></section>
+<section class="alt sec web-only" id="faq"><div class="wrap"><div class="sh"><span class="eye">Preguntas frecuentes</span><h2>Resolvemos tus dudas</h2></div>
+<div class="faq">
+<details><summary>¿Es gratis usar AhorraFuel?</summary><p>Sí. Puedes comparar precios sin registrarte ni crear una cuenta.</p></details>
+<details><summary>¿Cómo encuentro las gasolineras más cercanas?</summary><p>Pulsa «Cerca de mí» y permite el acceso a tu ubicación: verás las estaciones de tu zona con sus precios y la distancia.</p></details>
+<details><summary>¿Los precios son exactos?</summary><p>Indicamos la fecha de actualización en cada búsqueda. Los precios pueden variar en la gasolinera, así que conviene confirmarlos antes de repostar.</p></details>
+</div></div></section>
+<section class="wrap sec web-only"><section class="seo-content" aria-label="Información sobre AhorraFuel">
+    <h2>Compara las gasolineras más baratas</h2>
+    <p>AhorraFuel es un comparador de precios de carburantes pensado para ayudarte a encontrar dónde repostar más barato en España. Puedes buscar por provincia o usar tu ubicación para encontrar automáticamente las gasolineras más cercanas.</p>
 
-<script>
-(()=>{"use strict";
-const canvas=document.getElementById("canvas"),ctx=canvas.getContext("2d");
-let W=0,H=0,dpr=1,zoom=1,panX=0,panY=0,drag=false,lastX=0,lastY=0;
-let money=12540,fuel=3250,rep=72,clients=8,price=1.549,market=1.579,day=12,selected=0,mode="station";
-let fueling=false,progress=0;
+    <div class="seo-keywords" aria-label="Combustibles disponibles">
+      <button type="button" class="seo-keyword" data-fuel="95">⛽ Gasolina 95</button>
+      <button type="button" class="seo-keyword" data-fuel="98">⛽ Gasolina 98</button>
+      <button type="button" class="seo-keyword" data-fuel="diesel">🚗 Diésel</button>
+      <button type="button" class="seo-keyword" data-near="1">📍 Gasolineras cerca de ti</button>
+    </div>
 
-const pumps=[
- {id:1,x:-.48,y:-.22},{id:2,x:-.16,y:-.22},{id:3,x:.16,y:-.22},
- {id:4,x:-.48,y:.18},{id:5,x:-.16,y:.18},{id:6,x:.16,y:.18}
-];
-const cars=[
- {x:-1.25,y:.72,tx:-.16,ty:-.22,c:"#3b83bd",s:0.8},
- {x:1.28,y:.82,tx:.16,ty:.18,c:"#d95252",s:0.9},
- {x:-1.15,y:.92,tx:-.48,ty:.18,c:"#f0c84d",s:1},
- {x:1.25,y:.63,tx:.16,ty:-.22,c:"#e8e8e8",s:.75},
- {x:-1.3,y:.58,tx:-.48,ty:-.22,c:"#7a67b6",s:.72}
-];
-let trees=[];
-for(let i=0;i<22;i++)trees.push({x:-1.55+Math.random()*3.1,y:.1+Math.random()*.9,s:.65+Math.random()*.35});
+    <h2>Encuentra gasolina y diésel más baratos</h2>
+    <p>Comparar unos céntimos por litro puede marcar una diferencia importante cuando llenas el depósito. Con AhorraFuel puedes ordenar y revisar las estaciones disponibles para localizar alternativas económicas y decidir dónde repostar.</p>
 
-function resize(){const r=canvas.getBoundingClientRect();W=r.width;H=r.height;dpr=Math.min(devicePixelRatio||1,2);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
-function iso(x,y,z=0){
- return {x:W/2+(x-y)*W*.27*zoom+panX,y:H*.51+(x+y)*H*.15*zoom-z*H*.115*zoom+panY};
-}
-function poly(a,fill,stroke="#0000",lw=1){ctx.beginPath();a.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke!="#0000"){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}}
-function cube(x,y,z,w,d,h,top,left,right){
- const a=iso(x,y,z),b=iso(x+w,y,z),c=iso(x+w,y+d,z),d1=iso(x,y+d,z);
- const A=iso(x,y,z+h),B=iso(x+w,y,z+h),C=iso(x+w,y+d,z+h),D=iso(x,y+d,z+h);
- poly([a,b,c,d1],top);poly([d1,c,C,D],right);poly([a,b,B,A],left);poly([A,B,C,D],top);
-}
-function shadow(x,y,w,d){
- const a=iso(x,y,.01),b=iso(x+w,y+d,.01);ctx.fillStyle="#17221c55";ctx.beginPath();ctx.ellipse((a.x+b.x)/2,(a.y+b.y)/2,Math.abs(b.x-a.x)*.55+10,Math.abs(b.y-a.y)*.24+5,-.15,0,Math.PI*2);ctx.fill();
-}
-function txt(t,x,y,size,color="#fff"){ctx.fillStyle=color;ctx.font=`800 ${size}px system-ui`;ctx.textAlign="center";ctx.fillText(t,x,y)}
+    <h2>Gasolineras baratas cerca de mí</h2>
+    <p>Si activas tu ubicación, AhorraFuel utiliza la posición de tu dispositivo para buscar gasolineras cercanas y mostrarte las opciones disponibles. No necesitas introducir manualmente una ciudad para utilizar la búsqueda por ubicación.</p>
 
-function tree(t){
- const p=iso(t.x,t.y,.05),s=28*t.s*zoom;
- ctx.fillStyle="#704a31";ctx.fillRect(p.x-3,p.y-s*.05,6,s*.7);
- ctx.fillStyle="#347c48";ctx.beginPath();ctx.arc(p.x,p.y-s*.42,s*.62,0,7);ctx.fill();
- ctx.fillStyle="#58a55f";ctx.beginPath();ctx.arc(p.x-s*.16,p.y-s*.6,s*.38,0,7);ctx.fill();
-}
-function car(q){
- const p=iso(q.x,q.y,.08),s=46*q.s*zoom;
- ctx.save();ctx.translate(p.x,p.y);
- ctx.fillStyle="#14201b66";ctx.beginPath();ctx.ellipse(0,8,s*.68,s*.23,0,0,7);ctx.fill();
- poly([{x:-s*.58,y:0},{x:s*.58,y:0},{x:s*.48,y:-s*.28},{x:-s*.42,y:-s*.28}],q.c,"#1a2923",2);
- poly([{x:-s*.34,y:-s*.29},{x:s*.25,y:-s*.29},{x:s*.13,y:-s*.53},{x:-s*.2,y:-s*.53}],"#8cc5cc","#233b34",1);
- ctx.fillStyle="#111";for(const xx of [-.39,.39]){ctx.beginPath();ctx.arc(xx*s,2,s*.12,0,7);ctx.fill()}
- ctx.restore();
-}
-function pump(p){
- const q=iso(p.x,p.y,.05),s=35*zoom;
- if(selected===p.id){ctx.strokeStyle="#3fe482";ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(q.x,q.y+3,s*.55,s*.28,0,0,7);ctx.stroke()}
- shadow(p.x,p.y,.3,.24);
- cube(p.x-.14,p.y-.1,.05,.28,.22,.65,"#eef2ef","#c7d0cb","#aebbb5");
- const top=iso(p.x-.14,p.y-.1,.7);ctx.fillStyle="#153b2a";ctx.fillRect(top.x-8,top.y-4,16,6);
-}
+    <h2>¿Qué combustible quieres comparar?</h2>
+    <ul>
+      <li><strong>Gasolina 95:</strong> compara las estaciones que ofrecen gasolina sin plomo 95.</li>
+      <li><strong>Gasolina 98:</strong> consulta las opciones disponibles para gasolina 98.</li>
+      <li><strong>Diésel:</strong> encuentra y compara los precios de gasóleo disponibles.</li>
+    </ul>
 
-function draw(){
- ctx.clearRect(0,0,W,H);
- const sky=ctx.createLinearGradient(0,0,0,H*.5);sky.addColorStop(0,"#88b9ad");sky.addColorStop(1,"#d1ded0");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
- ctx.fillStyle="#ffe28d";ctx.beginPath();ctx.arc(W*.84,H*.13,25,0,7);ctx.fill();
- // mountains
- poly([{x:0,y:H*.40},{x:W*.14,y:H*.22},{x:W*.28,y:H*.37},{x:W*.44,y:H*.18},{x:W*.61,y:H*.36},{x:W*.77,y:H*.21},{x:W,y:H*.37},{x:W,y:H*.55},{x:0,y:H*.55}],"#72938b");
- // ground
- poly([{x:0,y:H*.48},{x:W*.5,y:H*.29},{x:W,y:H*.48},{x:W,y:H},{x:0,y:H}],"#687870");
- // road
- poly([{x:W*.08,y:H},{x:W*.36,y:H*.46},{x:W*.64,y:H*.46},{x:W*.92,y:H}],"#303a36");
- ctx.strokeStyle="#d9dfdbbb";ctx.lineWidth=4;ctx.setLineDash([17,16]);ctx.beginPath();ctx.moveTo(W*.22,H);ctx.lineTo(W*.46,H*.48);ctx.moveTo(W*.78,H);ctx.lineTo(W*.54,H*.48);ctx.stroke();ctx.setLineDash([]);
- // trees rear
- trees.filter(t=>t.y<.55).forEach(tree);
- // shop
- shadow(-.72,-.38,1.08,.72);
- cube(-.72,-.38,.05,1.15,.7,.68,"#edf1ee","#c5cec8","#afb9b3");
- cube(-.78,-.44,.73,1.27,.82,.10,"#17261f","#17261f","#17261f");
- // windows
- const a=iso(-.67,-.445,.35),b=iso(.28,-.445,.35),c=iso(.28,-.445,.57),d=iso(-.67,-.445,.57);poly([a,b,c,d],"#68aeb9","#355b55",1);
- txt("TIENDA",W*.38,H*.54,11,"#143328");
- // canopy
- shadow(-.02,-.35,1.45,1.18);
- cube(-.02,-.38,.72,1.65,1.28,.10,"#36df78","#218f51","#218f51");
- [[.04,-.31],[1.38,-.31],[.04,.75],[1.38,.75]].forEach(v=>cube(v[0],v[1],.05,.07,.07,.67,"#edf1ee","#c5cec8","#afb9b3"));
- txt("AHORRAFUEL",W*.62,H*.43,13,"#063019");
- // pumps
- pumps.forEach(pump);
- // chargers
- [1.52,1.78].forEach(x=>{const p=iso(x,.55,.05);ctx.fillStyle="#35df79";ctx.fillRect(p.x-7,p.y-7,14,8);ctx.fillStyle="#eef2ef";ctx.fillRect(p.x-3,p.y-30,6,24)});
- // tanker
- cube(-1.55,.72,.05,.58,.92,.48,"#e8eeea","#b9c4bd","#aab5ae");cube(-1.48,.72,.55,.48,.82,.07,"#35df79","#218f51","#218f51");
- // trees front
- trees.filter(t=>t.y>=.55).forEach(tree);
- cars.forEach(car);
- // customer at selected pump
- if(selected){const p=pumps[selected-1],q=iso(p.x,p.y,.8);ctx.fillStyle="#d79a70";ctx.beginPath();ctx.arc(q.x,q.y-13,5,0,7);ctx.fill();ctx.fillStyle="#397695";ctx.fillRect(q.x-7,q.y-8,14,17);txt("CLIENTE",q.x,q.y-23,7,"#0b2218")}
- requestAnimationFrame(draw);
-}
-
-function ui(){
- document.getElementById("money").textContent=Math.round(money).toLocaleString("es-ES")+" €";
- document.getElementById("fuel").textContent=Math.round(fuel).toLocaleString("es-ES")+" L";
- document.getElementById("rep").textContent=Math.round(rep)+"%";
- document.getElementById("clients").textContent=clients;
- document.getElementById("priceText").textContent=price.toFixed(3).replace(".",",")+" €/L";
-}
-function toast(t){document.getElementById("toast").textContent=t}
-
-function pumpAt(x,y){
- let best=0,dist=999,pos=pumps.map(p=>iso(p.x,p.y,.4));
- pos.forEach((p,i)=>{const d=Math.hypot(x-p.x,y-p.y);if(d<dist){dist=d;best=i+1}});
- return dist<55?best:0;
-}
-canvas.addEventListener("pointerdown",e=>{
- drag=true;lastX=e.clientX;lastY=e.clientY;
- const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
- const p=pumpAt(x,y);
- if(p){selected=p;document.getElementById("pricePanel").style.display="block";document.getElementById("selected").textContent="Surtidor "+p+" seleccionado";toast("Surtidor "+p+" seleccionado. Pulsa Repostar.");}
-});
-canvas.addEventListener("pointermove",e=>{if(drag){panX+=e.clientX-lastX;panY+=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY}});
-canvas.addEventListener("pointerup",()=>drag=false);canvas.addEventListener("pointercancel",()=>drag=false);
-canvas.addEventListener("wheel",e=>{e.preventDefault();zoom=Math.max(.7,Math.min(1.4,zoom-e.deltaY*.0008))},{passive:false});
-
-document.getElementById("priceRange").addEventListener("input",e=>{price=+e.target.value;ui()});
-document.getElementById("refuel").onclick=()=>{
- if(!selected)return toast("Toca primero un surtidor.");
- if(fueling)return toast("Ya estás repostando.");
- if(fuel<40)return toast("No tienes suficiente combustible.");
- fueling=true;progress=0;toast("Repostando cliente…");
- const timer=setInterval(()=>{
-  progress+=2;fuel-=2;ui();
-  if(progress>=40){clearInterval(timer);fueling=false;money+=40*price;rep=Math.min(100,rep+.4);clients++;toast("¡Repostaje terminado! +"+Math.round(40*price)+" €");ui()}
- },90);
-};
-document.getElementById("attend").onclick=()=>{clients++;rep=Math.min(100,rep+.2);toast("Cliente atendido. Entra otro coche.");ui()};
-document.getElementById("buy").onclick=()=>{if(money<900)return toast("Necesitas 900 €.");money-=900;fuel+=1000;toast("Has recibido 1.000 L de combustible.");ui()};
-document.getElementById("day").onclick=()=>{const p=Math.max(0,Math.round((rep-30)*2*price*.12));money+=p;day++;market=Math.max(1.4,Math.min(1.8,market+(Math.random()-.5)*.05));toast("Día "+day+" iniciado. Beneficio: +"+p+" €");ui()};
-document.querySelectorAll(".menu").forEach(b=>b.onclick=()=>{document.querySelectorAll(".menu").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");mode=b.dataset.mode;toast(mode==="station"?"Gestiona la gasolinera.":mode==="upgrade"?"Aquí construiremos nuevas instalaciones.":"Aquí gestionaremos la tienda.")});
-
-resize();ui();requestAnimationFrame(draw);
-window.addEventListener("resize",resize);
-})();
-</script>
+    <p class="seo-note">Los precios mostrados dependen de los datos disponibles para cada estación y pueden cambiar. Comprueba siempre el precio indicado antes de repostar.</p>
+  </section></section>
+<section class="wrap sec web-only"><div class="cta"><div class="mas" aria-hidden="true"></div><h2>Empieza a ahorrar en tu próximo repostaje</h2><p>Compara precios en segundos y elige la gasolinera más barata.</p><a class="btn w" href="#buscar">Buscar gasolineras</a></div></section></main>
+<footer><div class="wrap"><div class="web-only"><a class="logo" href="/" style="padding:0"><span class="wm">Ahorra<span>Fuel</span></span></a><p>Compara los precios de la gasolina y el diésel en toda España.</p></div><div class="web-only"><h4>Explorar</h4><a href="#ventajas">Ventajas</a><a href="#como">Cómo funciona</a><a href="#ciudades">Ciudades</a></div><div><h4>Legal</h4><a href="/privacidad.html">Privacidad</a><a href="/cookies.html">Cookies</a><a href="/informacion-legal.html">Información legal</a><a href="/condiciones-de-uso.html">Condiciones de uso</a></div><div class="cp">© 2026 AhorraFuel. Los precios pueden variar en la gasolinera.</div></div></footer>
+<script src="/app.js?v=20261012" defer></script>
+<script src="/fx.js?v=1" defer></script>
 </body>
 </html>

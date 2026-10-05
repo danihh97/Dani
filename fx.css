@@ -1,0 +1,23 @@
+/* AhorraFuel · estilos de la capa visual (se carga después de styles.css) */
+.fx3d{position:absolute;left:-30px;top:-50px;width:calc(100% + 60px);height:calc(100% + 70px);pointer-events:none;z-index:0}
+.art>.pv{position:relative;z-index:1}
+.fx .hero{overflow:clip}
+
+/* Mascota con inclinación 3D */
+.fx .af-mascot .mas,.fx .af-mascot:hover .mas{
+  transform:perspective(500px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  transition:transform .15s ease-out;cursor:pointer}
+.fx .af-mascot .mas:focus-visible{outline:3px solid #72e62a;outline-offset:4px;border-radius:12px}
+
+/* Tarjetas: entrada escalonada + inclinación con brillo */
+.fx .grid>.card{
+  opacity:0;translate:0 16px;
+  transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));
+  background-image:radial-gradient(220px circle at var(--gx,50%) var(--gy,0%),rgba(114,230,42,.12),transparent 70%);
+  transition:opacity .5s ease,translate .5s ease,transform .2s ease}
+.fx .grid>.card.in{opacity:1;translate:0 0;transition-delay:calc(var(--i,0)*70ms),calc(var(--i,0)*70ms),0s}
+
+@media (prefers-reduced-motion:reduce){
+  .fx3d{display:none}
+  .fx .grid>.card{opacity:1;translate:none;transform:none}
+}
