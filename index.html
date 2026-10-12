@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#073a54">
-<title>Marina Tycoon — Puerto de ensueño</title>
+<title>Marina Tycoon — Puerto de ensueño v0.2</title>
 <style>
 :root{--navy:#073a54;--deep:#05283b;--aqua:#30d4d0;--gold:#ffca62;--cream:#fff7e8;--panel:#0a4056}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#06354b;color:white;touch-action:manipulation}
@@ -46,9 +46,24 @@ canvas{display:block;width:100%;height:100%;touch-action:pan-y}
   <button class="tool" data-build="shop"><span class="emoji">🛍️</span><strong>Tienda</strong><small>€ 250</small></button>
   <button class="tool" data-build="decor"><span class="emoji">🌴</span><strong>Decoración</strong><small>€ 90</small></button>
  </div>
- <div class="subrow"><div class="hint" id="hint">Elige una construcción y toca una zona libre junto al agua.</div><button class="action" id="boatBtn">🚤 Acelerar barcos</button><button class="action gold" id="upgradeBtn">⬆ Mejorar</button></div>
+ <div class="subrow"><div class="hint" id="hint">Construye tu puerto y usa Servicios para ganar dinero con los visitantes.</div><button class="action" id="boatBtn">🚤 Acelerar barcos</button><button class="action gold" id="upgradeBtn">⬆ Mejorar</button></div>
 </div>
 <div class="modal" id="modal"><div class="modalcard"><h2 id="modalTitle">¡Bienvenido!</h2><p id="modalText"></p><div class="modalactions"><button class="action gold" id="modalPrimary">¡A jugar!</button><button class="action" id="modalSecondary">Seguir jugando</button></div></div></div>
+<div class="modal" id="servicesModal"><div class="modalcard"><h2>⚓ Centro de servicios</h2><p>Atiende a los visitantes para conseguir ingresos adicionales. Cada servicio representa una actividad que puedes ofrecer en tu marina.</p><div class="servicegrid">
+<button class="servicebtn" data-service="fuel">⛽<b>Repostaje</b><small>Coste 40 € · Cobras 130 €</small></button>
+<button class="servicebtn" data-service="repair">🔧<b>Reparación</b><small>Coste 60 € · Cobras 190 €</small></button>
+<button class="servicebtn" data-service="tour">🛥️<b>Paseo turístico</b><small>Ingreso 150 €</small></button>
+<button class="servicebtn" data-service="fish">🎣<b>Pesca deportiva</b><small>Ingreso 120 €</small></button>
+<button class="servicebtn" data-service="dive">🤿<b>Excursión de buceo</b><small>Ingreso 180 €</small></button>
+<button class="servicebtn" data-service="rescue">🛟<b>Equipo de rescate</b><small>Coste 70 € · + reputación</small></button>
+</div><div class="modalactions"><button class="action" id="closeServices">Volver al puerto</button></div></div></div>
+<style>
+.servicegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.servicebtn{display:flex;flex-direction:column;align-items:center;gap:4px;background:#0c4b61;color:#f5ffff;border:1px solid #58bfc5;border-radius:12px;padding:12px 5px;font:inherit;font-size:22px;cursor:pointer}
+.servicebtn b{font-size:12px}.servicebtn small{font-size:9px;color:#b6e6e3;text-align:center}
+#servicesModal .modalcard{max-height:85dvh;overflow:auto}
+@media(max-height:700px){.servicebtn{padding:7px 4px}.servicebtn small{font-size:8px}}
+</style>
 <div id="rotate"><div><div style="font-size:50px">⚓</div><h2>¡Tu puerto te espera!</h2><p>Gira el móvil para ver mejor la marina.</p></div></div>
 </div>
 <script>
@@ -134,6 +149,16 @@ document.getElementById('modalSecondary').addEventListener('click',()=>document.
 function save(){try{localStorage.setItem('marinaTycoonSave',JSON.stringify({money,visitors,rep,served,boatsReceived,day,buildings,boatInterval}));toast('Partida guardada en este dispositivo.');}catch(e){toast('No se pudo guardar en este navegador.');}}
 function load(){try{let s=JSON.parse(localStorage.getItem('marinaTycoonSave'));if(s){money=s.money??money;visitors=s.visitors??0;rep=s.rep??1;served=s.served??0;boatsReceived=s.boatsReceived??0;day=s.day??1;buildings=s.buildings??[];boatInterval=s.boatInterval??boatInterval;updateUI();toast('¡Partida recuperada!');}}catch(e){}}
 const saveBtn=document.createElement('button');saveBtn.className='action';saveBtn.textContent='💾 Guardar';saveBtn.addEventListener('click',save);document.querySelector('.subrow').insertBefore(saveBtn,document.getElementById('boatBtn'));
+const servicesBtn=document.createElement('button');servicesBtn.className='action';servicesBtn.textContent='🧰 Servicios';servicesBtn.addEventListener('click',()=>document.getElementById('servicesModal').classList.add('show'));document.querySelector('.subrow').insertBefore(servicesBtn,document.getElementById('boatBtn'));
+document.getElementById('closeServices').addEventListener('click',()=>document.getElementById('servicesModal').classList.remove('show'));
+const serviceData={fuel:{name:'Repostaje',cost:40,gain:130},repair:{name:'Reparación',cost:60,gain:190},tour:{name:'Paseo turístico',cost:0,gain:150},fish:{name:'Pesca deportiva',cost:0,gain:120},dive:{name:'Excursión de buceo',cost:0,gain:180},rescue:{name:'Equipo de rescate',cost:70,gain:0}};
+document.querySelectorAll('.servicebtn').forEach(btn=>btn.addEventListener('click',()=>{
+ const key=btn.dataset.service,svc=serviceData[key];
+ if(key==='rescue'){if(money<svc.cost){toast('Necesitas '+fmt(svc.cost)+' para contratar el equipo de rescate.');return;}money-=svc.cost;rep=Math.min(5,rep+1);toast('¡Equipo de rescate contratado! La reputación aumenta.');}
+ else {if(money<svc.cost){toast('No tienes suficiente dinero para ese servicio.');return;}money-=svc.cost;money+=svc.gain;visitors+=key==='tour'?4:key==='fish'?3:key==='dive'?5:2;served++;toast(svc.name+' completado: +'+fmt(svc.gain)+'. ¡Visitantes contentos!');}
+ updateUI();
+}));
+
 const resetBtn=document.createElement('button');resetBtn.className='action';resetBtn.textContent='↻';resetBtn.title='Reiniciar partida';resetBtn.addEventListener('click',()=>{if(confirm('¿Seguro que quieres empezar una partida nueva?')){localStorage.removeItem('marinaTycoonSave');money=1200;visitors=0;rep=1;served=0;boatsReceived=0;buildings=[];boats=[];updateUI();toast('Nueva partida iniciada.');}});document.querySelector('.subrow').appendChild(resetBtn);
 document.getElementById('modalTitle').textContent='¡Bienvenido a tu marina!';
 document.getElementById('modalText').textContent='Construye amarres junto al agua, atrae barcos y gana dinero para levantar restaurantes, hoteles y tiendas. Toca una construcción y después una casilla libre. Toca los barcos o edificios para conseguir ingresos extra.';
