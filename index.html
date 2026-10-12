@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Port Tycoon — Prototipo móvil</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;background:#67cde7;color:#fff;touch-action:manipulation}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block}
+.top{position:fixed;top:8px;left:8px;right:8px;display:flex;gap:5px;z-index:2;align-items:stretch}.stat{background:#103a52ed;border:1px solid #ffffff40;border-radius:12px;padding:7px 9px;box-shadow:0 3px 10px #1236;min-width:0;flex:1;font-size:10px;font-weight:650}.stat strong{display:block;color:#ffd166;font-size:14px}.stat.brand{flex:1.25;font-size:12px}.stat.brand strong{font-size:12px;color:white}
+.panel{position:fixed;z-index:3;background:#10344cf2;border:1px solid #ffffff55;border-radius:16px;padding:11px;box-shadow:0 5px 20px #09263850;font-size:12px;max-width:calc(100vw - 20px)}
+.panel h3{font-size:14px;margin:0 0 6px}.panel p{margin:5px 0;line-height:1.35;color:#d9eff8}.objectives{left:9px;top:76px;width:145px}.incoming{right:9px;bottom:76px;width:190px}
+.btn{border:1px solid #ffffff60;border-radius:11px;color:white;background:linear-gradient(#19a9e5,#0876b3);font-weight:750;font-size:12px;padding:10px 8px;width:100%;margin-top:6px;min-height:38px;cursor:pointer}.green{background:linear-gradient(#39b98e,#17785e)}.gold{background:linear-gradient(#ffca66,#c97922)}.dock{position:fixed;z-index:4;bottom:8px;left:8px;right:8px;display:flex;gap:5px;justify-content:center}.dock button{flex:1;max-width:160px;border-radius:12px;background:#103a52f5;color:white;border:1px solid #ffffff55;font-weight:750;font-size:11px;padding:10px 4px;min-height:43px}.toast{position:fixed;z-index:8;left:50%;top:70px;transform:translateX(-50%);display:none;background:#092d43f5;padding:10px 14px;border-radius:12px;border:1px solid #ffffff55;font-size:12px;font-weight:750;max-width:90%;text-align:center}.hint{position:fixed;z-index:2;bottom:60px;left:50%;transform:translateX(-50%);font-size:10px;color:white;background:#103a52d9;padding:5px 9px;border-radius:9px;white-space:nowrap}
+@media(min-width:760px){.stat{font-size:13px;padding:10px 14px}.stat strong{font-size:18px}.stat.brand strong{font-size:15px}.panel{font-size:14px;padding:15px}.panel h3{font-size:17px}.objectives{width:210px;top:88px;left:14px}.incoming{width:245px;bottom:88px;right:14px}.btn{font-size:14px}.dock{bottom:14px;gap:10px}.dock button{font-size:14px;padding:13px}.hint{bottom:72px;font-size:12px}}
+</style></head>
+<body>
+<canvas id="scene"></canvas>
+<div class="top">
+ <div class="stat brand">⚓ PORT TYCOON<strong>Tu puerto · Día 1</strong></div>
+ <div class="stat">💰 Dinero<strong id="money">12.000 €</strong></div>
+ <div class="stat">🚢 Atendidos<strong id="served">0</strong></div>
+ <div class="stat">⭐ Nivel<strong id="level">1</strong></div>
+</div>
+<div class="panel objectives"><h3>📋 Objetivos</h3><p id="mission">Atiende 3 barcos y cobra la recompensa.</p><p>Progreso: <b id="progress">0 / 3</b></p><p>Amarres: <b id="berths">2</b></p><button class="btn gold" id="upgrade">＋ Nuevo amarre · 3.000 €</button></div>
+<div class="panel incoming"><h3>🚢 Barco solicitando entrada</h3><p id="shipName">Yate Aurora</p><p id="shipDesc">Yate de lujo · Busca amarre</p><p>Ingreso: <b id="income">850 €</b></p><button class="btn green" id="accept">✓ Autorizar entrada</button><button class="btn" id="next">↻ Siguiente barco</button></div>
+<div class="hint">Toca los botones para jugar · El puerto está vivo</div>
+<div class="dock"><button id="build">🏗️ Construir</button><button id="decor">🌴 Decorar · 500 €</button><button id="view">🎥 Girar vista</button><button id="save">💾 Guardar</button></div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d');
+let W=0,H=0,D=1, money=12000,served=0,berths=2,level=1,boatIndex=0,decor=0,angle=0,buildings=0,accepted=0;
+const ships=[
+{name:'Yate Aurora',desc:'Yate de lujo',income:850,color:'#fff8df',kind:'yacht'},
+{name:'Ferri Costa Azul',desc:'Ferri turístico',income:1450,color:'#f7b538',kind:'ferry'},
+{name:'Velero Brisa',desc:'Velero de recreo',income:600,color:'#f8fafc',kind:'sail'},
+{name:'Crucero Estrella',desc:'Crucero de pasajeros',income:2600,color:'#fa6a65',kind:'cruise'},
+{name:'Mercante Atlántico',desc:'Carga comercial',income:1900,color:'#8bd4eb',kind:'cargo'}
+];let active=ships[0];
+const piers=[{x:0,z:0,len:150},{x:1,z:0,len:130},{x:-1,z:0,len:110}];
+let boats=[
+{x:.25,y:.13,type:'yacht',color:'#fff8df',name:'Marina',phase:0},
+{x:.68,y:.27,type:'ferry',color:'#f7b538',name:'Costa Azul',phase:1.5},
+{x:.39,y:.45,type:'sail',color:'#fff',name:'Brisa',phase:2.6}
+];
+let palmPositions=[[.12,.28],[.18,.31],[.23,.24],[.29,.31],[.13,.43],[.23,.49],[.34,.2],[.8,.25],[.85,.33]];
+let particles=Array.from({length:45},()=>({x:Math.random(),y:Math.random(),r:Math.random()*2+0.6,phase:Math.random()*6}));
+function resize(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*D;canvas.height=H*D;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(D,0,0,D,0,0);draw()}
+addEventListener('resize',resize);
+function poly(points,fill,stroke){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}}
+function ellipse(x,y,rx,ry,fill){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=fill;ctx.fill()}
+function line(x1,y1,x2,y2,color,width=2){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+function rounded(x,y,w,h,r,fill){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill()}
+function drawBuilding(x,y,s,color,roof){ctx.fillStyle='#12394b40';ctx.fillRect(x-s*.55,y+s*.35,s*1.2,s*.16);poly([[x-s*.5,y-s*.5],[x+s*.5,y-s*.5],[x+s*.5,y+s*.45],[x-s*.5,y+s*.45]],color);poly([[x-s*.5,y-s*.5],[x,y-s*.82],[x+s*.5,y-s*.5]],roof);for(let i=-1;i<=1;i++){rounded(x+i*s*.25-s*.055,y-s*.22,s*.11,s*.15,2,'#a8e8f6')}}
+function drawPalm(x,y,s){line(x,y,x-s*.08,y-s*.7,'#85532e',s*.12);for(let i=0;i<5;i++){const a=i*Math.PI*2/5;line(x-s*.08,y-s*.68,x-s*.08+Math.cos(a)*s*.5,y-s*.68+Math.sin(a)*s*.25,'#1d915b',s*.12);ellipse(x-s*.08+Math.cos(a)*s*.43,y-s*.68+Math.sin(a)*s*.21,s*.11,s*.07,'#31b96c')}}
+function drawBoat(x,y,scale,color,type,phase=0){ctx.save();ctx.translate(x,y+Math.sin(performance.now()/600+phase)*2);ctx.rotate(-.12);const L=scale,Wd=scale*.38;poly([[-Wd,-L*.35],[Wd,-L*.35],[Wd*.72,L*.38],[0,L*.52],[-Wd*.72,L*.38]],'#143e55');poly([[-Wd*.8,-L*.3],[Wd*.8,-L*.3],[Wd*.55,L*.29],[-Wd*.55,L*.29]],color);if(type==='sail'){line(0,-L*.25,0,-L*1.15,'#e9f5f7',2);poly([[1,-L*1.08],[1,-L*.33],[L*.3,-L*.37]],'#fffdf2');poly([[-2,-L*.88],[-2,-L*.35],[-L*.24,-L*.4]],'#ffdd76')}else{rounded(-Wd*.5,-L*.26,Wd,L*.26,3,'#e7f5fa');rounded(-Wd*.3,-L*.19,Wd*.6,L*.1,2,'#64c7e2');if(type==='cruise'||type==='ferry'){for(let i=0;i<4;i++)rounded(-Wd*.35+i*Wd*.22,-L*.23,Wd*.1,L*.045,1,'#17607a')}}ctx.restore()}
+function drawCrane(x,y,s){line(x,y,x,y-s,'#e9a51e',s*.09);line(x,y-s,x+s*.8,y-s,'#e9a51e',s*.08);line(x+s*.65,y-s,x+s*.65,y-s*.3,'#253f4d',2);rounded(x-s*.12,y-s*.08,s*.25,s*.15,2,'#197ca0')}
+function draw(){
+ if(!ctx||!W||!H)return;
+ ctx.clearRect(0,0,W,H);
+ // Sky and ocean
+ let sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#8ce4f4');sky.addColorStop(.42,'#50c4e3');sky.addColorStop(1,'#087fae');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ // Distant island
+ poly([[0,H*.19],[W*.13,H*.13],[W*.3,H*.17],[W*.43,H*.11],[W*.61,H*.16],[W*.76,H*.1],[W,H*.17],[W,H*.29],[0,H*.31]],'#5eaf83');
+ poly([[0,H*.22],[W*.18,H*.18],[W*.3,H*.21],[W*.45,H*.16],[W*.62,H*.21],[W*.82,H*.15],[W,H*.21],[W,H*.31],[0,H*.34]],'#e6d4a1');
+ // Water shimmering lines
+ for(let i=0;i<90;i++){const x=((i*97+performance.now()*.018)% (W+40))-20,y=H*.2+((i*43)%Math.max(1,H*.75));line(x,y,x+8+(i%5)*3,y,'#b6f4fa',.6)}
+ // port land
+ poly([[0,H*.31],[W*.34,H*.28],[W*.58,H*.34],[W*.55,H*.57],[W*.3,H*.66],[0,H*.59]],'#f0d8a1');
+ poly([[0,H*.32],[W*.34,H*.3],[W*.57,H*.36],[W*.54,H*.4],[W*.27,H*.47],[0,H*.42]],'#d8c28d');
+ // promenade
+ line(0,H*.44,W*.54,H*.39,'#f7ebc9',Math.max(5,W*.012));
+ // harbor walls/piers
+ poly([[W*.03,H*.45],[W*.47,H*.4],[W*.49,H*.44],[W*.04,H*.51]],'#b8a17b');
+ poly([[W*.22,H*.46],[W*.26,H*.45],[W*.31,H*.76],[W*.27,H*.78]],'#b79a70');
+ poly([[W*.42,H*.43],[W*.46,H*.43],[W*.52,H*.68],[W*.48,H*.7]],'#b79a70');
+ // quay edges
+ line(W*.02,H*.49,W*.28,H*.44,'#e8d2a4',5);line(W*.28,H*.44,W*.31,H*.75,'#e8d2a4',5);line(W*.48,H*.43,W*.52,H*.67,'#e8d2a4',5);
+ // warehouses and town
+ drawBuilding(W*.06,H*.37,Math.min(W,H)*.075,'#f7b45c','#cf5848');
+ drawBuilding(W*.15,H*.35,Math.min(W,H)*.067,'#79c9bd','#d95e4b');
+ drawBuilding(W*.25,H*.35,Math.min(W,H)*.07,'#f8df87','#d75a47');
+ drawBuilding(W*.08,H*.45,Math.min(W,H)*.06,'#f5f2e8','#3788ae');
+ drawBuilding(W*.19,H*.43,Math.min(W,H)*.064,'#ff9c82','#b54b42');
+ if(buildings>0)for(let i=0;i<Math.min(buildings,6);i++)drawBuilding(W*(.31+(i%3)*.07),H*(.32+Math.floor(i/3)*.075),Math.min(W,H)*.05,['#f5b95c','#8dd3c7','#fa8c78'][i%3],'#bd5546');
+ for(let i=0;i<Math.min(berths+1,7);i++){const x=W*(.27+i*.035),y=H*(.49+i*.025);rounded(x,y,Math.max(18,W*.026),5,2,'#e8c68a');for(let k=0;k<3;k++)ellipse(x+k*5,y+5,1.7,1.7,'#6a533c')}
+ drawCrane(W*.43,H*.53,Math.min(W,H)*.1);drawCrane(W*.49,H*.58,Math.min(W,H)*.07);
+ palmPositions.forEach((p,i)=>drawPalm(p[0]*W,p[1]*H,Math.min(W,H)*(.022+(i%3)*.004)));
+ for(let i=0;i<boats.length;i++){const b=boats[i],x=b.x*W+Math.sin(performance.now()/1800+b.phase)*4,y=b.y*H;drawBoat(x,y,Math.min(W,H)*(b.type==='cruise'?.1:.065),b.color,b.type,b.phase)}
+ // Incoming boat outside the harbor
+ drawBoat(W*.72,H*.38,Math.min(W,H)*.095,active.color,active.kind,boatIndex+2);
+ // small lighthouse
+ ellipse(W*.83,H*.42,Math.min(W,H)*.03,Math.min(W,H)*.012,'#14627a');poly([[W*.81,H*.42],[W*.85,H*.42],[W*.845,H*.35],[W*.815,H*.35]],'#fff4dc');poly([[W*.81,H*.35],[W*.83,H*.32],[W*.85,H*.35]],'#ed6557');rounded(W*.82,H*.365,W*.02,Math.min(W,H)*.012,2,'#70d9f5');
+ // wake lines
+ for(let i=0;i<boats.length;i++){const b=boats[i],x=b.x*W,y=b.y*H;line(x-10,y+12,x-20,y+18,'#e2fbff',1.5);line(x+9,y+12,x+20,y+18,'#e2fbff',1.5)}
+}
+function fmt(n){return n.toLocaleString('es-ES')+' €'}
+function update(){document.getElementById('money').textContent=fmt(money);document.getElementById('served').textContent=served;document.getElementById('level').textContent=level;document.getElementById('berths').textContent=berths;document.getElementById('progress').textContent=Math.min(served,3)+' / 3';document.getElementById('mission').textContent=served>=3?'¡Misión completada! Recompensa conseguida.':'Atiende '+(3-served)+' barco(s) más y gana 2.000 €.';document.getElementById('shipName').textContent=active.name;document.getElementById('shipDesc').textContent=active.desc+' · Solicita un amarre';document.getElementById('income').textContent=fmt(active.income);draw()}
+let toastTimer;function toast(s){const e=document.getElementById('toast');e.textContent=s;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',2300)}
+document.getElementById('accept').onclick=()=>{if(served>=berths){toast('No quedan amarres libres. Construye uno nuevo.');return}money+=active.income;served++;accepted++;if(boats.length<berths+1)boats.push({x:.29+Math.random()*.2,y:.53+Math.random()*.13,type:active.kind,color:active.color,name:active.name,phase:Math.random()*5});else{const b=boats[accepted%boats.length];b.color=active.color;b.type=active.kind;b.phase=Math.random()*5}if(served===3){money+=2000;toast('¡Misión completada! +2.000 € de recompensa')}else toast('¡Barco atendido! Has ganado '+fmt(active.income));level=1+Math.floor(served/3);active=ships[++boatIndex%ships.length];update()};
+document.getElementById('next').onclick=()=>{active=ships[++boatIndex%ships.length];update();toast('Ha llegado una nueva solicitud')};
+document.getElementById('upgrade').onclick=()=>{if(money<3000){toast('Necesitas 3.000 €');return}money-=3000;berths++;toast('¡Amarre ampliado! Ya tienes '+berths);update()};
+document.getElementById('build').onclick=()=>{if(money<1800){toast('Necesitas 1.800 € para construir');return}money-=1800;buildings++;toast('¡Nuevo edificio construido!');update()};
+document.getElementById('decor').onclick=()=>{if(money<500){toast('No tienes suficiente dinero');return}money-=500;decor++;palmPositions.push([.05+Math.random()*.48,.25+Math.random()*.28]);toast('¡Palmera añadida al paseo!');update()};
+document.getElementById('view').onclick=()=>{angle++;boats.forEach(b=>{b.x=.15+Math.random()*.7;b.y=.28+Math.random()*.37});toast(['Vista del puerto actualizada','Vista panorámica','Vista de los amarres'][angle%3]);draw()};
+document.getElementById('save').onclick=()=>{try{localStorage.setItem('portTycoonMobile',JSON.stringify({money,served,berths,level,boatIndex,decor,buildings}));toast('Partida guardada en este navegador')}catch(e){toast('El navegador no permite guardar aquí')}};
+try{const s=JSON.parse(localStorage.getItem('portTycoonMobile')||'null');if(s){money=s.money??money;served=s.served??served;berths=s.berths??berths;level=s.level??level;boatIndex=s.boatIndex??0;decor=s.decor??0;buildings=s.buildings??0;active=ships[boatIndex%ships.length];for(let i=0;i<decor;i++)palmPositions.push([.05+Math.random()*.48,.25+Math.random()*.28]);update()}}catch(e){}
+function frame(){draw();requestAnimationFrame(frame)}resize();frame();
+})();
+</script></body></html>
