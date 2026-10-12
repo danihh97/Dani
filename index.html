@@ -2,111 +2,143 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#123b50">
-<title>Marina Tycoon — Prototipo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#073a54">
+<title>Marina Tycoon — Puerto de ensueño</title>
 <style>
-:root{--navy:#123b50;--gold:#ffd36a;--line:#ffffff4d}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#45b9d8;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-#world{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
-header{position:fixed;z-index:2;top:8px;left:8px;right:8px;display:flex;gap:5px}
-.stat{min-width:0;flex:1;background:#123b50ed;border:1px solid var(--line);border-radius:11px;padding:7px 7px;box-shadow:0 3px 12px #07304735;font-size:10px;line-height:1.2;font-weight:750}
-.stat strong{display:block;color:var(--gold);font-size:14px;margin-top:3px}.stat.brand{flex:1.15}.stat.brand strong{font-size:10px;color:#fff}
-.card{position:fixed;z-index:2;background:#123b50f2;border:1px solid var(--line);border-radius:14px;padding:10px;box-shadow:0 5px 18px #052b3d30}
-.card h2{font-size:13px;margin:0 0 6px}.card p{font-size:11px;line-height:1.3;color:#e0f1f7;margin:5px 0}
-.objectives{left:8px;top:73px;width:132px}.shipcard{right:8px;bottom:70px;width:174px}
-button{font:inherit;color:#fff;font-weight:800;border:1px solid #ffffff66;border-radius:10px;padding:9px 7px;min-height:35px;background:linear-gradient(#159ed4,#0874ad);cursor:pointer;touch-action:manipulation}
-.card button{display:block;width:100%;margin-top:6px;font-size:10px}.green{background:linear-gradient(#38b98c,#187458)}.gold{background:linear-gradient(#ffca68,#c77925)}
-nav{position:fixed;z-index:3;left:8px;right:8px;bottom:7px;display:flex;gap:5px}nav button{flex:1;min-width:0;background:#123b50f5;font-size:10px;padding:8px 3px;min-height:41px}
-#toast{position:fixed;z-index:5;left:50%;top:66px;transform:translateX(-50%);display:none;max-width:90%;text-align:center;background:#0a3045f5;border:1px solid var(--line);border-radius:11px;padding:9px 13px;font-size:12px;font-weight:750}
-#help{position:fixed;z-index:2;bottom:53px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#123b50d9;border-radius:8px;padding:5px 8px;font-size:9px}
-@media(max-width:390px){.objectives{width:120px}.shipcard{width:160px}.stat{padding:6px 5px;font-size:9px}.stat strong{font-size:12px}.card{padding:9px}.card h2{font-size:12px}.card p{font-size:10px}.card button{font-size:9px;padding:8px 4px}nav button{font-size:9px}}
-@media(min-width:700px){header{top:12px;left:12px;right:12px;gap:8px}.stat{font-size:13px;padding:10px 12px}.stat strong{font-size:18px}.stat.brand strong{font-size:14px}.card{padding:15px}.card h2{font-size:17px}.card p{font-size:13px}.objectives{top:90px;left:12px;width:205px}.shipcard{right:12px;bottom:82px;width:245px}.card button{font-size:13px;padding:11px}nav{left:12px;right:12px;bottom:12px;gap:9px}nav button{font-size:13px;padding:12px}#help{bottom:67px;font-size:11px}}
+:root{--navy:#073a54;--deep:#05283b;--aqua:#30d4d0;--gold:#ffca62;--cream:#fff7e8;--panel:#0a4056}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#06354b;color:white;touch-action:manipulation}
+#app{position:relative;width:100%;height:100dvh;overflow:hidden;background:#0b7890}
+canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+.topbar{position:absolute;top:env(safe-area-inset-top,0);left:0;right:0;display:flex;gap:7px;align-items:center;padding:8px 9px;z-index:5;pointer-events:none}
+.brand,.stat,.goal{background:linear-gradient(180deg,#0b536c,#07384e);border:1px solid #62cbd0;border-radius:12px;box-shadow:0 3px 0 #03283a;pointer-events:auto}
+.brand{padding:7px 10px;min-width:105px}.brand strong{display:block;font-size:13px;letter-spacing:.4px}.brand small{font-size:9px;color:#a9f7ed}
+.stats{display:flex;gap:5px;flex:1;justify-content:flex-end}.stat{padding:6px 8px;min-width:54px;text-align:center}.stat small{display:block;font-size:9px;color:#b5e9e8}.stat b{font-size:13px;white-space:nowrap}
+.goal{position:absolute;top:62px;left:9px;max-width:calc(100% - 18px);padding:8px 11px;font-size:11px;line-height:1.3;z-index:4}
+.goal b{color:var(--gold)}.goal .progress{height:4px;background:#052d40;border-radius:4px;margin-top:6px;overflow:hidden}.goal .progress span{display:block;height:100%;background:#63e7b1;width:0%;transition:width .3s}
+.bottom{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 7px);left:8px;right:8px;z-index:6;background:linear-gradient(180deg,rgba(5,51,71,.94),rgba(3,35,51,.98));border:1px solid #4ab7c3;border-radius:17px;padding:8px;box-shadow:0 5px 0 rgba(0,0,0,.22)}
+.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.tool{border:1px solid #4c8795;border-radius:11px;background:#0d4a61;color:#f5ffff;padding:7px 2px 6px;min-width:0;font:inherit;cursor:pointer}.tool .emoji{font-size:21px;display:block;line-height:1.15}.tool strong{display:block;font-size:10px;white-space:nowrap}.tool small{display:block;color:#a6e2df;font-size:9px;margin-top:2px}.tool.active{background:linear-gradient(#ffe19a,#ffb943);color:#3a341e;border-color:#fff0b8;transform:translateY(-2px)}.tool.active small{color:#66502a}
+.subrow{display:flex;gap:7px;align-items:center;margin-top:7px}.hint{font-size:10px;color:#b9e5e5;flex:1;line-height:1.25}.action{border:1px solid #65d3d1;border-radius:9px;background:#14667a;color:white;font-weight:800;padding:8px 10px;font-size:11px;cursor:pointer}.action.gold{background:linear-gradient(#ffdc88,#ffb83f);border-color:#fff0b9;color:#4b3614}
+.toast{position:absolute;z-index:9;top:115px;left:50%;transform:translateX(-50%);background:#fff8e8;color:#163c4b;border:2px solid #e9b84e;border-radius:12px;padding:10px 14px;max-width:90%;font-weight:750;font-size:12px;text-align:center;box-shadow:0 4px 15px #00283b66;display:none}
+.modal{position:absolute;inset:0;z-index:12;background:#001e2caa;display:none;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modalcard{background:linear-gradient(160deg,#0e5870,#062f46);border:2px solid #64d3d1;border-radius:20px;padding:20px;width:min(390px,100%);box-shadow:0 12px 45px #001b29aa}.modalcard h2{margin:0 0 8px;font-size:22px}.modalcard p{color:#d1eeee;font-size:13px;line-height:1.45}.modalactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#rotate{display:none;position:absolute;inset:0;background:#073a54;z-index:20;align-items:center;justify-content:center;text-align:center;padding:30px}
+@media(max-height:600px){.brand{padding:5px 7px}.goal{top:54px;padding:6px 9px}.tool{padding:5px 2px}.tool .emoji{font-size:18px}.bottom{padding:6px}.subrow{margin-top:5px}.hint{font-size:9px}}
 </style>
 </head>
 <body>
-<canvas id="world"></canvas>
-<header>
- <div class="stat brand">⚓ MARINA TYCOON<strong>Tu puerto · Día 1</strong></div>
- <div class="stat">💰 Dinero<strong id="money">8.000 €</strong></div>
- <div class="stat">🛥️ Atendidos<strong id="served">0</strong></div>
- <div class="stat">⭐ Nivel<strong id="level">1</strong></div>
-</header>
-<section class="card objectives">
- <h2>📋 Objetivo</h2><p id="mission">Atiende 3 barcos para recibir una recompensa.</p>
- <p>Progreso: <b id="progress">0 / 3</b></p><p>Amarres: <b id="berths">2</b></p>
- <button class="gold" id="buildDock">＋ Construir amarre · 3.000 €</button>
-</section>
-<section class="card shipcard">
- <h2>🚤 Solicitud de atraque</h2><p><b id="shipName">Yate Aurora</b></p><p id="shipDesc">Yate de lujo · Busca un amarre libre.</p>
- <p>Tarifa: <b id="income">850 €</b></p>
- <button class="green" id="accept">✓ Asignar amarre</button><button id="next">↻ Siguiente barco</button>
-</section>
-<div id="help">Arrastra el puerto para mover la vista · Usa zoom</div>
-<nav>
- <button id="build">🏗️ Edificio</button><button id="service">🧰 Servicios</button><button id="zoomOut">－ Zoom</button><button id="zoomIn">＋ Zoom</button><button id="save">💾 Guardar</button>
-</nav>
-<div id="toast"></div>
+<div id="app">
+<canvas id="game"></canvas>
+<div class="topbar">
+ <div class="brand"><strong>⚓ MARINA TYCOON</strong><small>PUERTO DE ENSUEÑO</small></div>
+ <div class="stats">
+  <div class="stat"><small>TESORO</small><b id="money">€ 1.200</b></div>
+  <div class="stat"><small>VISITAS</small><b id="visitors">0</b></div>
+  <div class="stat"><small>REPUTACIÓN</small><b id="rep">★ 1</b></div>
+ </div>
+</div>
+<div class="goal" id="goal"><b>OBJETIVO DEL DÍA</b><br><span id="goaltext">Construye 2 amarres y recibe 3 barcos.</span><div class="progress"><span id="progress"></span></div></div>
+<div class="toast" id="toast"></div>
+<div class="bottom">
+ <div class="tools">
+  <button class="tool active" data-build="dock"><span class="emoji">🪵</span><strong>Amarre</strong><small>€ 180</small></button>
+  <button class="tool" data-build="restaurant"><span class="emoji">🍹</span><strong>Restaurante</strong><small>€ 350</small></button>
+  <button class="tool" data-build="hotel"><span class="emoji">🏨</span><strong>Hotel</strong><small>€ 600</small></button>
+  <button class="tool" data-build="shop"><span class="emoji">🛍️</span><strong>Tienda</strong><small>€ 250</small></button>
+  <button class="tool" data-build="decor"><span class="emoji">🌴</span><strong>Decoración</strong><small>€ 90</small></button>
+ </div>
+ <div class="subrow"><div class="hint" id="hint">Elige una construcción y toca una zona libre junto al agua.</div><button class="action" id="boatBtn">🚤 Acelerar barcos</button><button class="action gold" id="upgradeBtn">⬆ Mejorar</button></div>
+</div>
+<div class="modal" id="modal"><div class="modalcard"><h2 id="modalTitle">¡Bienvenido!</h2><p id="modalText"></p><div class="modalactions"><button class="action gold" id="modalPrimary">¡A jugar!</button><button class="action" id="modalSecondary">Seguir jugando</button></div></div></div>
+<div id="rotate"><div><div style="font-size:50px">⚓</div><h2>¡Tu puerto te espera!</h2><p>Gira el móvil para ver mejor la marina.</p></div></div>
+</div>
 <script>
 (()=> {
-const canvas=document.querySelector('#world'),ctx=canvas.getContext('2d');
-let W=0,H=0,dpr=1,money=8000,served=0,berths=2,level=1,idx=0,buildings=0,services=0,viewX=0,viewY=0,zoom=1;
-const ships=[
-{name:'Yate Aurora',desc:'Yate de lujo',income:850,color:'#fff6d9',kind:'yacht'},
-{name:'Ferri Costa Azul',desc:'Ferri turístico',income:1450,color:'#ffc145',kind:'ferry'},
-{name:'Velero Brisa',desc:'Velero de recreo',income:600,color:'#f5fafc',kind:'sail'},
-{name:'Crucero Estrella',desc:'Crucero de pasajeros',income:2600,color:'#ff786b',kind:'cruise'},
-{name:'Mercante Atlántico',desc:'Carga comercial',income:1900,color:'#79d4e9',kind:'cargo'}];
-let active=ships[0];
-let docked=[{x:.28,y:.47,kind:'yacht',color:'#fff6d9',phase:0},{x:.43,y:.57,kind:'sail',color:'#fff',phase:1.5}];
-let palms=[[.09,.31],[.16,.35],[.25,.31],[.12,.43],[.2,.46],[.35,.32],[.43,.36],[.52,.3],[.58,.38]];
-function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
-function poly(points,fill){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
-function line(x,y,x2,y2,c,w=2){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);ctx.strokeStyle=c;ctx.lineWidth=w;ctx.stroke()}
-function ellipse(x,y,rx,ry,c){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=c;ctx.fill()}
-function rr(x,y,w,h,r,c){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=c;ctx.fill()}
-function building(x,y,s,wall,roof){ctx.fillStyle='#173c4a40';ctx.fillRect(x-s*.52,y+s*.28,s*1.05,s*.14);poly([[x-s*.5,y-s*.2],[x+s*.5,y-s*.2],[x+s*.5,y+s*.3],[x-s*.5,y+s*.3]],wall);poly([[x-s*.58,y-s*.2],[x,y-s*.58],[x+s*.58,y-s*.2]],roof);for(let j=-1;j<=1;j++)rr(x+j*s*.24-s*.055,y-s*.1,s*.11,s*.13,2,'#8be0f1')}
-function palm(x,y,s){line(x,y,x-s*.06,y-s*.52,'#93613a',s*.1);for(let j=0;j<5;j++){let a=j*Math.PI*2/5;line(x-s*.06,y-s*.52,x-s*.06+Math.cos(a)*s*.37,y-s*.52+Math.sin(a)*s*.2,'#218b57',s*.13);ellipse(x-s*.06+Math.cos(a)*s*.32,y-s*.52+Math.sin(a)*s*.18,s*.09,s*.055,'#36b86a')}}
-function boat(x,y,s,color,kind,phase=0){ctx.save();ctx.translate(x,y+Math.sin(performance.now()/550+phase)*1.5);ctx.rotate(-.15);poly([[-s*.28+x*0,-s*.35],[s*.28,-s*.35],[s*.22,s*.35],[0,s*.52],[-s*.22,s*.35]].map(p=>[p[0],p[1]]),'#153e55');poly([[-s*.23,-s*.3],[s*.23,-s*.3],[s*.18,s*.27],[-s*.18,s*.27]],color);
-if(kind==='sail'){line(0,-s*.25,0,-s*.95,'#f4f7f5',2);poly([[2,-s*.88],[2,-s*.3],[s*.28,-s*.34]],'#fffdf2');poly([[-2,-s*.75],[-2,-s*.33],[-s*.22,-s*.38]],'#ffce67')}else{rr(-s*.17,-s*.24,s*.34,s*.18,2,'#f3f8f8');rr(-s*.12,-s*.2,s*.24,s*.08,1,'#68d0e8');if(['ferry','cruise','cargo'].includes(kind)){for(let i=0;i<4;i++)rr(-s*.13+i*s*.075,-s*.19,s*.04,s*.04,1,'#28657a')}}ctx.restore()}
-function crane(x,y,s){line(x,y,x,y-s,'#f2b31e',s*.07);line(x,y-s,x+s*.65,y-s,'#f2b31e',s*.07);line(x+s*.53,y-s,x+s*.53,y-s*.22,'#405666',1.5);rr(x-s*.1,y-s*.1,s*.2,s*.14,2,'#218db3')}
-function draw(){
- if(!W||!H)return;ctx.clearRect(0,0,W,H);
- let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#75d9ee');g.addColorStop(1,'#168eb9');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
- ctx.save();ctx.translate(W*.5+viewX,H*.48+viewY);ctx.scale(zoom,zoom);
- poly([[-W*.7,-H*.35],[-W*.48,-H*.43],[-W*.25,-H*.37],[-W*.03,-H*.45],[W*.2,-H*.37],[W*.48,-H*.44],[W*.7,-H*.35],[W*.7,-H*.15],[-W*.7,-H*.15]],'#4caa7b');
- poly([[-W*.7,-H*.29],[-W*.47,-H*.36],[-W*.25,-H*.3],[-W*.03,-H*.38],[W*.2,-H*.3],[W*.48,-H*.37],[W*.7,-H*.29],[W*.7,-H*.15],[-W*.7,-H*.15]],'#f0d8a0');
- poly([[-W*.62,-H*.17],[-W*.16,-H*.19],[W*.1,-H*.13],[W*.16,H*.04],[-W*.03,H*.18],[-W*.62,H*.12]],'#dfc18b');
- poly([[-W*.6,-H*.15],[-W*.15,-H*.17],[W*.08,-H*.11],[W*.12,-H*.04],[-W*.05,H*.06],[-W*.6,H*.04]],'#c8aa77');
- line(-W*.52,-H*.1,W*.04,-H*.07,'#f7e6bd',Math.max(5,W*.015));line(-W*.38,-H*.13,-W*.35,H*.05,'#f7e6bd',Math.max(4,W*.012));
- poly([[-W*.12,-H*.04],[-W*.06,-H*.05],[W*.01,H*.3],[-W*.04,H*.32]],'#aa8a5e');
- poly([[W*.05,-H*.07],[W*.1,-H*.08],[W*.17,H*.22],[W*.12,H*.24]],'#aa8a5e');
- poly([[-W*.35,H*.01],[-W*.31,H*.0],[-W*.28,H*.31],[-W*.32,H*.33]],'#aa8a5e');
- line(-W*.11,-H*.01,-W*.04,H*.29,'#ead3a2',4);line(W*.07,-H*.04,W*.14,H*.21,'#ead3a2',4);
- for(let i=0;i<Math.min(berths+1,7);i++){let x=-W*.12+i*W*.028,y=H*.03+i*H*.018;rr(x,y,Math.max(13,W*.022),4,2,'#eed39d');ellipse(x+4,y+5,1.5,1.5,'#6b5238')}
- building(-W*.44,-H*.16,Math.min(W,H)*.095,'#f8bb62','#d65a49');building(-W*.32,-H*.17,Math.min(W,H)*.085,'#7ccabd','#d45c4a');building(-W*.2,-H*.15,Math.min(W,H)*.09,'#f8df89','#c95043');building(-W*.45,-H*.04,Math.min(W,H)*.075,'#f8f0d8','#358cb1');building(-W*.32,-H*.05,Math.min(W,H)*.08,'#fa9b83','#b84b43');
- for(let i=0;i<buildings;i++)building(-W*.18+(i%3)*Math.min(W,H)*.075,-H*.2+Math.floor(i/3)*Math.min(W,H)*.06,Math.min(W,H)*.065,['#f8bb62','#7ccabd','#fa9b83'][i%3],'#c95043');
- palms.forEach(p=>palm((p[0]-.5)*W,(p[1]-.48)*H,Math.min(W,H)*.055));
- crane(W*.01,H*.04,Math.min(W,H)*.12);crane(W*.12,H*.1,Math.min(W,H)*.085);
- docked.forEach(b=>boat((b.x-.5)*W,(b.y-.48)*H,Math.min(W,H)*(b.kind==='cruise'?.13:.09),b.color,b.kind,b.phase));
- const t=(performance.now()/5000)%1;boat(W*.26+Math.sin(t*3)*W*.015,H*.02+t*H*.16,Math.min(W,H)*.11,active.color,active.kind,idx);
- for(let i=0;i<30;i++){let x=-W*.1+(i*47%Math.max(1,W*.8)),y=H*.08+(i*31%Math.max(1,H*.55));line(x,y,x+8+(i%4)*4,y,'#b9f5ff',1)}
- ctx.restore();
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const moneyEl=document.getElementById('money'),visitorsEl=document.getElementById('visitors'),repEl=document.getElementById('rep');
+const toastEl=document.getElementById('toast'),hintEl=document.getElementById('hint');
+const costs={dock:180,restaurant:350,hotel:600,shop:250,decor:90};
+const labels={dock:'Amarre',restaurant:'Restaurante',hotel:'Hotel',shop:'Tienda',decor:'Decoración'};
+let W=0,H=0,dpr=1,selected='dock',money=1200,visitors=0,rep=1,served=0,boatsReceived=0,day=1,buildings=[],boats=[],particles=[],lastBoat=0,boatInterval=9000,toastTimer,modalAction=null,zoom=1,panX=0,panY=0;
+const cols=9,rows=8; let cellW=0,cellH=0,originX=0,originY=0;
+const water='#1386a1';
+function resize(){const r=canvas.getBoundingClientRect();W=r.width;H=r.height;dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.floor(W*dpr);canvas.height=Math.floor(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);cellW=Math.min((W-22)/cols,52);cellH=cellW*.62;originX=(W-cols*cellW)/2;originY=Math.max(110,(H-rows*cellH-145)/2)+panY; if(H<650)originY=88+panY;}
+window.addEventListener('resize',resize); resize();
+function iso(c,r){return {x:originX+(c-r)*cellW*.5+cols*cellW*.5,y:originY+(c+r)*cellH*.5};}
+function poly(points,fill,stroke){ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let p of points.slice(1))ctx.lineTo(p.x,p.y);ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke();}}
+function diamond(c,r,fill,stroke){let p=iso(c,r);poly([{x:p.x,y:p.y-cellH*.5},{x:p.x+cellW*.5,y:p.y},{x:p.x,y:p.y+cellH*.5},{x:p.x-cellW*.5,y:p.y}],fill,stroke);}
+function roundRect(x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}}
+function drawSea(){let g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#1b9eb1');g.addColorStop(.5,'#08738e');g.addColorStop(1,'#064d70');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // sparkling water ripples
+ for(let i=0;i<60;i++){let x=((i*83+23)%Math.max(W,1)),y=((i*47+30)%(H));ctx.strokeStyle=i%3===0?'#78d7d1aa':'#76cdd044';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y,5+(i%5)*2,1.5,0,0,Math.PI*2);ctx.stroke();}
 }
-function fmt(n){return n.toLocaleString('es-ES')+' €'}
-function update(){document.querySelector('#money').textContent=fmt(money);document.querySelector('#served').textContent=served;document.querySelector('#level').textContent=level;document.querySelector('#berths').textContent=berths;document.querySelector('#progress').textContent=Math.min(served,3)+' / 3';document.querySelector('#mission').textContent=served>=3?'¡Objetivo completado! Recompensa recibida.':'Atiende '+(3-served)+' barco(s) más y gana 2.000 €.';document.querySelector('#shipName').textContent=active.name;document.querySelector('#shipDesc').textContent=active.desc+' · Solicita atraque';document.querySelector('#income').textContent=fmt(active.income);draw()}
-let toastTimer;function toast(s){const el=document.querySelector('#toast');el.textContent=s;el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',2200)}
-document.querySelector('#accept').onclick=()=>{if(served>=berths){toast('No quedan amarres libres: construye otro.');return}money+=active.income;served++;docked.push({x:.26+Math.random()*.24,y:.49+Math.random()*.17,kind:active.kind,color:active.color,phase:Math.random()*5});if(docked.length>Math.min(berths+1,7))docked.shift();if(served===3){money+=2000;toast('¡Objetivo completado! +2.000 €')}else toast('Barco atendido: +'+fmt(active.income));level=1+Math.floor(served/3);active=ships[++idx%ships.length];update()};
-document.querySelector('#next').onclick=()=>{active=ships[++idx%ships.length];update();toast('Nueva solicitud de atraque')};
-document.querySelector('#buildDock').onclick=()=>{if(money<3000){toast('Necesitas 3.000 €');return}money-=3000;berths++;toast('¡Amarre construido! Capacidad ampliada.');update()};
-document.querySelector('#build').onclick=()=>{if(money<1800){toast('Necesitas 1.800 €');return}money-=1800;buildings++;toast('¡Edificio añadido al puerto!');update()};
-document.querySelector('#service').onclick=()=>{if(money<1200){toast('Necesitas 1.200 €');return}money-=1200;services++;toast('¡Servicio mejorado!');update()};
-document.querySelector('#zoomIn').onclick=()=>{zoom=Math.min(1.55,zoom*1.12);draw()};
-document.querySelector('#zoomOut').onclick=()=>{zoom=Math.max(.72,zoom/1.12);draw()};
-document.querySelector('#save').onclick=()=>{try{localStorage.setItem('marinaTycoonSave',JSON.stringify({money,served,berths,level,idx,buildings,services,docked}));toast('Partida guardada en este navegador')}catch(e){toast('No se ha podido guardar en este navegador')}};
-try{const s=JSON.parse(localStorage.getItem('marinaTycoonSave')||'null');if(s){money=s.money??money;served=s.served??served;berths=s.berths??berths;level=s.level??level;idx=s.idx??0;buildings=s.buildings??0;services=s.services??0;docked=s.docked??docked;active=ships[idx%ships.length];update()}}catch(e){}
-let dragging=false,lastX=0,lastY=0;canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointercancel',()=>dragging=false);canvas.addEventListener('pointermove',e=>{if(!dragging)return;viewX+=e.clientX-lastX;viewY+=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;draw()});canvas.addEventListener('wheel',e=>{zoom=Math.max(.72,Math.min(1.55,zoom*(e.deltaY<0?1.06:.94)));draw()},{passive:true});
-function frame(){draw();requestAnimationFrame(frame)}addEventListener('resize',resize);resize();frame();
+function drawLand(){// grassy island / shore across upper left
+ poly([{x:0,y:0},{x:W,y:0},{x:W,y:Math.min(105,H*.17)},{x:W*.65,y:Math.min(125,H*.2)},{x:W*.43,y:Math.min(92,H*.15)},{x:W*.2,y:Math.min(145,H*.23)},{x:0,y:Math.min(100,H*.16)}],'#6dbd70');
+ poly([{x:0,y:0},{x:W,y:0},{x:W,y:30},{x:W*.65,y:39},{x:W*.4,y:26},{x:W*.18,y:45},{x:0,y:31}],'#a2dc83');
+ for(let i=0;i<12;i++){let x=(i*97+15)%W,y=20+(i*17)%65;drawTree(x,y,0.55+(i%3)*.12);}
+}
+function drawTree(x,y,s=1){ctx.fillStyle='#65452c';ctx.fillRect(x-2*s,y,4*s,10*s);ctx.fillStyle='#1b7957';ctx.beginPath();ctx.arc(x,y-3*s,10*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#43a76a';ctx.beginPath();ctx.arc(x-4*s,y-7*s,6*s,0,Math.PI*2);ctx.fill();}
+function drawGrid(){for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let p=iso(c,r);let island=(r<1&&c<2);diamond(c,r,island?'#65b96c':((c+r)%2?'#13849a':'#168ba0'),'#6dd2d1');}
+ // boardwalk / shoreline
+ for(let c=0;c<cols;c++){let p=iso(c,0);ctx.strokeStyle='#d8bd87';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(p.x-cellW*.5,p.y-1);ctx.lineTo(p.x+cellW*.5,p.y-1);ctx.stroke();}
+}
+function drawDock(b){let p=iso(b.c,b.r),w=cellW*.84,h=cellH*.24;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(-.08);
+ // shadow
+ roundRect(-w/2+3,-h/2+5,w,h,3,'#06394b66');
+ roundRect(-w/2,-h/2,w,h,3,'#9a7047','#e5c18a');
+ for(let i=0;i<5;i++){ctx.strokeStyle='#dcb67a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-w/2+i*w/5,-h/2);ctx.lineTo(-w/2+i*w/5,h/2);ctx.stroke();}
+ ctx.fillStyle='#60452e';for(let x of [-w/2+3,w/2-3]){ctx.beginPath();ctx.arc(x,0,2.4,0,Math.PI*2);ctx.fill();}
+ ctx.restore();
+ if(b.boatId!=null){let boat=boats.find(x=>x.id===b.boatId);if(boat)drawBoatAt(p.x,p.y-7,boat.type,.66,boat.color);}
+}
+function drawBuilding(b){let p=iso(b.c,b.r),s=cellW*.47;ctx.save();ctx.translate(p.x,p.y-cellH*.18);
+ // drop shadow
+ poly([{x:-s*.6,y:2},{x:0,y:s*.22},{x:s*.65,y:0},{x:s*.05,y:-s*.24}],'#00384b55');
+ if(b.type==='restaurant'||b.type==='shop'){poly([{x:-s*.52,y:-s*.28},{x:0,y:-s*.57},{x:s*.52,y:-s*.28},{x:0,y:0}],'#ffdf9a','#9b633b');poly([{x:-s*.52,y:-s*.28},{x:0,y:0},{x:0,y:s*.57},{x:-s*.52,y:s*.28}],'#fff1d1','#9b633b');poly([{x:0,y:0},{x:s*.52,y:-s*.28},{x:s*.52,y:s*.28},{x:0,y:s*.57}],b.type==='restaurant'?'#e98d52':'#77d3d2','#9b633b');poly([{x:-s*.58,y:-s*.3},{x:0,y:-s*.63},{x:s*.58,y:-s*.3},{x:0,y:.02} ],b.type==='restaurant'?'#e95749':'#4d94d0','#f5d5a0');
+ }else if(b.type==='hotel'){poly([{x:-s*.58,y:-s*.2},{x:0,y:-s*.5},{x:s*.58,y:-s*.2},{x:0,y:s*.1}],'#ffe2a4','#97623e');poly([{x:-s*.58,y:-s*.2},{x:0,y:s*.1},{x:0,y:s*.68},{x:-s*.58,y:s*.38}],'#fff1d2','#97623e');poly([{x:0,y:s*.1},{x:s*.58,y:-s*.2},{x:s*.58,y:s*.38},{x:0,y:s*.68}],'#f0b66d','#97623e');poly([{x:-s*.65,y:-s*.22},{x:0,y:-s*.57},{x:s*.65,y:-s*.22},{x:0,y:.13}],'#d85e59','#8c423a');}
+ else {poly([{x:-s*.42,y:0},{x:0,y:-s*.26},{x:s*.42,y:0},{x:0,y:s*.24}],'#4fc17b','#d2f1b7');drawTree(p.x-p.x,p.y,0.4);}
+ ctx.restore();
+ let icon=b.type==='restaurant'?'🍹':b.type==='hotel'?'🏨':b.type==='shop'?'🛍️':'🌴';ctx.font=`${Math.max(10,cellW*.27)}px system-ui`;ctx.textAlign='center';ctx.fillText(icon,p.x,p.y+cellH*.1);
+}
+function drawBoatAt(x,y,type=0,s=1,color='#f5f2db'){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.shadowColor='#00394b66';ctx.shadowBlur=3;ctx.shadowOffsetY=3;
+ poly([{x:-14,y:-4},{x:13,y:-4},{x:8,y:5},{x:-9,y:5}], '#263f50','#d6e9e7');ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+ poly([{x:-11,y:-4},{x:9,y:-4},{x:5,y:2},{x:-7,y:2}],color,'#fff6dc');
+ if(type%3===0){poly([{x:-4,y:-3},{x:2,y:-3},{x:2,y:-12},{x:-4,y:-12}],'#fff3d5','#9bb8ba');poly([{x:-2,y:-12},{x:7,y:-7},{x:-2,y:-7}],'#f7c95b');}
+ else {roundRect(-4,-11,9,7,2,'#f7f2d9','#aacdd0');roundRect(-2,-9,3,3,1,'#51b7d2');}
+ ctx.restore();}
+function drawBoat(b){let p=iso(b.c,b.r);drawBoatAt(p.x+b.offsetX,p.y+b.offsetY,b.type,.9,b.color);if(b.state==='incoming'){ctx.font='10px system-ui';ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('▼',p.x,p.y-18);}}
+function draw(){drawSea();drawLand();drawGrid();
+ let all=[...buildings].sort((a,b)=>(a.c+a.r)-(b.c+b.r));for(let b of all){if(b.type==='dock')drawDock(b);else drawBuilding(b);}
+ for(let b of boats){if(b.state==='incoming')drawBoat(b);}
+ // pier welcome sign
+ roundRect(9,H-155,92,24,8,'#073b50cc','#4cc6c6');ctx.font='bold 10px system-ui';ctx.fillStyle='#e7ffff';ctx.textAlign='center';ctx.fillText('⚓ TU MARINA',55,H-139);
+ requestAnimationFrame(draw);
+}
+function fmt(n){return '€ '+Math.round(n).toLocaleString('es-ES');}
+function updateUI(){moneyEl.textContent=fmt(money);visitorsEl.textContent=visitors;repEl.textContent='★ '+rep;let d=Math.min(100,Math.round((Math.min(buildings.filter(b=>b.type==='dock').length,2)/2*35)+(Math.min(boatsReceived,3)/3*65)));document.getElementById('progress').style.width=d+'%';document.getElementById('goaltext').textContent=`Construye ${Math.max(0,2-buildings.filter(b=>b.type==='dock').length)} amarres y recibe ${Math.max(0,3-boatsReceived)} barcos.`;document.getElementById('upgradeBtn').textContent=rep>=3?'✓ Mejorado':'⬆ Mejorar';}
+function toast(msg){toastEl.textContent=msg;toastEl.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.style.display='none',2200);}
+function occupied(c,r){return buildings.some(b=>b.c===c&&b.r===r);}
+function canPlace(type,c,r){if(c<0||c>=cols||r<0||r>=rows)return false;if(occupied(c,r))return false;if(type==='dock'&&r<1)return false;return true;}
+function place(type,c,r){if(!canPlace(type,c,r)){toast('Ese espacio no está libre. Prueba en otra zona.');return;}let cost=costs[type];if(money<cost){toast('No tienes suficiente dinero. Atiende más barcos para ganar monedas.');return;}money-=cost;buildings.push({id:Date.now()+Math.random(),type,c,r,level:1,boatId:null});if(type==='dock')toast('¡Amarre construido! Los barcos podrán atracar aquí.');else toast(`${labels[type]} construido. Aumentará los ingresos del puerto.`);hintEl.textContent='¡Bien! Sigue ampliando tu puerto y recibe barcos.';updateUI();}
+function nearestDock(){return buildings.find(b=>b.type==='dock'&&b.boatId==null);}
+let boatId=1;
+function spawnBoat(){let dock=nearestDock();if(!dock){toast('Construye un amarre para recibir barcos.');return;}let colors=['#f7f3de','#f6c45f','#f5a28a','#b5e6e6','#d4c3f4'];let b={id:boatId++,type:Math.floor(Math.random()*4),color:colors[Math.floor(Math.random()*colors.length)],state:'incoming',c:dock.c,r:dock.r,offsetX:0,offsetY:-50,targetDock:dock.id,arriveAt:Date.now()+1600};boats.push(b);lastBoat=Date.now();toast('¡Barco a la vista! Está buscando un amarre libre.');}
+function dockBoat(b){let d=buildings.find(x=>x.id===b.targetDock);if(!d||d.boatId!=null){b.state='leaving';return;}d.boatId=b.id;b.state='docked';b.c=d.c;b.r=d.r;b.offsetY=-7;boatsReceived++;visitors+=3;let bonus=80+buildings.filter(x=>x.type==='restaurant'||x.type==='hotel'||x.type==='shop').length*18;money+=bonus;toast(`¡Barco atendido! +${fmt(bonus)} en tasas y servicios.`);rep=Math.min(5,1+Math.floor(boatsReceived/4));setTimeout(()=>{let index=boats.findIndex(x=>x.id===b.id);if(index>=0){let boat=boats[index];let dock=buildings.find(x=>x.boatId===boat.id);if(dock)dock.boatId=null;boats.splice(index,1);}},6500);updateUI();}
+function tick(){let now=Date.now();if(now-lastBoat>boatInterval&&buildings.some(b=>b.type==='dock'&&b.boatId==null)){spawnBoat();}for(let b of [...boats]){if(b.state==='incoming'&&now>=b.arriveAt)dockBoat(b);}requestAnimationFrame(tick);}
+function screenToTile(x,y){let best=null,dist=1e9;for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let p=iso(c,r);let d=Math.abs(x-p.x)/(cellW*.5)+Math.abs(y-p.y)/(cellH*.5);if(d<dist){dist=d;best={c,r};}}return dist<2.1?best:null;}
+canvas.addEventListener('pointerdown',e=>{let rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;let t=screenToTile(x,y);if(!t)return;let b=buildings.find(z=>z.c===t.c&&z.r===t.r);if(b){if(b.type==='dock'&&b.boatId!=null){let bonus=35;money+=bonus;visitors+=1;toast(`Has atendido al barco: +${fmt(bonus)}.`);updateUI();}else if(b.type!=='dock'){let bonus=b.type==='hotel'?45:b.type==='restaurant'?35:b.type==='shop'?25:8;money+=bonus;toast(`${labels[b.type]} ha atendido a visitantes: +${fmt(bonus)}.`);updateUI();}else toast('Amarre construido. ¡Espera la llegada de un barco!');return;}place(selected,t.c,t.r);});
+document.querySelectorAll('.tool').forEach(btn=>btn.addEventListener('click',()=>{selected=btn.dataset.build;document.querySelectorAll('.tool').forEach(x=>x.classList.toggle('active',x===btn));hintEl.textContent=`Construir ${labels[selected].toLowerCase()}: toca un espacio libre. Coste ${fmt(costs[selected])}.`;}));
+document.getElementById('boatBtn').addEventListener('click',()=>{if(!nearestDock()){toast('Primero construye un amarre.');return;}spawnBoat();});
+document.getElementById('upgradeBtn').addEventListener('click',()=>{let cost=rep>=3?0:500;if(rep>=3){toast('¡Tu puerto ya tiene una mejora de reputación!');return;}if(money<cost){toast('Necesitas € 500 para mejorar la reputación.');return;}money-=cost;rep++;boatInterval=Math.max(5000,boatInterval-1000);toast('¡Puerto mejorado! Llegarán barcos con más frecuencia.');updateUI();});
+document.getElementById('modalPrimary').addEventListener('click',()=>{document.getElementById('modal').classList.remove('show');});
+document.getElementById('modalSecondary').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
+function save(){try{localStorage.setItem('marinaTycoonSave',JSON.stringify({money,visitors,rep,served,boatsReceived,day,buildings,boatInterval}));toast('Partida guardada en este dispositivo.');}catch(e){toast('No se pudo guardar en este navegador.');}}
+function load(){try{let s=JSON.parse(localStorage.getItem('marinaTycoonSave'));if(s){money=s.money??money;visitors=s.visitors??0;rep=s.rep??1;served=s.served??0;boatsReceived=s.boatsReceived??0;day=s.day??1;buildings=s.buildings??[];boatInterval=s.boatInterval??boatInterval;updateUI();toast('¡Partida recuperada!');}}catch(e){}}
+const saveBtn=document.createElement('button');saveBtn.className='action';saveBtn.textContent='💾 Guardar';saveBtn.addEventListener('click',save);document.querySelector('.subrow').insertBefore(saveBtn,document.getElementById('boatBtn'));
+const resetBtn=document.createElement('button');resetBtn.className='action';resetBtn.textContent='↻';resetBtn.title='Reiniciar partida';resetBtn.addEventListener('click',()=>{if(confirm('¿Seguro que quieres empezar una partida nueva?')){localStorage.removeItem('marinaTycoonSave');money=1200;visitors=0;rep=1;served=0;boatsReceived=0;buildings=[];boats=[];updateUI();toast('Nueva partida iniciada.');}});document.querySelector('.subrow').appendChild(resetBtn);
+document.getElementById('modalTitle').textContent='¡Bienvenido a tu marina!';
+document.getElementById('modalText').textContent='Construye amarres junto al agua, atrae barcos y gana dinero para levantar restaurantes, hoteles y tiendas. Toca una construcción y después una casilla libre. Toca los barcos o edificios para conseguir ingresos extra.';
+document.getElementById('modal').classList.add('show');
+load();updateUI();draw();tick();
 })();
 </script>
 </body>
