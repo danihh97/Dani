@@ -36,7 +36,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#8fdcea;font-family:'F
 <div id="hud"><span class="pill" id="co"></span><span class="pill" id="lv" style="margin-left:auto"></span></div>
 <div id="goal"><i id="gf"></i><span id="gt"></span></div>
 <div id="ts" hidden></div>
-<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Construye amarres para recibir veleros, lanchas, yates de lujo, barcos pesqueros y cruceros. Atiende a los turistas, recoge monedas y controla las emergencias para ampliar tu marina.</p><button id="ob">Jugar</button></div></div>
+<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Tu marina recibe desde pequeñas lanchas hasta yates, pesqueros, catamaranes y cruceros de varias cubiertas. Cada barco tiene una silueta y un tamaño propios.</p><button id="ob">Jugar</button></div></div>
 <div id="bar"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -150,10 +150,14 @@ function mkGuest(){const g=new T.Group();box(.3,.5,.3,PAL[Math.random()*5|0],0,.
  const h=new T.Mesh(new T.SphereGeometry(.17,6,5),M(0xffd9b3));h.position.y=.65;g.add(h);return g}
 function spawn(){const f=[];for(let r=3-ex;r<=8+ex;r++){const k=cells[r][3];if(k&&!k.boat)f.push(k)}
  if(!f.length)return;const k=f[Math.random()*f.length|0];
+ // Rotación de flota visible desde el primer nivel: no esconder cruceros por nivel.
  const roll=Math.random();let ty;
- if(lvl<2)ty=roll<.48?0:roll<.82?1:roll<.94?2:3;
- else if(lvl<4)ty=roll<.25?0:roll<.48?1:roll<.7?2:roll<.9?3:5;
- else ty=roll<.16?0:roll<.32?1:roll<.53?2:roll<.76?3:roll<.9?4:5;
+ if(roll<.20)ty=0;             // velero con mástil y vela alta
+ else if(roll<.38)ty=1;        // lancha corta y rápida
+ else if(roll<.60)ty=2;        // yate de lujo con varias cubiertas
+ else if(roll<.78)ty=3;        // pesquero con grúa, redes y boyas
+ else if(roll<.91)ty=5;        // catamarán de doble casco
+ else ty=4;                    // crucero grande, poco frecuente
  const g=mkBoat2(ty);
  const b={g,k,state:'in',fee:[10,16,28,24,75,20][ty],n:[2,3,4,3,8,3][ty],stay:6+Math.random()*2,out:0,ph:Math.random()*6,tx:-.9};
  k.boat=b;g.position.set(6,0,zr(k.r));scene.add(g);boats.push(b)}
