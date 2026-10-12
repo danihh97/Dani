@@ -11,6 +11,31 @@
 .panel h3{font-size:14px;margin:0 0 6px}.panel p{margin:5px 0;line-height:1.35;color:#d9eff8}.objectives{left:9px;top:76px;width:145px}.incoming{right:9px;bottom:76px;width:190px}
 .btn{border:1px solid #ffffff60;border-radius:11px;color:white;background:linear-gradient(#19a9e5,#0876b3);font-weight:750;font-size:12px;padding:10px 8px;width:100%;margin-top:6px;min-height:38px;cursor:pointer}.green{background:linear-gradient(#39b98e,#17785e)}.gold{background:linear-gradient(#ffca66,#c97922)}.dock{position:fixed;z-index:4;bottom:8px;left:8px;right:8px;display:flex;gap:5px;justify-content:center}.dock button{flex:1;max-width:160px;border-radius:12px;background:#103a52f5;color:white;border:1px solid #ffffff55;font-weight:750;font-size:11px;padding:10px 4px;min-height:43px}.toast{position:fixed;z-index:8;left:50%;top:70px;transform:translateX(-50%);display:none;background:#092d43f5;padding:10px 14px;border-radius:12px;border:1px solid #ffffff55;font-size:12px;font-weight:750;max-width:90%;text-align:center}.hint{position:fixed;z-index:2;bottom:60px;left:50%;transform:translateX(-50%);font-size:10px;color:white;background:#103a52d9;padding:5px 9px;border-radius:9px;white-space:nowrap}
 @media(min-width:760px){.stat{font-size:13px;padding:10px 14px}.stat strong{font-size:18px}.stat.brand strong{font-size:15px}.panel{font-size:14px;padding:15px}.panel h3{font-size:17px}.objectives{width:210px;top:88px;left:14px}.incoming{width:245px;bottom:88px;right:14px}.btn{font-size:14px}.dock{bottom:14px;gap:10px}.dock button{font-size:14px;padding:13px}.hint{bottom:72px;font-size:12px}}
+/* Mobile layout refinement: keep the harbor visible and controls compact */
+@media(max-width:759px){
+ .top{top:7px;left:7px;right:7px;gap:4px}
+ .stat{padding:7px 6px;border-radius:10px;font-size:9px;line-height:1.15}
+ .stat strong{font-size:12px;margin-top:3px}
+ .stat.brand{flex:1.1;font-size:10px}
+ .stat.brand strong{font-size:10px;line-height:1.2}
+ .objectives{top:72px;left:8px;width:132px;padding:9px;border-radius:13px;background:#10344ce8}
+ .objectives h3,.incoming h3{font-size:12px;margin-bottom:5px}
+ .objectives p{font-size:10px;line-height:1.25;margin:4px 0}
+ .objectives .btn{font-size:10px;padding:8px 5px;min-height:34px}
+ .incoming{right:8px;bottom:68px;width:176px;padding:10px;border-radius:14px;background:#10344cf0}
+ .incoming p{font-size:10px;line-height:1.25;margin:4px 0}
+ .incoming .btn{font-size:10px;padding:8px 5px;min-height:34px;margin-top:5px}
+ .dock{left:7px;right:7px;bottom:7px;gap:4px}
+ .dock button{font-size:9px;padding:8px 2px;min-height:39px;border-radius:10px}
+ .hint{bottom:52px;font-size:9px;padding:4px 7px}
+}
+@media(max-width:390px){
+ .stat.brand{flex:.95}
+ .objectives{width:119px}
+ .incoming{width:160px}
+ .dock button{font-size:8px}
+}
+
 </style></head>
 <body>
 <canvas id="scene"></canvas>
