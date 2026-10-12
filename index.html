@@ -1,34 +1,170 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#07354a"><title>Marina Tycoon Realista</title><style>
-*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#06384d;color:white;font-family:system-ui,-apple-system,sans-serif}#app{height:100dvh;position:relative}canvas{width:100%;height:100%;display:block;touch-action:none}.hud{position:absolute;top:env(safe-area-inset-top,6px);left:7px;right:7px;display:flex;gap:5px;z-index:3}.brand,.stat,.mission,.bottom,.side button{background:#052f45eF;border:1px solid #50c0c9;border-radius:12px;box-shadow:0 3px 0 #032433}.brand{padding:7px;min-width:115px}.brand b{display:block;font-size:12px}.brand small{font-size:9px;color:#9be5df}.stats{display:flex;flex:1;gap:4px}.stat{flex:1;min-width:0;text-align:center;padding:5px 3px}.stat small{font-size:8px;color:#b6e4e3;display:block}.stat b{font-size:11px;white-space:nowrap}.mission{position:absolute;top:65px;right:8px;width:48%;padding:9px;font-size:10px;z-index:3}.mission b{display:block;color:#ffda7c;margin-bottom:4px}.progress{height:4px;background:#164d5f;border-radius:4px;margin-top:6px}.progress span{height:100%;display:block;background:#55df9a;width:0}.side{position:absolute;top:75px;left:7px;display:flex;flex-direction:column;gap:5px;z-index:3}.side button{color:white;width:57px;min-height:43px;font-weight:800;font-size:9px;padding:4px}.side span{display:block;font-size:20px}.bottom{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 7px);left:7px;right:7px;padding:7px;z-index:4}.boats{display:flex;overflow-x:auto;gap:5px;padding-bottom:7px;scrollbar-width:none}.boat{flex:0 0 77px;border-radius:10px;border:1px solid #398596;background:#0a485d;color:white;padding:5px 2px;text-align:center}.boat.active{background:linear-gradient(#ffe6a5,#ffbd51);color:#392d18}.boat span{display:block;font-size:23px}.boat b{display:block;font-size:10px}.boat small{font-size:9px}.controls{display:flex;gap:5px;align-items:center}.controls button,.action{border:1px solid #4abac4;background:#0b5269;color:white;border-radius:9px;padding:9px 8px;font-size:10px;font-weight:800}.gold{background:linear-gradient(#ffe5a0,#ffbd4a)!important;color:#40311a!important}.hint{font-size:9px;color:#c2e7e5;flex:1}.toast{display:none;position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);z-index:10;background:#fff4dc;color:#163a47;border:2px solid #e5b74e;border-radius:12px;padding:11px;font-weight:800;font-size:12px;text-align:center;max-width:85%}.modal{display:none;position:absolute;inset:0;background:#001b2dcc;z-index:12;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}.panel{width:min(420px,100%);max-height:85dvh;overflow:auto;background:linear-gradient(145deg,#0d566b,#062d43);border:2px solid #65d4d2;border-radius:18px;padding:16px}.panel h2{font-size:20px;margin:0 0 7px}.panel p{font-size:12px;color:#d0eded;line-height:1.4}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.opt{background:#0b465b;color:white;border:1px solid #54b8c3;border-radius:11px;padding:10px 4px;font:inherit}.opt span{display:block;font-size:22px}.opt b{font-size:11px}.opt small{display:block;color:#bde7e5;font-size:9px}.close{margin-top:12px;padding:10px;border:1px solid #5dc9cf;border-radius:9px;background:#0c5369;color:white;font-weight:800}
-@media(max-height:650px){.side{top:60px}.side button{min-height:36px}.bottom{padding:5px}.boat{flex-basis:68px}.boat span{font-size:20px}.brand{padding:5px}.mission{top:57px}}
-</style></head><body><div id="app"><canvas id="c"></canvas><div class="hud"><div class="brand"><b>⚓ MARINA TYCOON</b><small>PUERTO REALISTA</small></div><div class="stats"><div class="stat"><small>TESORO</small><b id="cash">€ 8.000</b></div><div class="stat"><small>VISITAS</small><b id="visits">0</b></div><div class="stat"><small>AMARRES</small><b id="berths">0</b></div><div class="stat"><small>NIVEL</small><b id="level">1</b></div></div></div><div class="mission"><b>📋 OBJETIVO DEL DÍA</b><span id="goal">Construye 3 amarres y recibe 3 barcos.</span><div class="progress"><span id="prog"></span></div></div><div class="side"><button id="build"><span>🏗️</span>Construir</button><button id="services"><span>⛽</span>Servicios</button><button id="fleet"><span>🛥️</span>Flota</button><button id="staff"><span>👷</span>Personal</button><button id="missions"><span>📋</span>Misiones</button></div><div class="bottom"><div class="boats" id="boats"></div><div class="controls"><div class="hint" id="hint">Toca Construir y después el agua para ampliar el puerto.</div><button id="minus">−</button><button id="plus">+</button><button id="save">💾</button><button class="gold" id="construct">🏗️ Construir</button></div></div><div class="toast" id="toast"></div><div class="modal" id="modal"><div class="panel"><h2 id="title"></h2><p id="desc"></p><div class="grid" id="grid"></div><button class="close" id="close">Volver al puerto</button></div></div></div>
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Puerto Faro</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14304a;--panel:#fff;--accent:#ff6f59;--gold:#ffc83d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f2f8fc;--panel:#1d3b57}}
+:root[data-theme="dark"]{--ink:#f2f8fc;--panel:#1d3b57}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;height:100%;overflow:hidden;background:#8fdcea;font-family:'Fredoka',ui-rounded,system-ui,sans-serif;color:var(--ink);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:6px;pointer-events:none}
+.pill{background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(10,40,70,.28);border:1px solid rgba(255,255,255,.5)}
+#goal{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 50px);height:22px;background:rgba(255,255,255,.6);border-radius:11px;overflow:hidden;pointer-events:none}
+#gf{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#ffb020,#ffd866);transition:width .3s}
+#gt{position:relative;display:block;text-align:center;font-weight:700;font-size:13px;line-height:22px;color:#14304a}
+#ts{position:fixed;z-index:6;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 80px);text-align:center;background:var(--panel);color:var(--ink);border-radius:14px;padding:8px 12px;font-weight:700;font-size:14px;box-shadow:0 2px 0 rgba(0,0,0,.25);pointer-events:none}
+#ts[hidden]{display:none}
+#bar{position:fixed;z-index:5;left:6px;right:6px;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+#bar button{border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:7px 1px 8px;background:var(--panel);color:var(--ink);font:inherit;font-weight:500;font-size:11px;line-height:1.25;box-shadow:0 6px 16px rgba(10,40,70,.3)}
+#bar button b{display:block;font-size:20px;font-weight:400}
+#bar button.on{background:var(--gold);color:#14304a}
+#bar button:disabled{opacity:.5}
+#bar button:focus-visible,#ob:focus-visible,.coin:focus-visible{outline:3px solid #fff}
+.coin{position:fixed;z-index:3;transform:translate(-50%,-50%);border:0;border-radius:999px;background:var(--gold);color:#14304a;font:inherit;font-weight:700;font-size:15px;padding:6px 10px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.coin.fire{background:#ff4b3a;color:#fff}
+#ov{position:fixed;z-index:4;inset:0 0 84px 0;display:flex;align-items:center;justify-content:center;background:rgba(20,48,74,.5);padding:20px}
+#ov[hidden]{display:none}
+#pn{background:var(--panel);border-radius:22px;padding:22px;max-width:330px;text-align:center}
+#oh{margin:0 0 8px;font-size:28px}
+#op{margin:0 0 16px;line-height:1.4;font-weight:500}
+#ob{border:0;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:18px;padding:10px 26px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+
+#viewctl{position:fixed;z-index:5;right:8px;top:calc(env(safe-area-inset-top,0px) + 82px);display:flex;flex-direction:column;gap:5px}
+#viewctl button{border:1px solid rgba(255,255,255,.65);border-radius:12px;background:var(--panel);color:var(--ink);font:inherit;font-weight:700;font-size:18px;min-width:42px;min-height:40px;box-shadow:0 3px 9px #16304a55}
+#help{position:fixed;z-index:3;bottom:calc(env(safe-area-inset-bottom,0px) + 65px);left:10px;right:10px;text-align:center;font-size:11px;font-weight:700;color:#14304a;text-shadow:0 1px 0 #ffffffaa;pointer-events:none}
+@media(max-height:650px){#viewctl{top:70px}#viewctl button{min-height:34px;min-width:36px}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud"><span class="pill" id="co"></span><span class="pill" id="lv" style="margin-left:auto"></span></div>
+<div id="goal"><i id="gf"></i><span id="gt"></span></div>
+<div id="ts" hidden></div>
+<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Construye muelles para que lleguen barcos. Los turistas visitarán tus cafés, tiendas, hoteles y escuelas de buceo. Toca las monedas 🪙 para cobrar y apaga los 🔥 a tiempo. Cumple objetivos y amplía tu puerto.</p><button id="ob">Jugar</button></div></div>
+<div id="bar"></div>
+<div id="viewctl"><button id="zin" aria-label="Acercar">＋</button><button id="zout" aria-label="Alejar">−</button><button id="rot" aria-label="Girar cámara">↻</button></div>
+<div id="help">Construye muelles, cobra monedas 🪙 y apaga fuegos 🔥 antes de que causen daños.</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-(()=>{const cv=document.querySelector('#c'),ctx=cv.getContext('2d');let W,H,D=1,zoom=1,px=0,py=0,cash=8000,visits=0,level=1,served=0,id=1,mode='',buildings=[],boats=[],drag=null,timer;
-const vessels=[['⛵','Velero',350,.72,'sail'],['🚤','Lancha',450,.6,'launch'],['🛥️','Yate pequeño',600,.8,'yacht'],['🛥️','Yate mediano',850,1,'yacht'],['🛥️','Yate de lujo',1200,1.2,'luxury'],['⛵','Catamarán',950,1,'cat'],['🎣','Pesquero',700,.95,'fish'],['🚢','Barco turístico',1000,1.15,'tour'],['🛳️','Crucero',3000,1.5,'cruise'],['🛥️','Superyate',5000,1.65,'luxury']];
-const builds=[['dock','🪵','Amarre',180],['pier','⚓','Muelle largo',350],['fuel','⛽','Gasolinera náutica',650],['workshop','🔧','Taller náutico',800],['restaurant','🍽️','Restaurante',950],['hotel','🏨','Hotel',1600],['shop','🛍️','Tienda náutica',550],['dive','🤿','Escuela de buceo',700],['tree','🌴','Palmeras y jardín',120]];
-function resize(){let r=cv.getBoundingClientRect();W=r.width;H=r.height;D=Math.min(devicePixelRatio||1,2);cv.width=W*D;cv.height=H*D;ctx.setTransform(D,0,0,D,0,0)}addEventListener('resize',resize);resize();
-function iso(x,y,z=0){return{x:W*.52+(x-y)*34*zoom+px,y:H*.47+(x+y)*17*zoom+py-z}}
-function poly(p,fill,stroke){ctx.beginPath();ctx.moveTo(p[0].x,p[0].y);p.slice(1).forEach(q=>ctx.lineTo(q.x,q.y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}}
-function line(a,b,col,w=1){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=col;ctx.lineWidth=w;ctx.stroke()}
-function rect(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(x,y,w,h)}
-function sea(){let g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#35b8c3');g.addColorStop(.5,'#087c96');g.addColorStop(1,'#06435f');rect(0,0,W,H,g);for(let i=0;i<80;i++){let x=(i*91+19)%W,y=(i*53+12)%H;ctx.strokeStyle=i%3?'#b1e8df55':'#d0f4e966';ctx.beginPath();ctx.ellipse(x,y,4+i%6*2,1.3,0,0,Math.PI*2);ctx.stroke()}}
-function land(){poly([{x:0,y:0},{x:W,y:0},{x:W,y:H*.13},{x:W*.77,y:H*.17},{x:W*.6,y:H*.12},{x:W*.43,y:H*.19},{x:W*.19,y:H*.15},{x:0,y:H*.2}],'#63b970');poly([{x:0,y:0},{x:W,y:0},{x:W,y:24},{x:W*.7,y:32},{x:W*.45,y:18},{x:W*.2,y:36},{x:0,y:28}],'#a4d77e');for(let i=0;i<17;i++){let x=(i*77+20)%W,y=25+(i*17)%(H*.13);ctx.fillStyle='#755336';rect(x-2,y,4,10);ctx.fillStyle='#188258';ctx.beginPath();ctx.arc(x,y-4,8,0,7);ctx.fill();ctx.fillStyle='#44aa69';ctx.beginPath();ctx.arc(x-3,y-7,5,0,7);ctx.fill()}}
-function drawDock(b){let a=iso(b.x,b.y),q=iso(b.x+1,b.y),c=iso(b.x+1,b.y+.23),d=iso(b.x,b.y+.23);poly([{x:a.x,y:a.y-4},{x:q.x,y:q.y-4},{x:c.x,y:c.y-4},{x:d.x,y:d.y-4}],'#9b744b','#edc68a');for(let i=0;i<5;i++){let t=i/4;line({x:a.x+(q.x-a.x)*t,y:a.y+(q.y-a.y)*t-4},{x:d.x+(c.x-d.x)*t,y:d.y+(c.y-d.y)*t-4},'#d7b17a')}for(let p of [a,q]){ctx.fillStyle='#49372b';ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,7);ctx.fill()}}
-function drawBuilding(b){let p=iso(b.x,b.y),s=zoom,w=25*s,h=12*s;poly([{x:p.x-w,y:p.y-h},{x:p.x,y:p.y-h-15*s},{x:p.x+w,y:p.y-h},{x:p.x,y:p.y+h}],'#e7c999','#fff0cb');poly([{x:p.x-w,y:p.y-h},{x:p.x,y:p.y+h},{x:p.x,y:p.y+h+10*s},{x:p.x-w,y:p.y+3*s}],'#fff0d1','#b48d60');poly([{x:p.x,y:p.y+h},{x:p.x+w,y:p.y-h},{x:p.x+w,y:p.y+3*s},{x:p.x,y:p.y+h+10*s}],'#dfa96e','#b48d60');let roof=b.type==='hotel'?'#bc5148':b.type==='restaurant'?'#e5a24f':b.type==='workshop'?'#5e8390':'#4d9fc0';poly([{x:p.x-w-3*s,y:p.y-h},{x:p.x,y:p.y-h-19*s},{x:p.x+w+3*s,y:p.y-h},{x:p.x,y:p.y-h+3*s}],roof,'#f0d3a1');ctx.font=`${Math.max(10,13*s)}px system-ui`;ctx.textAlign='center';ctx.fillText(b.emoji,p.x,p.y+3*s)}
-function drawBoat(b){let p=iso(b.x,b.y,7),s=b.size*zoom;ctx.save();ctx.translate(p.x,p.y+Math.sin(Date.now()/700+b.id)*1.4);ctx.rotate(b.angle||0);ctx.scale(s,s);poly([{x:-24,y:-3},{x:22,y:-3},{x:14,y:8},{x:-16,y:8}],'#253f4c','#d7ece6');poly([{x:-20,y:-3},{x:17,y:-3},{x:11,y:3},{x:-14,y:3}],b.color||'#f7f2e5','#fff8e4');if(['sail','cat'].includes(b.kind)){line({x:-1,y:-2},{x:-1,y:-25},'#594c3e',1.5);poly([{x:-2,y:-23},{x:-2,y:-5},{x:-14,y:-6}],'#fff9e9','#a8c8c6');poly([{x:0,y:-20},{x:0,y:-7},{x:10,y:-7}],'#efd68b','#a8c8c6')}else{ctx.fillStyle=b.kind==='cruise'?'#e8e6d9':'#f7f0dc';ctx.fillRect(-13,-12,25,9);for(let i=0;i<4;i++){ctx.fillStyle='#67c4d0';ctx.fillRect(-10+i*6,-9,3,2)}if(b.kind==='luxury'){ctx.fillStyle='#fff8e6';ctx.fillRect(-3,-17,14,6)}}ctx.restore()}
-function render(){sea();land();for(let x=-1;x<9;x++)for(let y=-1;y<9;y++){let a=iso(x,y),b=iso(x+1,y),c=iso(x+1,y+1),d=iso(x,y+1);poly([a,b,c,d],(x+y)%2?'#1594a04c':'#0b87994c','#a5e5df55')}for(let b of buildings.filter(b=>['dock','pier'].includes(b.type)))drawDock(b);for(let b of buildings.filter(b=>!['dock','pier'].includes(b.type)))drawBuilding(b);boats.forEach(drawBoat);let l=iso(6.4,6.1);poly([{x:l.x-6,y:l.y},{x:l.x+6,y:l.y},{x:l.x+4,y:l.y-26},{x:l.x-4,y:l.y-26}],'#f6eee0','#a8c5c5');rect(l.x-5,l.y-29,10,5,'#d94d48');rect(l.x-3,l.y-35,6,6,'#fff1d2');ctx.beginPath();ctx.arc(l.x,l.y-35,2,0,7);ctx.fillStyle='#ffe99b';ctx.fill();requestAnimationFrame(render)}
-function fmt(n){return '€ '+Math.round(n).toLocaleString('es-ES')}function update(){document.querySelector('#cash').textContent=fmt(cash);document.querySelector('#visits').textContent=visits;document.querySelector('#berths').textContent=buildings.filter(b=>['dock','pier'].includes(b.type)).length;document.querySelector('#level').textContent=level;let d=Math.min(100,Math.min(served,3)/3*65+Math.min(buildings.filter(b=>b.type==='dock').length,3)/3*35);document.querySelector('#prog').style.width=d+'%';document.querySelector('#goal').textContent=`Construye ${Math.max(0,3-buildings.filter(b=>b.type==='dock').length)} amarres y recibe ${Math.max(0,3-served)} barcos.`}
-function toast(s){let t=document.querySelector('#toast');t.textContent=s;t.style.display='block';clearTimeout(timer);timer=setTimeout(()=>t.style.display='none',2200)}
-function panel(title,desc,items){document.querySelector('#title').textContent=title;document.querySelector('#desc').textContent=desc;let g=document.querySelector('#grid');g.innerHTML='';items.forEach(it=>{let b=document.createElement('button');b.className='opt';b.innerHTML=`<span>${it.e}</span><b>${it.n}</b><small>${it.i}</small>`;b.onclick=it.f;g.appendChild(b)});document.querySelector('#modal').classList.add('show')}
-document.querySelector('#close').onclick=()=>document.querySelector('#modal').classList.remove('show');
-function buildPanel(){panel('🏗️ Construir','Elige una instalación y después toca un espacio libre del puerto.',builds.map(t=>({e:t[1],n:t[2],i:fmt(t[3]),f:()=>{if(cash<t[3])return toast('No tienes suficiente dinero.');mode=t[0];document.querySelector('#modal').classList.remove('show');document.querySelector('#hint').textContent='Toca una zona libre del agua para colocar '+t[2]+'.';toast('Seleccionado: '+t[2])}})))}
-function fleetPanel(){panel('🛥️ Comprar barcos','Compra barcos de distintos tamaños y tipos para dar vida a tu marina.',vessels.map((v,i)=>({e:v[0],n:v[1],i:fmt(v[2])+(i>7?' · nivel '+(i===8?5:8):''),f:()=>{if(i>7&&level<(i===8?5:8))return toast('Sube de nivel para desbloquearlo.');if(cash<v[2])return toast('No tienes suficiente dinero.');cash-=v[2];boats.push({id:id++,x:1+Math.random()*4,y:2+Math.random()*4,size:v[3],kind:v[4],color:['#f7f2e5','#e7eee7','#e9d7b5','#f8f6ef'][Math.floor(Math.random()*4)],angle:(Math.random()-.5)*.2});visits+=2;update();toast(v[1]+' añadido a tu flota.');document.querySelector('#modal').classList.remove('show')}})))}
-function servicesPanel(){let sv=[['⛽','Repostaje',40,130],['🔧','Reparación',60,190],['🛥️','Paseo turístico',0,150],['🎣','Pesca deportiva',0,120],['🤿','Buceo',0,180],['🛟','Equipo de rescate',70,-1]];panel('🧰 Servicios','Ofrece actividades para ganar dinero y mejorar tu reputación.',sv.map(v=>({e:v[0],n:v[1],i:v[2]?'Coste '+fmt(v[2])+' · ingreso '+fmt(v[3]):'Ingreso '+fmt(v[3]),f:()=>{if(cash<v[2])return toast('No tienes suficiente dinero.');cash-=v[2];if(v[3]>0)cash+=v[3];else level=Math.min(20,level+1);visits+=3;update();toast(v[1]+' completado.');}})))}
-document.querySelector('#build').onclick=buildPanel;document.querySelector('#construct').onclick=buildPanel;document.querySelector('#fleet').onclick=fleetPanel;document.querySelector('#services').onclick=servicesPanel;document.querySelector('#staff').onclick=()=>panel('👷 Personal','Contrata trabajadores para que la marina funcione mejor.',[{e:'🧑‍🔧',n:'Mecánico',i:'500 € · sube nivel',f:()=>{if(cash<500)return toast('Necesitas 500 €.');cash-=500;level++;update();toast('Mecánico contratado.')}},{e:'🧑‍✈️',n:'Marinero',i:'350 € · + visitas',f:()=>{if(cash<350)return toast('Necesitas 350 €.');cash-=350;visits+=4;update();toast('Marinero contratado.')}}]);document.querySelector('#missions').onclick=()=>panel('📋 Misiones','Completa objetivos y desbloquea barcos de mayor tamaño.',[{e:'🚤',n:'Recibir barcos',i:`Progreso ${Math.min(served,3)}/3`,f:()=>toast(served>=3?'¡Objetivo completado!':'Construye amarres y espera barcos.')},{e:'🪵',n:'Construir amarres',i:`Progreso ${Math.min(buildings.filter(b=>b.type==='dock').length,3)}/3`,f:()=>toast('Construye tres amarres para completar el objetivo.')}]);
-document.querySelector('#plus').onclick=()=>zoom=Math.min(1.7,zoom+.12);document.querySelector('#minus').onclick=()=>zoom=Math.max(.65,zoom-.12);document.querySelector('#save').onclick=()=>{localStorage.setItem('marinaRealista',JSON.stringify({cash,visits,level,served,buildings,boats,id,zoom}));toast('Partida guardada en este dispositivo.')};
-function tileAt(x,y){let best=null,dist=1e9;for(let a=-1;a<9;a++)for(let b=-1;b<9;b++){let p=iso(a+.5,b+.5),d=Math.abs(x-p.x)/(34*zoom)+Math.abs(y-p.y)/(17*zoom);if(d<dist){dist=d;best={x:a,y:b}}}return dist<2?best:null}
-cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,px,py,moved:false};cv.setPointerCapture(e.pointerId)});cv.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>8)drag.moved=true;if(drag.moved){px=drag.px+dx;py=drag.py+dy}});cv.addEventListener('pointerup',e=>{if(!drag)return;let d=drag;drag=null;if(d.moved)return;let r=cv.getBoundingClientRect(),t=tileAt(e.clientX-r.left,e.clientY-r.top);if(!t)return;let existing=buildings.find(b=>b.x===t.x&&b.y===t.y);if(existing){cash+=20;update();toast('Instalación atendida: +20 €.');return}let b=builds.find(x=>x[0]===mode)||builds[0];if(cash<b[3])return toast('No tienes suficiente dinero.');cash-=b[3];buildings.push({id:id++,type:b[0],emoji:b[1],x:t.x,y:t.y});mode='';update();toast(b[2]+' construido.')});
-setInterval(()=>{let dock=buildings.find(b=>['dock','pier'].includes(b.type)&&!b.busy);if(!dock)return;dock.busy=true;let v=vessels[Math.floor(Math.random()*7)];let b={id:id++,x:dock.x+.35,y:dock.y+.1,size:v[3],kind:v[4],color:v[5]||'#f7f2e5',angle:0};boats.push(b);setTimeout(()=>{served++;visits+=4;cash+=100+Math.floor(Math.random()*150);level=Math.min(20,1+Math.floor(served/3));update();toast('¡Barco atracado! Ingresos por tasas portuarias.');setTimeout(()=>{boats=boats.filter(x=>x!==b);dock.busy=false},8000)},2000)},12000);
-document.querySelector('#boats').innerHTML=vessels.map((v,i)=>`<button class="boat ${i===0?'active':''}" data-i="${i}"><span>${v[0]}</span><b>${v[1]}</b><small>${fmt(v[2])}</small></button>`).join('');document.querySelectorAll('.boat').forEach(b=>b.onclick=()=>{document.querySelectorAll('.boat').forEach(x=>x.classList.toggle('active',x===b));let v=vessels[+b.dataset.i];document.querySelector('#hint').textContent=`${v[1]} seleccionado · usa Flota para comprarlo.`});
-try{let s=JSON.parse(localStorage.getItem('marinaRealista'));if(s){cash=s.cash??cash;visits=s.visits??0;level=s.level??1;served=s.served??0;buildings=s.buildings??[];boats=s.boats??[];id=s.id??1;zoom=s.zoom??1}}catch(e){}update();render();if(!buildings.length)setTimeout(()=>panel('¡Bienvenido a tu marina!','Construye amarres, compra barcos diferentes, ofrece servicios y amplía el puerto. Guarda tu partida en el dispositivo.',[{e:'🪵',n:'Construir amarre',i:'180 €',f:()=>{mode='dock';document.querySelector('#modal').classList.remove('show');toast('Toca el agua para colocar el amarre.')}},{e:'🛥️',n:'Ver barcos',i:'10 tipos diferentes',f:()=>{document.querySelector('#modal').classList.remove('show');fleetPanel()}}]),100);
-})();</script></body></html>
+(()=>{
+const $=i=>document.getElementById(i),T=THREE;
+const renderer=new T.WebGLRenderer({canvas:$('c'),antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+const scene=new T.Scene();scene.background=new T.Color(0x8fdcea);
+const cam=new T.PerspectiveCamera(45,1,.1,300);
+let H=22,HT=22,camZoom=1,camAngle=.35;
+function setCam(){const a=innerWidth/innerHeight,d=Math.max(15/a,H)/(2*Math.tan(22.5*Math.PI/180));
+ cam.position.set(-3.4,d*Math.cos(.35),.3+d*Math.sin(.35));cam.lookAt(-3.4,0,.3)}
+function resize(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();setCam()}
+addEventListener('resize',resize);resize();
+ $('zin').onclick=()=>{camZoom=Math.min(1.7,camZoom+.12);setCam()};
+ $('zout').onclick=()=>{camZoom=Math.max(.65,camZoom-.12);setCam()};
+ $('rot').onclick=()=>{camAngle=camAngle>=.7?.25:camAngle+.15;setCam()};
+scene.add(new T.HemisphereLight(0xffffff,0x4aa3b5,.9));
+const sun=new T.DirectionalLight(0xffffff,.6);sun.position.set(6,10,4);scene.add(sun);
+const M=c=>new T.MeshStandardMaterial({color:c,flatShading:true,roughness:.9,metalness:0});
+const box=(w,h,d,c,x,y,z,p)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);(p||scene).add(m);return m};
+box(90,.2,90,0x2fa8c6,0,-.1,0);box(7,.04,40,0x63d3e3,-1,.01,0);box(7.2,.6,34,0xf1d9a0,-7.2,.3,0);box(.35,.1,34,0xffffff,-3.5,.04,0);
+
+// datos
+const COL=[-9.6,-7.2,-4.8,-2.4],zr=r=>(r-5.5)*2.4,PAL=[0xff6f59,0xffc83d,0x7b61ff,0x3ddc97,0xffffff];
+const TK=['dock','cafe','shop','hotel','dive'],EX=[150,300,500],HS=[22,27,32,37];
+const TY={dock:{n:'Muelle',c:30,e:'⚓'},cafe:{n:'Café',c:50,e:'🍔',s:8,col:0xff6f59,w:3},shop:{n:'Tienda',c:40,e:'🎁',s:10,col:0xffc83d,w:3},hotel:{n:'Hotel',c:120,e:'🏨',s:25,col:0x7b61ff,w:7},dive:{n:'Buceo',c:90,e:'🤿',s:20,col:0x3b9dff,w:4}};
+let money=100,lvl=1,earned=0,goal=100,ex=0,tool=null,playing=false,spawnT=1,fireT=45,time=0,uiT=0;
+let boats=[],guests=[],coins=[];const blds=[],cells=[],plates=[];
+const goalFor=l=>Math.round(100+120*(l-1)+30*(l-1)**2);
+
+// casillas
+for(let r=0;r<12;r++){cells[r]=[null,null,null,null];plates[r]=[];
+ for(let c=0;c<4;c++){const m=new T.Mesh(new T.BoxGeometry(2.1,.04,2.1),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.25}));
+  m.position.set(COL[c],c<3?.62:.06,zr(r));scene.add(m);plates[r][c]=m}}
+function refresh(){for(let r=0;r<12;r++)for(let c=0;c<4;c++){const m=plates[r][c];
+ m.visible=r>=3-ex&&r<=8+ex&&!cells[r][c];m.material.opacity=!tool?.25:((tool==='dock')===(c===3)?.7:.1)}}
+function build(t,r,c,free){const d=TY[t];if(!t||cells[r][c]||(t==='dock')!==(c===3)||(!free&&money<d.c))return;
+ if(!free)money-=d.c;
+ const g=new T.Group();g.position.set(COL[c],c<3?.6:0,zr(r));scene.add(g);
+ if(t==='dock'){box(2.2,.25,1.9,0xb98250,0,.12,0,g);[[.9,.8],[.9,-.8],[-.9,.8],[-.9,-.8]].forEach(p=>box(.18,.6,.18,0x6b4a2b,p[0],.3,p[1],g))}
+ else{const h=t==='hotel'?2.2:1.1;box(1.8,h,1.8,0xfff4dc,0,h/2,0,g);
+  for(let f=0;f<(t==='hotel'?2:1);f++)[-.45,.45].forEach(z=>box(.06,.35,.4,0x2a4a63,.91,.55+f*1.0,z,g));box(.06,.55,.35,d.col,.91,.28,0,g);box(.5,.08,1.5,d.col,1.05,.95,0,g);
+  const rf=new T.Mesh(new T.ConeGeometry(1.5,.9,4),M(d.col));rf.rotation.y=Math.PI/4;rf.position.y=h+.45;g.add(rf)}
+ const k={t,g,r,c,fire:false};cells[r][c]=k;if(t!=='dock')blds.push(k);refresh()}
+
+// barcos y turistas
+function mkBoat(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[1,1.15,1.35][ty];
+ box(2.4*s,.5,s,c,0,.2,0,g);
+ const bow=new T.Mesh(new T.ConeGeometry(.5*s,.8*s,4),M(c));bow.rotation.z=Math.PI/2;bow.scale.set(.5,1,1);bow.position.set(-1.6*s,.2,0);g.add(bow);
+ box(.9*s,.55,.7*s,0xffffff,.3*s,.7,0,g);if(ty>1)box(.6,.4,.5,0xffc83d,-.6,.65,0,g);return g}
+function hullG(s,h){const sh=new T.Shape();sh.moveTo(1.2*s,.5*s);sh.lineTo(-.7*s,.5*s);sh.lineTo(-1.9*s,0);sh.lineTo(-.7*s,-.5*s);sh.lineTo(1.2*s,-.5*s);sh.closePath();
+ const g=new T.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);return g}
+function mkBoat2(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[.82,1.0,1.28,1.05,1.4][ty]||1,bx=(w,h,d,col,x,y,z)=>box(w,h,d,col,x,y,z,g),W=0x2a4a63;
+ const part=(geo,col,y)=>{const m=new T.Mesh(geo,M(col));m.position.y=y;g.add(m)};
+ part(hullG(s,.5),c,0);part(hullG(s*1.03,.07),0xffffff,.28);part(hullG(s*.9,.05),0xe8d5b0,.5);
+ if(ty===0){const m=new T.Mesh(new T.CylinderGeometry(.05,.06,2.6,6),M(0x8a6a44));m.position.set(-.2,1.85,0);g.add(m);
+  const sh=new T.Shape();sh.moveTo(0,0);sh.lineTo(0,2.3);sh.lineTo(1.5,.1);sh.closePath();const sg=new T.ExtrudeGeometry(sh,{depth:.04,bevelEnabled:false});sg.translate(0,0,-.02);
+  const sl=new T.Mesh(sg,M(0xffffff));sl.position.set(-.15,.7,0);g.add(sl);bx(.6,.25,.45,0xffffff,.7,.7,0)}
+ else if(ty===1){bx(1.1,.6,.8,0xffffff,.2,.85,0);bx(1.12,.16,.82,W,.2,.92,0);bx(1.25,.06,.95,c,.2,1.18,0);bx(.22,.5,.22,0xff6f59,.6,1.45,0)}
+ else{bx(2,.55,.9,0xffffff,.1,.82,0);bx(2.02,.15,.92,W,.1,.86,0);bx(1.2,.5,.7,0xffffff,.4,1.35,0);bx(1.22,.14,.72,W,.4,1.4,0);bx(1.35,.06,.85,c,.4,1.63,0);bx(.05,.5,.05,0x9aa7b3,.5,1.9,0);bx(.5,.05,.05,0x9aa7b3,.5,2.1,0)}
+ return g}
+function mkGuest(){const g=new T.Group();box(.3,.5,.3,PAL[Math.random()*5|0],0,.25,0,g);
+ const h=new T.Mesh(new T.SphereGeometry(.17,6,5),M(0xffd9b3));h.position.y=.65;g.add(h);return g}
+function spawn(){const f=[];for(let r=3-ex;r<=8+ex;r++){const k=cells[r][3];if(k&&!k.boat)f.push(k)}
+ if(!f.length)return;const k=f[Math.random()*f.length|0],roll=Math.random(),ty=roll<.28?0:roll<.52?1:roll<.72?2:roll<.88?3:4,g=mkBoat2(ty);
+ const b={g,k,state:'in',fee:[10,16,28,22,36][ty],n:[2,3,4,3,5][ty],stay:6+Math.random()*2,out:0,ph:Math.random()*6,tx:-.9};
+ k.boat=b;g.position.set(6,0,zr(k.r));scene.add(g);boats.push(b)}
+function arrive(b){coin(b.g,b.fee,'🪙',9);
+ for(let i=0;i<b.n&&blds.length;i++){const m=mkGuest();m.position.set(-2.4,.25,zr(b.k.r));scene.add(m);
+  guests.push({m,b,t:blds[Math.random()*blds.length|0],st:0,w:0,o:(Math.random()-.5)*.8});b.out++}}
+
+// monedas y fuegos
+function coin(g,v,e,t,fire,cell){const el=document.createElement('button');el.className='coin'+(fire?' fire':'');el.textContent=e+(v?' +'+v:'');
+ document.body.appendChild(el);const o={el,g,v,t,fire,cell};el.onpointerdown=ev=>{ev.stopPropagation();take(o,true)};coins.push(o)}
+function take(o,ok){const i=coins.indexOf(o);if(i<0)return;coins.splice(i,1);o.el.remove();
+ if(o.fire){o.cell.fire=false;if(ok)money+=5;else{money=Math.max(0,money-20);toast('El fuego causó daños: -20 🪙')}}
+ else if(ok){money+=o.v;earned+=o.v}}
+function toast(t){const e=$('ts');e.textContent=t;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3000)}
+
+function step(dt){if(!playing)return;
+ spawnT-=dt;if(spawnT<=0){spawn();spawnT=Math.max(2.5,6-lvl*.4)*(1-.1*ex)*(.8+Math.random()*.5)}
+ fireT-=dt;if(fireT<=0&&blds.length>1){const k=blds[Math.random()*blds.length|0];if(!k.fire){k.fire=true;coin(k.g,0,'🔥',10,true,k)}fireT=35+Math.random()*25}
+ for(const b of boats){const p=b.g.position,dx=b.tx-p.x,d=Math.abs(dx);
+  if(d>.05)p.x+=Math.sign(dx)*Math.min(d,(b.state==='out'?4:3)*dt);
+  else if(b.state==='in'){b.state='docked';arrive(b)}else if(b.state==='out')b.state='gone';
+  p.y=Math.sin(time*2+b.ph)*.05;
+  if(b.state==='docked'){b.stay-=dt;if(b.stay<=0&&b.out<=0){b.state='out';b.k.boat=null;b.tx=7;b.g.rotation.y=Math.PI}}}
+ boats=boats.filter(b=>{if(b.state==='gone'){scene.remove(b.g);return false}return true});
+ for(const q of guests){const p=q.m.position,z0=zr(q.b.k.r),t=q.t,D=TY[t.t];
+  const W=[[-3.9,z0],[COL[t.c]+q.o,zr(t.r)+q.o],0,[-3.9,z0],[-1.6,z0]];
+  if(q.st===2){q.w+=dt;if(q.w>=D.w){coin(t.g,D.s,D.e,9);q.st=3}}
+  else if(q.st<5){const w=W[q.st],dx=w[0]-p.x,dz=w[1]-p.z,d=Math.hypot(dx,dz);
+   if(d<.1)q.st++;else{p.x+=dx/d*2.2*dt;p.z+=dz/d*2.2*dt}}
+  p.y=p.x<-3.6?.6:.25;
+  if(q.st>=5){scene.remove(q.m);q.b.out--;q.done=1}}
+ guests=guests.filter(q=>!q.done);
+ for(const o of coins.slice()){o.t-=dt;if(o.t<=0)take(o,false)}
+ while(earned>=goal){earned-=goal;const bn=50*lvl;money+=bn;toast('¡Objetivo '+lvl+' cumplido! +'+bn+' 🪙');lvl++;goal=goalFor(lvl)}}
+
+// interfaz
+const btns=TK.map(k=>{const b=document.createElement('button');b.onclick=()=>{tool=tool===k?null:k;refresh();ui()};$('bar').appendChild(b);return b});
+const be=document.createElement('button');$('bar').appendChild(be);
+be.onclick=()=>{const c=EX[ex];if(ex<3&&money>=c){money-=c;ex++;HT=HS[ex];refresh();toast('¡Puerto ampliado! Hay terreno y muelles nuevos');ui()}};
+function ui(){TK.forEach((k,i)=>{const b=btns[i],d=TY[k];b.innerHTML='<b>'+d.e+'</b>'+d.n+' '+d.c;b.disabled=money<d.c;b.classList.toggle('on',tool===k)});
+ be.innerHTML=ex>=3?'<b>🏝</b>Máx':'<b>🏝</b>Ampliar '+EX[ex];be.disabled=ex>=3||money<EX[ex]}
+function hud(){$('co').textContent='🪙 '+money;$('lv').textContent='Nivel '+lvl;
+ $('gf').style.width=Math.min(100,earned/goal*100)+'%';$('gt').textContent='Objetivo: '+earned+' / '+goal}
+const ray=new T.Raycaster(),mv=new T.Vector2(),pl=new T.Plane(new T.Vector3(0,1,0),-.3),pt=new T.Vector3(),v=new T.Vector3();
+$('c').addEventListener('pointerdown',e=>{if(!playing||!tool)return;
+ mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);
+ if(!ray.ray.intersectPlane(pl,pt))return;const x=pt.x,r=Math.round(pt.z/2.4+5.5);
+ const c=x>=-10.8&&x<-3.6?Math.floor((x+10.8)/2.4):(x>=-3.6&&x<-1.2?3:-1);
+ if(c<0||r<3-ex||r>8+ex)return;build(tool,r,c);ui()});
+$('ob').onclick=()=>{$('ov').hidden=true;playing=true;toast('Elige ⚓ Muelle y toca un hueco blanco para construir')};
+build('dock',5,3,true);build('dock',6,3,true);refresh();ui();
+let last=performance.now();
+function loop(n){requestAnimationFrame(loop);const dt=Math.min(.05,(n-last)/1000);last=n;time+=dt;step(dt);
+ if(Math.abs(HT-H)>.01){H+=(HT-H)*Math.min(1,dt*3);setCam()}
+ for(const o of coins){v.copy(o.g.position);v.y+=o.fire?3:2;v.project(cam);o.el.style.left=((v.x*.5+.5)*innerWidth)+'px';o.el.style.top=((-v.y*.5+.5)*innerHeight)+'px'}
+ uiT+=dt;if(uiT>.3){uiT=0;ui()}hud();renderer.render(scene,cam)}
+loop(last);
+})();
+</script></body></html>
