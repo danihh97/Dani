@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Puerto Faro</title>
+<title>Puerto Faro — Marina Tycoon</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#14304a;--panel:#fff;--accent:#ff6f59;--gold:#ffc83d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -32,19 +32,46 @@ html,body{margin:0;height:100%;overflow:hidden;background:#8fdcea;font-family:'F
 #op{margin:0 0 16px;line-height:1.4;font-weight:500}
 #ob{border:0;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:18px;padding:10px 26px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
 
-#viewctl{position:fixed;z-index:5;right:8px;top:calc(env(safe-area-inset-top,0px) + 82px);display:flex;flex-direction:column;gap:5px}
-#viewctl button{border:1px solid rgba(255,255,255,.65);border-radius:12px;background:var(--panel);color:var(--ink);font:inherit;font-weight:700;font-size:18px;min-width:42px;min-height:40px;box-shadow:0 3px 9px #16304a55}
-#help{position:fixed;z-index:3;bottom:calc(env(safe-area-inset-bottom,0px) + 65px);left:10px;right:10px;text-align:center;font-size:11px;font-weight:700;color:#14304a;text-shadow:0 1px 0 #ffffffaa;pointer-events:none}
-@media(max-height:650px){#viewctl{top:70px}#viewctl button{min-height:34px;min-width:36px}}
+/* PUERTO FARO — capa visual profesional */
+:root{--ink:#102d43;--panel:rgba(248,253,255,.94);--accent:#ff765f;--gold:#ffd166}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
+html,body{font-family:Manrope,ui-rounded,system-ui,sans-serif;background:#78cbdc}
+#c{filter:saturate(1.06) contrast(1.025)}
+#hud{left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 10px);gap:8px;align-items:center}
+.pill{background:linear-gradient(145deg,rgba(255,255,255,.97),rgba(232,248,252,.93));border:1px solid rgba(255,255,255,.9);border-radius:15px;padding:9px 13px;font-size:14px;letter-spacing:-.2px;box-shadow:0 7px 20px rgba(8,45,66,.2),inset 0 1px 0 #fff}
+#co{color:#0d5c65}
+#lv{color:#183e5a}
+#goal{top:calc(env(safe-area-inset-top,0px) + 59px);left:10px;right:10px;height:27px;border:1px solid rgba(255,255,255,.75);background:rgba(240,252,255,.78);box-shadow:0 4px 12px #174e6620;backdrop-filter:blur(10px);border-radius:10px}
+#gf{background:linear-gradient(90deg,#ff9f43,#ffd166 70%,#8de3c4);border-radius:10px}
+#gt{font-size:11px;line-height:25px;letter-spacing:.1px}
+#ts{top:calc(env(safe-area-inset-top,0px) + 96px);left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 28px);border-radius:13px;padding:10px 15px;background:rgba(13,48,68,.94);color:#f6fdff;border:1px solid rgba(255,255,255,.25);box-shadow:0 9px 28px #082e4055;font-size:13px;backdrop-filter:blur(14px)}
+#bar{left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 9px);gap:6px;padding:7px;background:rgba(8,42,62,.18);border:1px solid rgba(255,255,255,.35);border-radius:21px;backdrop-filter:blur(14px);filter:drop-shadow(0 8px 18px #07334b28)}
+#bar button{min-height:62px;border:1px solid rgba(21,67,91,.12);border-radius:14px;padding:8px 2px 7px;background:linear-gradient(160deg,#ffffff,#eaf6f8);color:#153950;font-size:10px;font-weight:800;line-height:1.2;box-shadow:0 4px 0 rgba(11,57,78,.12),inset 0 1px 0 #fff;transition:transform .12s,box-shadow .12s}
+#bar button b{font-size:21px;margin-bottom:3px;filter:drop-shadow(0 2px 0 #d9e9ed)}
+#bar button.on{background:linear-gradient(160deg,#ffe8a3,#ffc85b);color:#49381b;border-color:#fff1bd;box-shadow:0 4px 0 #d79a38,inset 0 1px 0 #fff6d8}
+#bar button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(11,57,78,.12)}
+#bar button:disabled{opacity:.48;filter:grayscale(.25)}
+#ov{inset:0;background:linear-gradient(180deg,rgba(4,35,53,.25),rgba(4,35,53,.64));backdrop-filter:blur(3px)}
+#pn{max-width:350px;width:100%;padding:25px 22px 23px;border-radius:25px;background:linear-gradient(155deg,rgba(255,255,255,.98),rgba(228,247,250,.96));border:1px solid rgba(255,255,255,.95);box-shadow:0 22px 65px rgba(0,29,48,.35),inset 0 1px 0 #fff;position:relative;overflow:hidden}
+#pn:before{content:"⚓";display:grid;place-items:center;margin:0 auto 13px;width:60px;height:60px;border-radius:19px;background:linear-gradient(145deg,#0f7286,#0c405c);color:#fff;font-size:29px;box-shadow:0 7px 15px #0b526333}
+#oh{font-size:29px;letter-spacing:-1.1px;margin:0 0 8px;color:#12344b}
+#op{font-size:13px;line-height:1.6;color:#4b6678;margin:0 0 19px}
+#ob{width:100%;border-radius:14px;background:linear-gradient(135deg,#ff8066,#f45e4b);color:#fff;font-size:16px;padding:13px 24px;box-shadow:0 5px 0 #c9473b,0 9px 18px #ee725044}
+#ob:active{transform:translateY(2px);box-shadow:0 3px 0 #c9473b}
+.coin{border:2px solid rgba(255,255,255,.85);background:linear-gradient(145deg,#ffe88a,#ffbd36);color:#62420c;font-size:13px;padding:7px 10px;box-shadow:0 4px 0 #c98d20,0 7px 16px #102f3c33;animation:coinFloat 1.6s ease-in-out infinite}
+.coin.fire{background:linear-gradient(145deg,#ff7866,#ed3e34);color:#fff;box-shadow:0 4px 0 #a62b28,0 7px 16px #102f3c33}
+@keyframes coinFloat{0%,100%{margin-top:0}50%{margin-top:-4px}}
+button{ -webkit-tap-highlight-color:transparent;cursor:pointer}
+#bar button:focus-visible,#ob:focus-visible,.coin:focus-visible{outline:3px solid #0f8496;outline-offset:2px}
+@media(max-width:390px){#hud{gap:5px}.pill{padding:8px 10px;font-size:12px}#bar{gap:4px;padding:5px}#bar button{font-size:9px;min-height:58px;border-radius:12px}#bar button b{font-size:19px}}
+@media(min-width:700px){#hud{left:18px;right:18px;max-width:720px}#goal{left:18px;right:auto;width:500px}#bar{left:50%;right:auto;transform:translateX(-50%);width:min(720px,calc(100% - 28px));gap:8px}#bar button{font-size:12px;min-height:70px}#bar button b{font-size:24px}}
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="hud"><span class="pill" id="co"></span><span class="pill" id="lv" style="margin-left:auto"></span></div>
 <div id="goal"><i id="gf"></i><span id="gt"></span></div>
 <div id="ts" hidden></div>
-<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Construye muelles para que lleguen barcos. Los turistas visitarán tus cafés, tiendas, hoteles y escuelas de buceo. Toca las monedas 🪙 para cobrar y apaga los 🔥 a tiempo. Cumple objetivos y amplía tu puerto.</p><button id="ob">Jugar</button></div></div>
+<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Diseña tu propia marina, recibe embarcaciones y crea un destino costero de primera. Construye muelles, abre negocios, cobra monedas y controla las emergencias para hacer crecer tu puerto.</p><button id="ob">Jugar</button></div></div>
 <div id="bar"></div>
-<div id="viewctl"><button id="zin" aria-label="Acercar">＋</button><button id="zout" aria-label="Alejar">−</button><button id="rot" aria-label="Girar cámara">↻</button></div>
-<div id="help">Construye muelles, cobra monedas 🪙 y apaga fuegos 🔥 antes de que causen daños.</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (()=>{
@@ -53,14 +80,11 @@ const renderer=new T.WebGLRenderer({canvas:$('c'),antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 const scene=new T.Scene();scene.background=new T.Color(0x8fdcea);
 const cam=new T.PerspectiveCamera(45,1,.1,300);
-let H=22,HT=22,camZoom=1,camAngle=.35;
+let H=22,HT=22;
 function setCam(){const a=innerWidth/innerHeight,d=Math.max(15/a,H)/(2*Math.tan(22.5*Math.PI/180));
  cam.position.set(-3.4,d*Math.cos(.35),.3+d*Math.sin(.35));cam.lookAt(-3.4,0,.3)}
 function resize(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();setCam()}
 addEventListener('resize',resize);resize();
- $('zin').onclick=()=>{camZoom=Math.min(1.7,camZoom+.12);setCam()};
- $('zout').onclick=()=>{camZoom=Math.max(.65,camZoom-.12);setCam()};
- $('rot').onclick=()=>{camAngle=camAngle>=.7?.25:camAngle+.15;setCam()};
 scene.add(new T.HemisphereLight(0xffffff,0x4aa3b5,.9));
 const sun=new T.DirectionalLight(0xffffff,.6);sun.position.set(6,10,4);scene.add(sun);
 const M=c=>new T.MeshStandardMaterial({color:c,flatShading:true,roughness:.9,metalness:0});
@@ -97,7 +121,7 @@ function mkBoat(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[1,1.15,1.3
  box(.9*s,.55,.7*s,0xffffff,.3*s,.7,0,g);if(ty>1)box(.6,.4,.5,0xffc83d,-.6,.65,0,g);return g}
 function hullG(s,h){const sh=new T.Shape();sh.moveTo(1.2*s,.5*s);sh.lineTo(-.7*s,.5*s);sh.lineTo(-1.9*s,0);sh.lineTo(-.7*s,-.5*s);sh.lineTo(1.2*s,-.5*s);sh.closePath();
  const g=new T.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);return g}
-function mkBoat2(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[.82,1.0,1.28,1.05,1.4][ty]||1,bx=(w,h,d,col,x,y,z)=>box(w,h,d,col,x,y,z,g),W=0x2a4a63;
+function mkBoat2(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[.9,1.1,1.4][ty],bx=(w,h,d,col,x,y,z)=>box(w,h,d,col,x,y,z,g),W=0x2a4a63;
  const part=(geo,col,y)=>{const m=new T.Mesh(geo,M(col));m.position.y=y;g.add(m)};
  part(hullG(s,.5),c,0);part(hullG(s*1.03,.07),0xffffff,.28);part(hullG(s*.9,.05),0xe8d5b0,.5);
  if(ty===0){const m=new T.Mesh(new T.CylinderGeometry(.05,.06,2.6,6),M(0x8a6a44));m.position.set(-.2,1.85,0);g.add(m);
@@ -109,8 +133,8 @@ function mkBoat2(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[.82,1.0,1
 function mkGuest(){const g=new T.Group();box(.3,.5,.3,PAL[Math.random()*5|0],0,.25,0,g);
  const h=new T.Mesh(new T.SphereGeometry(.17,6,5),M(0xffd9b3));h.position.y=.65;g.add(h);return g}
 function spawn(){const f=[];for(let r=3-ex;r<=8+ex;r++){const k=cells[r][3];if(k&&!k.boat)f.push(k)}
- if(!f.length)return;const k=f[Math.random()*f.length|0],roll=Math.random(),ty=roll<.28?0:roll<.52?1:roll<.72?2:roll<.88?3:4,g=mkBoat2(ty);
- const b={g,k,state:'in',fee:[10,16,28,22,36][ty],n:[2,3,4,3,5][ty],stay:6+Math.random()*2,out:0,ph:Math.random()*6,tx:-.9};
+ if(!f.length)return;const k=f[Math.random()*f.length|0],ty=Math.random()<.6?0:(Math.random()<.75||lvl<2?1:2),g=mkBoat2(ty);
+ const b={g,k,state:'in',fee:[10,16,28][ty],n:[2,3,4][ty],stay:6+Math.random()*2,out:0,ph:Math.random()*6,tx:-.9};
  k.boat=b;g.position.set(6,0,zr(k.r));scene.add(g);boats.push(b)}
 function arrive(b){coin(b.g,b.fee,'🪙',9);
  for(let i=0;i<b.n&&blds.length;i++){const m=mkGuest();m.position.set(-2.4,.25,zr(b.k.r));scene.add(m);
