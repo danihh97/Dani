@@ -31,16 +31,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:#8fdcea;font-family:'F
 #oh{margin:0 0 8px;font-size:28px}
 #op{margin:0 0 16px;line-height:1.4;font-weight:500}
 #ob{border:0;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:18px;padding:10px 26px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
-
-#viewctl{position:fixed;z-index:7;right:8px;top:calc(env(safe-area-inset-top,0px) + 88px);display:flex;flex-direction:column;gap:6px}
-#viewctl button{min-width:42px;min-height:42px;border:1px solid rgba(255,255,255,.8);border-radius:13px;background:rgba(255,255,255,.9);color:#14304a;font:700 20px system-ui;box-shadow:0 4px 12px #14304a33}
-@media(max-height:650px){#viewctl{top:68px}#viewctl button{min-height:34px;min-width:36px}}
 </style></head><body>
-<canvas id="c"></canvas><div id="viewctl"><button id="zin">＋</button><button id="zout">−</button><button id="rot">↻</button></div>
+<canvas id="c"></canvas>
 <div id="hud"><span class="pill" id="co"></span><span class="pill" id="lv" style="margin-left:auto"></span></div>
 <div id="goal"><i id="gf"></i><span id="gt"></span></div>
 <div id="ts" hidden></div>
-<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Tu marina recibe desde pequeñas lanchas hasta yates, pesqueros, catamaranes y cruceros de varias cubiertas. Cada barco tiene una silueta y un tamaño propios.</p><button id="ob">Jugar</button></div></div>
+<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Observa cómo llegan distintos barcos: veleros, lanchas, yates, pesqueros, catamaranes y cruceros. Construye muelles y servicios para hacer crecer tu puerto.</p><button id="ob">Jugar</button></div></div>
 <div id="bar"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -48,53 +44,37 @@ html,body{margin:0;height:100%;overflow:hidden;background:#8fdcea;font-family:'F
 const $=i=>document.getElementById(i),T=THREE;
 const renderer=new T.WebGLRenderer({canvas:$('c'),antialias:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.outputEncoding=T.sRGBEncoding;
-renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
-const scene=new T.Scene();scene.background=new T.Color(0x8fdcea);
+const scene=new T.Scene();scene.background=new T.Color(0x087f9f);
 const cam=new T.PerspectiveCamera(45,1,.1,300);
-let H=22,HT=22,camAngle=.67,camZoom=1;
-function setCam(){const a=innerWidth/innerHeight,d=Math.max(15/a,H)/(2*Math.tan(22.5*Math.PI/180))/camZoom;
- cam.position.set(-3.4,d*Math.cos(camAngle),.3+d*Math.sin(camAngle));cam.lookAt(-3.4,.15,.3)}
+let H=22,HT=22;
+function setCam(){const a=innerWidth/innerHeight,d=Math.max(15/a,H)/(2*Math.tan(22.5*Math.PI/180));
+ cam.position.set(-3.4,d*Math.cos(.35),.3+d*Math.sin(.35));cam.lookAt(-3.4,0,.3)}
 function resize(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();setCam()}
 addEventListener('resize',resize);resize();
-$('zin').onclick=()=>{camZoom=Math.min(1.45,camZoom+.12);setCam()};
-$('zout').onclick=()=>{camZoom=Math.max(.7,camZoom-.12);setCam()};
-$('rot').onclick=()=>{camAngle=camAngle>=.95?.48:camAngle+.16;setCam()};
-scene.add(new T.HemisphereLight(0xe8fbff,0x3d7180,1.15));
-const sun=new T.DirectionalLight(0xfff1d4,2.0);sun.position.set(-5,12,8);scene.add(sun);
-sun.castShadow=false;
-const fill=new T.DirectionalLight(0x80e3f1,.65);fill.position.set(7,6,-6);scene.add(fill);
-const M=c=>new T.MeshStandardMaterial({color:c,flatShading:false,roughness:.66,metalness:0.02});
+scene.add(new T.HemisphereLight(0xffffff,0x4aa3b5,.9));
+const sun=new T.DirectionalLight(0xffffff,.6);sun.position.set(6,10,4);scene.add(sun);
+const M=c=>new T.MeshStandardMaterial({color:c,flatShading:true,roughness:.9,metalness:0});
 const box=(w,h,d,c,x,y,z,p)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);(p||scene).add(m);return m};
-box(90,.2,90,0x1688a7,0,-.1,0);
-box(7,.04,40,0x2ec1d2,-1,.01,0);
-box(7.2,.6,34,0xdcc18b,-7.2,.3,0);
-box(.35,.1,34,0xf9f0d9,-3.5,.04,0);
+box(90,.2,90,0x2fa8c6,0,-.1,0);box(7,.04,40,0x63d3e3,-1,.01,0);box(7.2,.6,34,0xf1d9a0,-7.2,.3,0);box(.35,.1,34,0xffffff,-3.5,.04,0);
 
 // datos
 const COL=[-9.6,-7.2,-4.8,-2.4],zr=r=>(r-5.5)*2.4,PAL=[0xff6f59,0xffc83d,0x7b61ff,0x3ddc97,0xffffff];
 const TK=['dock','cafe','shop','hotel','dive'],EX=[150,300,500],HS=[22,27,32,37];
 const TY={dock:{n:'Muelle',c:30,e:'⚓'},cafe:{n:'Café',c:50,e:'🍔',s:8,col:0xff6f59,w:3},shop:{n:'Tienda',c:40,e:'🎁',s:10,col:0xffc83d,w:3},hotel:{n:'Hotel',c:120,e:'🏨',s:25,col:0x7b61ff,w:7},dive:{n:'Buceo',c:90,e:'🤿',s:20,col:0x3b9dff,w:4}};
-let money=100,lvl=1,earned=0,goal=100,ex=0,tool=null,playing=false,spawnT=1,fireT=45,time=0,uiT=0;
+let money=100,lvl=1,earned=0,goal=100,ex=0,tool=null,playing=false,spawnT=.4,fireT=45,time=0,uiT=0;
 let boats=[],guests=[],coins=[];const blds=[],cells=[],plates=[];
 const goalFor=l=>Math.round(100+120*(l-1)+30*(l-1)**2);
 
 // casillas
 for(let r=0;r<12;r++){cells[r]=[null,null,null,null];plates[r]=[];
- for(let c=0;c<4;c++){const m=new T.Mesh(new T.BoxGeometry(2.1,.04,2.1),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.16}));
+ for(let c=0;c<4;c++){const m=new T.Mesh(new T.BoxGeometry(2.1,.04,2.1),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.25}));
   m.position.set(COL[c],c<3?.62:.06,zr(r));scene.add(m);plates[r][c]=m}}
 function refresh(){for(let r=0;r<12;r++)for(let c=0;c<4;c++){const m=plates[r][c];
  m.visible=r>=3-ex&&r<=8+ex&&!cells[r][c];m.material.opacity=!tool?.25:((tool==='dock')===(c===3)?.7:.1)}}
 function build(t,r,c,free){const d=TY[t];if(!t||cells[r][c]||(t==='dock')!==(c===3)||(!free&&money<d.c))return;
  if(!free)money-=d.c;
  const g=new T.Group();g.position.set(COL[c],c<3?.6:0,zr(r));scene.add(g);
- if(t==='dock'){
-    box(2.2,.24,1.9,0x9c6840,0,.12,0,g);
-    for(let zz=-.78;zz<=.8;zz+=.26)box(2.12,.035,.22,zz%2?0xc18a54:0xb67a47,0,.255,zz,g);
-    box(2.28,.10,.12,0x69472f,0,.31,-.94,g);box(2.28,.10,.12,0x69472f,0,.31,.94,g);
-    [[.98,.82],[.98,-.82],[-.98,.82],[-.98,-.82]].forEach(p=>{box(.16,.48,.16,0x62452e,p[0],.34,p[1],g);box(.18,.08,.18,0x3d352c,p[0],.58,p[1],g)});
-    for(let i=-1;i<=1;i++)box(.10,.12,.16,0x303c44,i*.52,.34,.96,g);
-  }
+ if(t==='dock'){box(2.2,.25,1.9,0xb98250,0,.12,0,g);[[.9,.8],[.9,-.8],[-.9,.8],[-.9,-.8]].forEach(p=>box(.18,.6,.18,0x6b4a2b,p[0],.3,p[1],g))}
  else{const h=t==='hotel'?2.2:1.1;box(1.8,h,1.8,0xfff4dc,0,h/2,0,g);
   for(let f=0;f<(t==='hotel'?2:1);f++)[-.45,.45].forEach(z=>box(.06,.35,.4,0x2a4a63,.91,.55+f*1.0,z,g));box(.06,.55,.35,d.col,.91,.28,0,g);box(.5,.08,1.5,d.col,1.05,.95,0,g);
   const rf=new T.Mesh(new T.ConeGeometry(1.5,.9,4),M(d.col));rf.rotation.y=Math.PI/4;rf.position.y=h+.45;g.add(rf)}
@@ -108,80 +88,72 @@ function mkBoat(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[1,1.15,1.3
 function hullG(s,h){const sh=new T.Shape();sh.moveTo(1.2*s,.5*s);sh.lineTo(-.7*s,.5*s);sh.lineTo(-1.9*s,0);sh.lineTo(-.7*s,-.5*s);sh.lineTo(1.2*s,-.5*s);sh.closePath();
  const g=new T.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);return g}
 function mkBoat2(ty){
- const g=new T.Group(),paint=[0xf6f5ed,0xeaf1f2,0xf2d9b5,0xffffff,0xf5f1e5,0xd9e7e8][Math.random()*6|0],
- bx=(w,h,d,col,x,y,z)=>box(w,h,d,col,x,y,z,g);
- const mesh=(geo,col,x=0,y=0,z=0)=>{const m=new T.Mesh(geo,M(col));m.position.set(x,y,z);g.add(m);return m};
- const hull=(len,wide,col)=>{let sh=new T.Shape();sh.moveTo(len*.52,wide*.5);sh.lineTo(-len*.30,wide*.5);sh.lineTo(-len*.5,0);sh.lineTo(-len*.30,-wide*.5);sh.lineTo(len*.52,-wide*.5);sh.closePath();let geo=new T.ExtrudeGeometry(sh,{depth:.36,bevelEnabled:true,bevelSegments:1,steps:1,bevelSize:.025,bevelThickness:.025});geo.rotateX(-Math.PI/2);mesh(geo,col,0,.22,0)};
- const win=(x,y,z,w=.1)=>bx(w,.075,.035,0x1d5269,x,y,z);
- // Each boat gets its own hull geometry and superstructure; type 0 sailboat, 1 speedboat,
- // 2 luxury yacht, 3 fishing trawler, 4 cruise liner, 5 catamaran.
- if(ty===0){
-   hull(2.7,.88,0x263f53);bx(2.45,.08,.78,0xf4f0df,0,.43,0);
-   bx(.65,.34,.5,0xffffff,.48,.65,0);bx(.48,.08,.52,0x43b8d0,.48,.84,0);
-   mesh(new T.CylinderGeometry(.035,.05,3.1,8),0x805c3a,-.25,2.0,0);
-   let sh=new T.Shape();sh.moveTo(0,0);sh.lineTo(0,2.45);sh.lineTo(1.45,.12);sh.closePath();
-   let sail=new T.Mesh(new T.ShapeGeometry(sh),M(0xfffdf1));sail.position.set(-.22,.76,.06);g.add(sail);
-   let sh2=new T.Shape();sh2.moveTo(0,0);sh2.lineTo(0,1.55);sh2.lineTo(-.92,.12);sh2.closePath();
-   let sail2=new T.Mesh(new T.ShapeGeometry(sh2),M(0xe8f3f4));sail2.position.set(-.2,1.02,-.05);g.add(sail2);
- }else if(ty===1){
-   hull(2.1,.78,0xffffff);bx(1.1,.09,.7,0x203f57,-.05,.42,0);bx(.8,.28,.5,0x263f53,.22,.62,0);
-   bx(.58,.09,.45,0x53c3d8,.22,.79,.02);bx(.18,.35,.18,0xff745e,.58,.9,0);
-   bx(.34,.07,.65,0xe2e9e8,-.62,.42,0);
- }else if(ty===2){
-   hull(3.45,1.12,0x243e53);bx(3.22,.08,1.04,0xffffff,0,.43,0);
-   bx(2.25,.42,.82,0xf7f6ef,.28,.67,0);bx(2.22,.07,.85,0x1d425b,.28,.82,0);
-   bx(1.55,.38,.72,0xffffff,.56,.96,0);bx(1.57,.07,.74,0x24485e,.56,1.14,0);
-   bx(.85,.24,.55,0xfaf7ee,.75,1.28,0);bx(.82,.07,.57,0x52bdd2,.75,1.41,0);
-   for(let i=0;i<7;i++){win(-.68+i*.27,.91,.44,.12);win(-.68+i*.27,.91,-.44,.12)}
-   bx(.12,.28,.12,0xa7b7bb,.95,1.53,0);bx(.5,.05,.04,0xa7b7bb,.95,1.68,0);
- }else if(ty===3){
-   hull(3.05,1.12,0x28566a);bx(2.75,.10,1.02,0xd6c4a2,0,.43,0);
-   bx(1.0,.58,.76,0xf3eee1,.34,.78,0);bx(.96,.11,.78,0x344e60,.34,.93,0);
-   bx(.7,.22,.69,0x80d5e2,.34,1.10,0);
-   // commercial fishing gear, mast, net boom and orange buoys
-   bx(.09,.9,.09,0x515f65,-.73,.94,0);bx(1.45,.07,.07,0x56666b,-.08,1.36,0);
-   bx(.07,.63,.07,0x6f5a40,-.76,.92,0);bx(.62,.06,.06,0xff795c,-1.0,1.2,0);
-   for(let i=0;i<5;i++){mesh(new T.SphereGeometry(.095,8,6),0xff7950,-.85+i*.34,.53,.52)}
-   for(let i=0;i<3;i++)bx(.28,.12,.24,0x34596a,-.8+i*.34,.53,-.40);
-   for(let i=0;i<4;i++)win(-.05+i*.2,1.02,.39,.09);
- }else if(ty===4){
-   hull(5.2,1.65,0x263e52);bx(4.85,.10,1.52,0xffffff,0,.43,0);
-   bx(4.35,.38,1.35,0xf8f5eb,0,.66,0);bx(3.95,.07,1.38,0x55bdd0,0,.87,0);
-   bx(3.75,.34,1.20,0xffffff,.04,1.0,0);bx(3.35,.07,1.23,0x55bdd0,.04,1.20,0);
-   bx(2.95,.31,1.02,0xf8f5ec,.08,1.34,0);bx(2.55,.07,1.04,0x55bdd0,.08,1.52,0);
-   bx(2.15,.28,.84,0xffffff,.12,1.67,0);bx(1.75,.07,.86,0x55bdd0,.12,1.83,0);
-   bx(1.35,.24,.66,0xffffff,.16,1.97,0);
-   for(let deck=0;deck<4;deck++){let width=[4.1,3.7,3.1,2.3][deck],y=[.77,1.10,1.43,1.74][deck],n=[20,18,15,11][deck];for(let side of [-1,1])for(let i=0;i<n;i++)win(-width/2+(i+.5)*width/n,y,side*[.69,.61,.51,.42][deck],.075)}
-   bx(.30,.48,.30,0xd94f43,-.70,2.17,0);bx(.32,.1,.32,0x2b3f52,-.70,2.44,0);
-   bx(.30,.42,.30,0xf2b94b,-.12,2.14,0);bx(.32,.1,.32,0x2b3f52,-.12,2.38,0);
-   for(let i=0;i<7;i++){bx(.19,.10,.13,0xff8b43,-1.55+i*.48,.57,.79);bx(.19,.10,.13,0xff8b43,-1.55+i*.48,.57,-.79)}
- }else{
-   // Wide double-hull catamaran: two clearly separated hulls.
-   for(const z of [-.40,.40]){hull(2.85,.38,0xfaf8ef);bx(2.6,.07,.34,0x23475d,0,.40,z)}
-   bx(2.15,.15,1.15,0xe9d7b3,-.05,.61,0);bx(1.05,.38,.8,0xffffff,.35,.86,0);
-   bx(1.08,.08,.82,0x49bad0,.35,1.07,0);
-   mesh(new T.CylinderGeometry(.025,.035,2.2,7),0x80613e,-.58,1.55,0);
-   bx(.06,.05,.06,0xffffff,-.1,2.62,0);bx(.9,.04,.035,0xffffff,-.15,2.05,0);
+ const g=new T.Group(),c=([0xf7f4e8,0xe6eef1,0xf2d9b5,0xffffff,0xf5f1e5,0xd9e7e8])[Math.random()*6|0],
+ s=[.9,1.1,1.4,1.12,2.15,1.05][ty]||1,
+ bx=(w,h,d,col,x,y,z)=>box(w,h,d,col,x,y,z,g),W=0x2a4a63;
+ const part=(geo,col,y)=>{const m=new T.Mesh(geo,M(col));m.position.y=y;g.add(m);return m};
+ const windowRow=(count,width,y,z,col=0x42b9d2)=>{for(let i=0;i<count;i++){const x=-width/2+(i+.5)*width/count;bx(.09,.07,.025,col,x,y,z)}};
+ // Main hull, white upper rim and warm teak deck
+ part(hullG(s,.5),ty===3?0x2f6577:(ty===4?0xffffff:c),0);
+ part(hullG(s*1.035,.07),0xffffff,.28);
+ part(hullG(s*.91,.045,0xe8d5b0),0xe8d5b0,.5);
+ if(ty===0){ // modern sailboat
+  const mast=new T.Mesh(new T.CylinderGeometry(.035,.05,2.9,8),M(0x8a6a44));mast.position.set(-.2,1.85,0);g.add(mast);
+  const sh=new T.Shape();sh.moveTo(0,0);sh.lineTo(0,2.3);sh.lineTo(1.5,.1);sh.closePath();
+  const sg=new T.ExtrudeGeometry(sh,{depth:.045,bevelEnabled:true,bevelSize:.015,bevelThickness:.015,bevelSegments:1});sg.translate(0,0,-.02);
+  const sl=new T.Mesh(sg,M(0xffffff));sl.position.set(-.15,.7,0);g.add(sl);
+  bx(.62,.25,.48,0xffffff,.7,.7,0);bx(.42,.07,.38,0x45a6bf,.7,.86,.01);
+ }else if(ty===1){ // sleek speedboat
+  bx(1.1,.52,.8,0xffffff,.2,.85,0);bx(1.12,.14,.82,W,.2,.92,0);bx(1.25,.06,.95,c,.2,1.18,0);
+  bx(.65,.08,.52,0x5ec1d5,.2,1.25,.03);bx(.22,.5,.22,0xff765f,.6,1.45,0);
+  bx(.25,.08,.65,0xd7e5eb,-.65,.62,.02);
+ }else if(ty===2){ // luxury yacht with two decks and dark panoramic windows
+  bx(1.95,.52,.9,0xffffff,.1,.82,0);bx(1.98,.13,.92,W,.1,.86,0);bx(1.2,.47,.7,0xffffff,.4,1.32,0);
+  bx(1.22,.12,.72,W,.4,1.38,0);bx(1.35,.06,.85,c,.4,1.62,0);
+  bx(.72,.28,.55,0xffffff,.5,1.73,.02);bx(.75,.07,.56,0x4ab5d0,.5,1.82,.04);
+  for(let i=0;i<5;i++)bx(.11,.09,.025,0x48b6d0,-.35+i*.23,1.46,.36);
+  bx(.05,.5,.05,0x9aa7b3,.5,2.0,0);bx(.5,.05,.05,0x9aa7b3,.5,2.2,0);
+  bx(.22,.05,.22,0xfff2cf,-.72,.65,.12);
+ }else if(ty===3){ // fishing trawler: working deck, wheelhouse, mast and net boom
+  const hull=bx(1.9,.52,.95,0x2f6577,0,.75,0);
+  bx(1.55,.12,.83,0xe6d6b6,0,1.04,0);bx(.78,.56,.65,0xf5eee0,.3,1.35,0);
+  bx(.8,.12,.68,0x3d596a,.3,1.42,0);bx(.54,.18,.52,0x8fd4df,.3,1.66,.01);
+  bx(.08,.68,.08,0x5a6870,-.6,1.55,0);bx(1.25,.06,.06,0x596a70,-.08,1.88,0);
+  bx(.06,.7,.06,0x7c6950,-.7,1.5,0);bx(.5,.05,.05,0xff765f,-.9,1.82,0);
+  // orange buoys and stacked nets
+  for(let i=0;i<4;i++)bx(.12,.14,.13,0xff765f,-.62+i*.34,1.18,.45);
+  bx(.32,.12,.25,0x315b6d,-.7,1.17,-.34);bx(.32,.12,.25,0x315b6d,-.3,1.17,-.34);
+  windowRow(3,.5,1.56,.34,0x8adce5);
+ }else if(ty===4){ // passenger cruise ship, several decks, rows of windows and funnels
+  bx(2.8,.5,1.2,0xffffff,0,.75,0);bx(2.85,.12,1.22,0x243d56,0,.83,0);
+  bx(2.55,.38,1.04,0xf8f5ec,0,1.13,0);bx(2.18,.32,.92,0xffffff,.08,1.48,0);
+  bx(1.75,.28,.78,0xf8f5ec,.12,1.78,0);bx(1.28,.24,.65,0xffffff,.18,2.03,0);
+  // colored promenade bands and port/starboard windows
+  bx(2.57,.045,1.06,0x58bad1,0,1.27,.01);bx(2.2,.045,.94,0x58bad1,.08,1.61,.01);
+  for(let deck=0;deck<4;deck++){let width=[2.42,2.08,1.68,1.2][deck],y=[1.28,1.62,1.91,2.13][deck],n=[14,12,10,7][deck];for(let side of [-1,1])for(let i=0;i<n;i++){let x=-width/2+(i+.5)*width/n;bx(.075,.065,.025,0x42b9d2,x,y,side*([.51,.45,.38,.31][deck]))}}
+  bx(.24,.38,.25,0xd84e43,-.52,2.31,0);bx(.25,.1,.26,0x273f55,-.52,2.52,0);
+  bx(.24,.34,.24,0xf1b74a,-.1,2.28,0);bx(.25,.08,.26,0x273f55,-.1,2.48,0);
+  bx(.5,.08,.25,0xeeeeea,.55,2.18,0);bx(.08,.25,.08,0xeeeeea,.55,2.31,0);
+  // lifeboats along both sides
+  for(let i=0;i<6;i++){bx(.18,.08,.12,0xff8c45,-.9+i*.34,1.04,.61);bx(.18,.08,.12,0xff8c45,-.9+i*.34,1.04,-.61)}
+ }else{ // catamaran with two hulls and a wide deck
+  bx(1.7,.34,.34,0xffffff,-.12,.65,-.3);bx(1.7,.34,.34,0xffffff,-.12,.65,.3);
+  bx(1.4,.15,.8,0xe8d5b0,-.12,.86,0);bx(.72,.4,.55,0xffffff,.3,1.15,0);
+  bx(.72,.07,.57,0x4ab5d0,.3,1.25,.02);bx(.04,1.5,.04,0x8a6a44,-.5,1.5,0);
+  bx(.85,.05,.04,0xffffff,-.1,2.0,0);bx(.42,.05,.04,0xffffff,-.45,1.75,0);
  }
- bx(.12,.07,.08,0xffd166,ty===4?2.2:1.05,.48,.12);
- // Cruise is unmistakably larger; speedboat compact; catamaran wider than mono-hulls.
- const scales=[1,0.83,1.08,1.0,1.16,1.04];g.scale.setScalar(scales[ty]||1);
- return g;
+ // bow light and stern detail
+ bx(.1,.07,.08,0xffd166,s*.38,.65,.1);
+ return g
 }
-
 function mkGuest(){const g=new T.Group();box(.3,.5,.3,PAL[Math.random()*5|0],0,.25,0,g);
  const h=new T.Mesh(new T.SphereGeometry(.17,6,5),M(0xffd9b3));h.position.y=.65;g.add(h);return g}
+let boatTypeIndex=0;const boatSequence=[0,1,2,3,5,4];
 function spawn(){const f=[];for(let r=3-ex;r<=8+ex;r++){const k=cells[r][3];if(k&&!k.boat)f.push(k)}
  if(!f.length)return;const k=f[Math.random()*f.length|0];
  // Rotación de flota visible desde el primer nivel: no esconder cruceros por nivel.
- const roll=Math.random();let ty;
- if(roll<.20)ty=0;             // velero con mástil y vela alta
- else if(roll<.38)ty=1;        // lancha corta y rápida
- else if(roll<.60)ty=2;        // yate de lujo con varias cubiertas
- else if(roll<.78)ty=3;        // pesquero con grúa, redes y boyas
- else if(roll<.91)ty=5;        // catamarán de doble casco
- else ty=4;                    // crucero grande, poco frecuente
- const g=mkBoat2(ty);
+ const ty=boatSequence[boatTypeIndex++%boatSequence.length];
+  const g=mkBoat2(ty);
  const b={g,k,state:'in',fee:[10,16,28,24,75,20][ty],n:[2,3,4,3,8,3][ty],stay:6+Math.random()*2,out:0,ph:Math.random()*6,tx:-.9};
  k.boat=b;g.position.set(6,0,zr(k.r));scene.add(g);boats.push(b)}
 function arrive(b){coin(b.g,b.fee,'🪙',9);
@@ -197,7 +169,7 @@ function take(o,ok){const i=coins.indexOf(o);if(i<0)return;coins.splice(i,1);o.e
 function toast(t){const e=$('ts');e.textContent=t;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3000)}
 
 function step(dt){if(!playing)return;
- spawnT-=dt;if(spawnT<=0){spawn();spawnT=Math.max(2.5,6-lvl*.4)*(1-.1*ex)*(.8+Math.random()*.5)}
+ spawnT-=dt;if(spawnT<=0){spawn();spawnT=Math.max(2.2,3.8-lvl*.25)*(1-.1*ex)*(.8+Math.random()*.35)}
  fireT-=dt;if(fireT<=0&&blds.length>1){const k=blds[Math.random()*blds.length|0];if(!k.fire){k.fire=true;coin(k.g,0,'🔥',10,true,k)}fireT=35+Math.random()*25}
  for(const b of boats){const p=b.g.position,dx=b.tx-p.x,d=Math.abs(dx);
   if(d>.05)p.x+=Math.sign(dx)*Math.min(d,(b.state==='out'?4:3)*dt);
