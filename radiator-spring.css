@@ -1,0 +1,288 @@
+/* AhorraFuel · tema "Ruta 66 / pueblo del desierto"
+   Se carga DESPUÉS de styles.css y solo sobrescribe colores, tipografía y decoración.
+   No toca la mascota (.mas, .af-mascot-bubble) ni el logo (.lg). */
+
+:root {
+  --rs-asphalt: #2a2623;
+  --rs-asphalt-2: #3b3430;
+  --rs-sand: #f6e9cf;
+  --rs-sand-2: #ecd7ae;
+  --rs-cream: #fff8e8;
+  --rs-canyon: #c9431e;
+  --rs-canyon-dark: #7a2410;
+  --rs-amber: #f2a33a;
+  --rs-line: #f2b632;
+  --rs-neon: #5ff0dc;
+  --rs-good: #1f7a3f;
+  --rs-mid: #b36a00;
+  --rs-bad: #b3261e;
+  --rs-display: "Arial Black", "Helvetica Neue", Impact, system-ui, sans-serif;
+}
+
+body {
+  background: var(--rs-sand);
+  color: var(--rs-asphalt);
+}
+
+h1, h2, h3,
+.sh h2, .stats b, .pvh b {
+  font-family: var(--rs-display);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Cabecera: asfalto con línea central ---------- */
+header {
+  background: var(--rs-asphalt) !important;
+  border-bottom: 4px dashed var(--rs-line) !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+header .wm { color: var(--rs-sand) !important; font-family: var(--rs-display); font-weight: 900; }
+header .wm span { color: var(--rs-amber) !important; }
+header nav.af-menu { background: var(--rs-asphalt); }
+header .af-menu a { color: var(--rs-sand) !important; }
+header .af-menu a:hover { color: var(--rs-amber) !important; }
+.af-menu-button span { background: var(--rs-sand) !important; }
+
+/* ---------- Botones: pulsador de surtidor ---------- */
+.btn.p, .btn.w {
+  background: var(--rs-canyon) !important;
+  color: #fff !important;
+  border: 2px solid var(--rs-asphalt) !important;
+  box-shadow: 0 4px 0 var(--rs-canyon-dark) !important;
+  font-weight: 800;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn.p:hover, .btn.w:hover { background: #d94f26 !important; }
+.btn.p:active, .btn.w:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--rs-canyon-dark) !important; }
+.btn.w { background: var(--rs-amber) !important; color: var(--rs-asphalt) !important; box-shadow: 0 4px 0 #a86a12 !important; }
+.btn.w:hover { background: #f7b24f !important; }
+.btn.s {
+  background: var(--rs-cream) !important;
+  color: var(--rs-asphalt) !important;
+  border: 2px solid var(--rs-asphalt) !important;
+  box-shadow: 0 4px 0 var(--rs-asphalt-2) !important;
+  font-weight: 800;
+}
+.btn.s:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--rs-asphalt-2) !important; }
+
+/* ---------- Portada: atardecer en el desierto ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: clamp(120px, 20vw, 190px);
+  background:
+    radial-gradient(1.2px 1.2px at 12% 14%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 27% 8%, #ffe9b8 50%, transparent 52%),
+    radial-gradient(1.4px 1.4px at 41% 20%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 58% 10%, #ffe9b8 50%, transparent 52%),
+    radial-gradient(1.2px 1.2px at 73% 17%, #fff 50%, transparent 52%),
+    radial-gradient(1px 1px at 88% 7%, #fff 50%, transparent 52%),
+    linear-gradient(180deg, #1f1530 0%, #3a1f40 45%, #8c3b3f 76%, #d9692f 92%, #f2a33a 100%) !important;
+  color: var(--rs-sand);
+}
+.hero > .wrap { position: relative; z-index: 1; }
+
+.hero .eye {
+  display: inline-block;
+  background: var(--rs-line);
+  color: var(--rs-asphalt);
+  border: 2px solid var(--rs-asphalt);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-weight: 800;
+}
+
+/* Rótulo de neón: único momento animado de la página */
+.hero h1 {
+  color: #ffe9b8;
+  text-shadow:
+    0 0 6px rgba(255, 179, 71, 0.9),
+    0 0 18px rgba(255, 122, 26, 0.7),
+    0 0 42px rgba(255, 122, 26, 0.45);
+  animation: rs-neon-on 1.4s ease-out 0.2s both;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--rs-neon);
+  text-shadow:
+    0 0 6px rgba(95, 240, 220, 0.9),
+    0 0 20px rgba(95, 240, 220, 0.6),
+    0 0 44px rgba(95, 240, 220, 0.35);
+}
+.hero .lead { color: #f3dfbd; }
+.hero .trust li { color: #f3dfbd; }
+.hero .trust svg { stroke: var(--rs-neon); }
+
+@keyframes rs-neon-on {
+  0%   { opacity: 0.15; }
+  8%   { opacity: 1; }
+  12%  { opacity: 0.25; }
+  22%  { opacity: 1; }
+  28%  { opacity: 0.5; }
+  36%, 100% { opacity: 1; }
+}
+
+/* Mesetas + carretera al pie de la portada */
+.rs-skyline {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: clamp(110px, 18vw, 170px);
+  pointer-events: none;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(90deg, var(--rs-line) 0 36px, transparent 36px 72px) center calc(100% - 13px) / 100% 4px no-repeat,
+    linear-gradient(var(--rs-asphalt), var(--rs-asphalt)) bottom / 100% 28px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 140' preserveAspectRatio='none'%3E%3Cpath fill='%23a8452f' d='M0 140V92h60l12-26h74l10 20h46l8-34h92l8 30h58V70h70l10 22h90l12-40h110l8 26h66l14-22h96l12 30h74l8-20h92l10 24h70V140z'/%3E%3Cpath fill='%237a2e1d' d='M0 140v-30h110l14-24h96l10 24h140l12-18h84l10 18h160l14-30h120l12 30h120l14-20h110l12 20h104v30z'/%3E%3C/svg%3E") bottom / 100% calc(100% - 20px) no-repeat;
+}
+
+/* ---------- Tarjetas ---------- */
+.card {
+  background: var(--rs-cream);
+  color: var(--rs-asphalt);
+  border: 2px solid var(--rs-asphalt);
+  border-radius: 10px;
+  box-shadow: 4px 4px 0 var(--rs-asphalt);
+}
+.card h3 { color: var(--rs-asphalt); }
+.card p { color: #4a413b; }
+.grid .card { border-top: 8px solid var(--rs-canyon); }
+.grid .card:nth-child(3n+2) { border-top-color: var(--rs-amber); }
+.grid .card:nth-child(3n+3) { border-top-color: var(--rs-neon); }
+
+.search-card, .card.lt {
+  background: var(--rs-cream);
+  border-radius: 14px;
+  box-shadow: 0 0 0 4px var(--rs-line), 0 0 0 6px var(--rs-asphalt), 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+.search-card label, .search-card .fld { color: var(--rs-asphalt); font-weight: 700; }
+.search-card select {
+  background: #fff;
+  color: var(--rs-asphalt);
+  border: 2px solid var(--rs-asphalt);
+  border-radius: 8px;
+}
+.fuels input:checked + span {
+  background: var(--rs-asphalt) !important;
+  color: var(--rs-line) !important;
+  border-color: var(--rs-asphalt) !important;
+}
+
+/* Icono: señal redonda de ruta */
+.ic {
+  background: var(--rs-line) !important;
+  color: var(--rs-asphalt) !important;
+  border: 3px solid var(--rs-asphalt);
+  border-radius: 50% !important;
+  font-family: var(--rs-display);
+  font-weight: 900;
+}
+.ic svg { stroke: var(--rs-asphalt); }
+
+/* ---------- Vista previa de precios: panel de surtidor ---------- */
+.pv {
+  background: var(--rs-asphalt) !important;
+  color: var(--rs-sand) !important;
+  border: 3px solid var(--rs-line) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 0 0 3px var(--rs-asphalt), 0 18px 40px rgba(0, 0, 0, 0.45) !important;
+}
+.pv small, .pvh span, .pvs span { color: #d9c7a3 !important; }
+.pvh b { color: var(--rs-line); }
+.pvr { background: var(--rs-asphalt-2) !important; border-color: transparent !important; }
+.pvr.best { outline: 2px solid var(--rs-neon); }
+.pvr i { background: var(--rs-line) !important; color: var(--rs-asphalt) !important; }
+.pvr strong { font-family: "Courier New", ui-monospace, monospace; font-weight: 700; letter-spacing: 0.03em; }
+.pv .g { color: #6df29a !important; }
+.pv .m { color: var(--rs-amber) !important; }
+.pv .b { color: #ff8a80 !important; }
+
+/* ---------- Cifras ---------- */
+.stats { background: var(--rs-asphalt) !important; border-top: 4px solid var(--rs-line); }
+.stats b { color: var(--rs-line) !important; }
+.stats span { color: var(--rs-sand) !important; }
+
+/* ---------- Secciones alternas ---------- */
+.alt { background: var(--rs-sand-2) !important; }
+.sh h2 { color: var(--rs-asphalt); }
+.sh p { color: #4a413b; }
+.sh .eye {
+  display: inline-block;
+  background: var(--rs-canyon);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-weight: 800;
+}
+
+/* ---------- Provincias y enlaces ---------- */
+.chips a {
+  background: var(--rs-cream);
+  color: var(--rs-asphalt);
+  border: 2px solid var(--rs-asphalt);
+  border-radius: 999px;
+  font-weight: 700;
+}
+.chips a:hover { background: var(--rs-line); }
+
+.seo-keyword {
+  background: var(--rs-cream);
+  color: var(--rs-asphalt);
+  border: 2px solid var(--rs-asphalt);
+  border-radius: 999px;
+  font-weight: 700;
+}
+.seo-keyword:hover { background: var(--rs-line); }
+.seo-content h2 { color: var(--rs-asphalt); }
+.seo-content a { color: var(--rs-canyon); }
+
+/* ---------- Preguntas frecuentes ---------- */
+.faq details {
+  background: var(--rs-cream);
+  border: 2px solid var(--rs-asphalt);
+  border-left: 8px solid var(--rs-canyon);
+  border-radius: 8px;
+}
+.faq summary { color: var(--rs-asphalt); font-weight: 800; }
+
+/* ---------- Tarjeta de instalación de la app ---------- */
+#afPwaInstallCard {
+  background: linear-gradient(180deg, #3a1f40 0%, #8c3b3f 100%) !important;
+  border: 3px solid var(--rs-line) !important;
+  border-radius: 16px;
+}
+.af-pwa-title { color: var(--rs-sand) !important; font-family: var(--rs-display); }
+.af-pwa-title span { color: var(--rs-neon) !important; }
+.af-pwa-subtitle { color: #f3dfbd !important; }
+
+/* ---------- Banda final y pie ---------- */
+.cta {
+  background: linear-gradient(180deg, #8c3b3f 0%, #d9692f 100%) !important;
+  border: 3px solid var(--rs-asphalt);
+  border-radius: 16px;
+  color: #fff;
+}
+.cta h2 { color: #fff; }
+.cta p { color: #ffe9cf; }
+
+footer {
+  background: var(--rs-asphalt) !important;
+  color: var(--rs-sand);
+  border-top: 4px dashed var(--rs-line);
+}
+footer a, footer h4, footer p { color: var(--rs-sand) !important; }
+footer a:hover { color: var(--rs-amber) !important; }
+footer .wm { font-family: var(--rs-display); }
+footer .wm span { color: var(--rs-amber) !important; }
+
+/* ---------- Accesibilidad ---------- */
+:focus-visible {
+  outline: 3px solid var(--rs-neon);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero h1 { animation: none; }
+  .btn.p, .btn.w { transition: none; }
+}

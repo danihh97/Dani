@@ -1,250 +1,319 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Puerto Faro — Marina Tycoon</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#14304a;--panel:#fff;--accent:#ff6f59;--gold:#ffc83d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f2f8fc;--panel:#1d3b57}}
-:root[data-theme="dark"]{--ink:#f2f8fc;--panel:#1d3b57}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-html,body{margin:0;height:100%;overflow:hidden;background:#8fdcea;font-family:'Fredoka',ui-rounded,system-ui,sans-serif;color:var(--ink);touch-action:manipulation;user-select:none;-webkit-user-select:none}
-#c{position:fixed;inset:0;width:100%;height:100%;display:block}
-#hud{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 8px);display:flex;gap:6px;pointer-events:none}
-.pill{background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(10,40,70,.28);border:1px solid rgba(255,255,255,.5)}
-#goal{position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 50px);height:22px;background:rgba(255,255,255,.6);border-radius:11px;overflow:hidden;pointer-events:none}
-#gf{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#ffb020,#ffd866);transition:width .3s}
-#gt{position:relative;display:block;text-align:center;font-weight:700;font-size:13px;line-height:22px;color:#14304a}
-#ts{position:fixed;z-index:6;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 80px);text-align:center;background:var(--panel);color:var(--ink);border-radius:14px;padding:8px 12px;font-weight:700;font-size:14px;box-shadow:0 2px 0 rgba(0,0,0,.25);pointer-events:none}
-#ts[hidden]{display:none}
-#bar{position:fixed;z-index:5;left:6px;right:6px;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
-#bar button{border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:7px 1px 8px;background:var(--panel);color:var(--ink);font:inherit;font-weight:500;font-size:11px;line-height:1.25;box-shadow:0 6px 16px rgba(10,40,70,.3)}
-#bar button b{display:block;font-size:20px;font-weight:400}
-#bar button.on{background:var(--gold);color:#14304a}
-#bar button:disabled{opacity:.5}
-#bar button:focus-visible,#ob:focus-visible,.coin:focus-visible{outline:3px solid #fff}
-.coin{position:fixed;z-index:3;transform:translate(-50%,-50%);border:0;border-radius:999px;background:var(--gold);color:#14304a;font:inherit;font-weight:700;font-size:15px;padding:6px 10px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
-.coin.fire{background:#ff4b3a;color:#fff}
-#ov{position:fixed;z-index:4;inset:0 0 84px 0;display:flex;align-items:center;justify-content:center;background:rgba(20,48,74,.5);padding:20px}
-#ov[hidden]{display:none}
-#pn{background:var(--panel);border-radius:22px;padding:22px;max-width:330px;text-align:center}
-#oh{margin:0 0 8px;font-size:28px}
-#op{margin:0 0 16px;line-height:1.4;font-weight:500}
-#ob{border:0;border-radius:14px;background:var(--accent);color:#fff;font:inherit;font-weight:700;font-size:18px;padding:10px 26px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+<html lang="es">
 
-/* Puerto Faro — rediseño de interfaz */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap');
-:root{--ink:#12364c;--panel:rgba(9,43,62,.94);--line:rgba(174,235,239,.4);--mint:#65dfc0;--gold:#ffd166;--coral:#ff806b;box-sizing:border-box}
-html,body{font-family:Manrope,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:#087f9f;color:#fff}
-#c{filter:saturate(1.08) contrast(1.03)}
-#hud{left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 10px);gap:7px;align-items:center}
-.pill{background:linear-gradient(145deg,rgba(9,49,70,.96),rgba(16,75,94,.94));color:#f4fcff;border:1px solid rgba(155,235,234,.5);border-radius:14px;padding:10px 13px;font-size:13px;font-weight:800;letter-spacing:-.2px;box-shadow:0 7px 22px #052c3c40,inset 0 1px 0 #ffffff20;backdrop-filter:blur(12px)}
-#co{min-width:92px}#lv{margin-left:auto!important;min-width:78px;text-align:center}
-#goal{left:10px;right:10px;top:calc(env(safe-area-inset-top,0px) + 62px);height:28px;border:1px solid #ffffff80;background:#e9fbf6d9;border-radius:999px;box-shadow:0 5px 16px #07374b22;backdrop-filter:blur(10px)}
-#gf{background:linear-gradient(90deg,#ff9f43,#ffd166 60%,#65dfc0);border-radius:999px}
-#gt{line-height:28px;font-size:11px;font-weight:800;color:#12364c;text-shadow:none}
-#ts{top:calc(env(safe-area-inset-top,0px) + 101px);left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);padding:10px 15px;border:1px solid #8be6dc80;border-radius:13px;background:rgba(7,43,61,.94);color:#f6ffff;font-size:12px;line-height:1.35;box-shadow:0 12px 30px #062d4055;backdrop-filter:blur(14px)}
-#bar{left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);gap:6px;padding:8px;background:linear-gradient(145deg,rgba(7,39,57,.94),rgba(10,58,76,.92));border:1px solid #8fe6df65;border-radius:21px;box-shadow:0 12px 35px #042b3d4d,inset 0 1px 0 #ffffff18;backdrop-filter:blur(18px)}
-#bar button{min-width:0;min-height:66px;padding:8px 2px;border:1px solid #b4e9e755;border-radius:14px;background:linear-gradient(160deg,#f4fcfc,#dceff0);color:#143c50;font-size:10px;font-weight:800;line-height:1.25;box-shadow:0 4px 0 #072b3b50,inset 0 1px 0 #fff;transition:transform .12s,filter .12s}
-#bar button b{display:block;font-size:22px;margin-bottom:3px;filter:drop-shadow(0 2px 0 #c7e1e3)}
-#bar button.on{background:linear-gradient(145deg,#ffe6a1,#ffc24b);color:#443317;border-color:#fff1c5;box-shadow:0 4px 0 #bc852d,inset 0 1px 0 #fff8dd}
-#bar button:disabled{opacity:.46;filter:saturate(.5)}
-#bar button:active{transform:translateY(2px)}
-#ov{inset:0;background:linear-gradient(145deg,rgba(4,30,46,.65),rgba(5,70,86,.42));backdrop-filter:blur(5px);padding:18px 18px calc(100px + env(safe-area-inset-bottom,0px))}
-#pn{position:relative;overflow:hidden;width:100%;max-width:370px;padding:27px 23px 24px;border-radius:27px;background:linear-gradient(150deg,rgba(248,254,255,.98),rgba(220,244,246,.97));border:1px solid #fff;box-shadow:0 25px 75px #031f31a8,inset 0 1px 0 white;color:#12364c}
-#pn:before{content:"⚓";display:grid;place-items:center;width:65px;height:65px;margin:0 auto 16px;border-radius:21px;background:linear-gradient(145deg,#126b7e,#082f4a);color:#ffd166;font-size:32px;box-shadow:0 8px 18px #0c526344}
-#oh{font-size:27px;letter-spacing:-1px;line-height:1.1;color:#10354b;margin:0 0 10px}
-#op{font-size:13px;line-height:1.65;color:#496778;font-weight:600;margin:0 0 21px}
-#ob{border:0;border-radius:14px;background:linear-gradient(135deg,#ff8c70,#ef5d50);color:#fff;font:inherit;font-weight:800;font-size:15px;padding:13px 28px;box-shadow:0 5px 0 #c9473b,0 10px 20px #f36c5a55}
-#ob:active{transform:translateY(2px);box-shadow:0 3px 0 #c9473b}
-.coin{border:1px solid #fff6c7;background:linear-gradient(145deg,#ffe88a,#ffbd36);color:#62420c;font-size:13px;padding:7px 11px;box-shadow:0 4px 0 #c98d20,0 7px 16px #102f3c33}
-.coin.fire{background:linear-gradient(145deg,#ff796a,#df342d);color:white;border-color:#ffd6cf}
-button{-webkit-tap-highlight-color:transparent;cursor:pointer}
-@media(max-width:390px){#hud{gap:5px}.pill{padding:9px 10px;font-size:12px}#bar{gap:4px;padding:6px}#bar button{min-height:59px;font-size:9px;border-radius:12px}#bar button b{font-size:20px}#gt{font-size:10px}}
-@media(min-width:700px){#hud{left:18px;right:18px;max-width:720px}#goal{left:18px;right:auto;width:500px}#bar{left:50%;right:auto;transform:translateX(-50%);width:min(720px,calc(100% - 30px));gap:8px}#bar button{min-height:74px;font-size:12px}#bar button b{font-size:25px}}
-</style></head><body>
-<canvas id="c"></canvas>
-<div id="hud"><span class="pill" id="co"></span><span class="pill" id="lv" style="margin-left:auto"></span></div>
-<div id="goal"><i id="gf"></i><span id="gt"></span></div>
-<div id="ts" hidden></div>
-<div id="ov"><div id="pn"><h1 id="oh">Puerto Faro</h1><p id="op">Diseña tu propia marina, recibe embarcaciones y crea un destino costero de primera. Construye muelles, abre negocios, cobra monedas y controla las emergencias para hacer crecer tu puerto.</p><button id="ob">Jugar</button></div></div>
-<div id="bar"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(()=>{
-const $=i=>document.getElementById(i),T=THREE;
-const renderer=new T.WebGLRenderer({canvas:$('c'),antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-const scene=new T.Scene();scene.background=new T.Color(0x8fdcea);
-const cam=new T.PerspectiveCamera(45,1,.1,300);
-let H=22,HT=22;
-function setCam(){const a=innerWidth/innerHeight,d=Math.max(15/a,H)/(2*Math.tan(22.5*Math.PI/180));
- cam.position.set(-3.4,d*Math.cos(.35),.3+d*Math.sin(.35));cam.lookAt(-3.4,0,.3)}
-function resize(){renderer.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();setCam()}
-addEventListener('resize',resize);resize();
-scene.add(new T.HemisphereLight(0xffffff,0x4aa3b5,.9));
-const sun=new T.DirectionalLight(0xffffff,.6);sun.position.set(6,10,4);scene.add(sun);
-const M=c=>new T.MeshStandardMaterial({color:c,flatShading:true,roughness:.9,metalness:0});
-const box=(w,h,d,c,x,y,z,p)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);(p||scene).add(m);return m};
-box(90,.2,90,0x2fa8c6,0,-.1,0);box(7,.04,40,0x63d3e3,-1,.01,0);box(7.2,.6,34,0xf1d9a0,-7.2,.3,0);box(.35,.1,34,0xffffff,-3.5,.04,0);
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-// datos
-const COL=[-9.6,-7.2,-4.8,-2.4],zr=r=>(r-5.5)*2.4,PAL=[0xff6f59,0xffc83d,0x7b61ff,0x3ddc97,0xffffff];
-const TK=['dock','cafe','shop','hotel','dive'],EX=[150,300,500],HS=[22,27,32,37];
-const TY={dock:{n:'Muelle',c:30,e:'⚓'},cafe:{n:'Café',c:50,e:'🍔',s:8,col:0xff6f59,w:3},shop:{n:'Tienda',c:40,e:'🎁',s:10,col:0xffc83d,w:3},hotel:{n:'Hotel',c:120,e:'🏨',s:25,col:0x7b61ff,w:7},dive:{n:'Buceo',c:90,e:'🤿',s:20,col:0x3b9dff,w:4}};
-let money=100,lvl=1,earned=0,goal=100,ex=0,tool=null,playing=false,spawnT=1,fireT=45,time=0,uiT=0;
-let boats=[],guests=[],coins=[];const blds=[],cells=[],plates=[];
-const goalFor=l=>Math.round(100+120*(l-1)+30*(l-1)**2);
+  <title>Gasolina y gasoil más baratos hoy en España | AhorraFuel</title>
+  <meta name="description" content="Compara el precio de la gasolina 95, 98 y el gasoil en más de 10.000 gasolineras de España. Datos oficiales actualizados cada día. Gratis y sin registro.">
+  <meta name="robots" content="index, follow">
+  <meta name="application-name" content="AhorraFuel">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#2a2623">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AhorraFuel">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="canonical" href="https://ahorrafuel.es/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192x192.png">
 
-// casillas
-for(let r=0;r<12;r++){cells[r]=[null,null,null,null];plates[r]=[];
- for(let c=0;c<4;c++){const m=new T.Mesh(new T.BoxGeometry(2.1,.04,2.1),new T.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.25}));
-  m.position.set(COL[c],c<3?.62:.06,zr(r));scene.add(m);plates[r][c]=m}}
-function refresh(){for(let r=0;r<12;r++)for(let c=0;c<4;c++){const m=plates[r][c];
- m.visible=r>=3-ex&&r<=8+ex&&!cells[r][c];m.material.opacity=!tool?.25:((tool==='dock')===(c===3)?.7:.1)}}
-function build(t,r,c,free){const d=TY[t];if(!t||cells[r][c]||(t==='dock')!==(c===3)||(!free&&money<d.c))return;
- if(!free)money-=d.c;
- const g=new T.Group();g.position.set(COL[c],c<3?.6:0,zr(r));scene.add(g);
- if(t==='dock'){box(2.2,.25,1.9,0xb98250,0,.12,0,g);[[.9,.8],[.9,-.8],[-.9,.8],[-.9,-.8]].forEach(p=>box(.18,.6,.18,0x6b4a2b,p[0],.3,p[1],g))}
- else{const h=t==='hotel'?2.2:1.1;box(1.8,h,1.8,0xfff4dc,0,h/2,0,g);
-  for(let f=0;f<(t==='hotel'?2:1);f++)[-.45,.45].forEach(z=>box(.06,.35,.4,0x2a4a63,.91,.55+f*1.0,z,g));box(.06,.55,.35,d.col,.91,.28,0,g);box(.5,.08,1.5,d.col,1.05,.95,0,g);
-  const rf=new T.Mesh(new T.ConeGeometry(1.5,.9,4),M(d.col));rf.rotation.y=Math.PI/4;rf.position.y=h+.45;g.add(rf)}
- const k={t,g,r,c,fire:false};cells[r][c]=k;if(t!=='dock')blds.push(k);refresh()}
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ahorrafuel.es/">
+  <meta property="og:title" content="Gasolina y gasoil más baratos hoy en España | AhorraFuel">
+  <meta property="og:description" content="Compara el precio de la gasolina 95, 98 y el gasoil en más de 10.000 gasolineras de España. Datos oficiales actualizados cada día. Gratis y sin registro.">
+  <meta property="og:image" content="https://ahorrafuel.es/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AhorraFuel: gasolineras más baratas en España">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gasolina y gasoil más baratos hoy en España | AhorraFuel">
+  <meta name="twitter:description" content="Compara el precio de la gasolina 95, 98 y el gasoil en más de 10.000 gasolineras de España. Datos oficiales actualizados cada día. Gratis y sin registro.">
+  <meta name="twitter:image" content="https://ahorrafuel.es/og-image.png">
+  <meta property="og:site_name" content="AhorraFuel">
 
-// barcos y turistas
-function mkBoat(ty){const g=new T.Group(),c=PAL[Math.random()*5|0],s=[1,1.15,1.35][ty];
- box(2.4*s,.5,s,c,0,.2,0,g);
- const bow=new T.Mesh(new T.ConeGeometry(.5*s,.8*s,4),M(c));bow.rotation.z=Math.PI/2;bow.scale.set(.5,1,1);bow.position.set(-1.6*s,.2,0);g.add(bow);
- box(.9*s,.55,.7*s,0xffffff,.3*s,.7,0,g);if(ty>1)box(.6,.4,.5,0xffc83d,-.6,.65,0,g);return g}
-function hullG(s,h){const sh=new T.Shape();sh.moveTo(1.2*s,.5*s);sh.lineTo(-.7*s,.5*s);sh.lineTo(-1.9*s,0);sh.lineTo(-.7*s,-.5*s);sh.lineTo(1.2*s,-.5*s);sh.closePath();
- const g=new T.ExtrudeGeometry(sh,{depth:h,bevelEnabled:false});g.rotateX(-Math.PI/2);return g}
-function mkBoat2(ty){
- const g=new T.Group(),c=([0xf7f4e8,0xe6eef1,0xf2d9b5,0xffffff,0xf5f1e5,0xd9e7e8])[Math.random()*6|0],
- s=[.9,1.1,1.4,1.12,2.15,1.05][ty]||1,
- bx=(w,h,d,col,x,y,z)=>box(w,h,d,col,x,y,z,g),W=0x2a4a63;
- const part=(geo,col,y)=>{const m=new T.Mesh(geo,M(col));m.position.y=y;g.add(m);return m};
- const windowRow=(count,width,y,z,col=0x42b9d2)=>{for(let i=0;i<count;i++){const x=-width/2+(i+.5)*width/count;bx(.09,.07,.025,col,x,y,z)}};
- // Main hull, white upper rim and warm teak deck
- part(hullG(s,.5),ty===3?0x2f6577:(ty===4?0xffffff:c),0);
- part(hullG(s*1.035,.07),0xffffff,.28);
- part(hullG(s*.91,.045,0xe8d5b0),0xe8d5b0,.5);
- if(ty===0){ // modern sailboat
-  const mast=new T.Mesh(new T.CylinderGeometry(.035,.05,2.9,8),M(0x8a6a44));mast.position.set(-.2,1.85,0);g.add(mast);
-  const sh=new T.Shape();sh.moveTo(0,0);sh.lineTo(0,2.3);sh.lineTo(1.5,.1);sh.closePath();
-  const sg=new T.ExtrudeGeometry(sh,{depth:.045,bevelEnabled:true,bevelSize:.015,bevelThickness:.015,bevelSegments:1});sg.translate(0,0,-.02);
-  const sl=new T.Mesh(sg,M(0xffffff));sl.position.set(-.15,.7,0);g.add(sl);
-  bx(.62,.25,.48,0xffffff,.7,.7,0);bx(.42,.07,.38,0x45a6bf,.7,.86,.01);
- }else if(ty===1){ // sleek speedboat
-  bx(1.1,.52,.8,0xffffff,.2,.85,0);bx(1.12,.14,.82,W,.2,.92,0);bx(1.25,.06,.95,c,.2,1.18,0);
-  bx(.65,.08,.52,0x5ec1d5,.2,1.25,.03);bx(.22,.5,.22,0xff765f,.6,1.45,0);
-  bx(.25,.08,.65,0xd7e5eb,-.65,.62,.02);
- }else if(ty===2){ // luxury yacht with two decks and dark panoramic windows
-  bx(1.95,.52,.9,0xffffff,.1,.82,0);bx(1.98,.13,.92,W,.1,.86,0);bx(1.2,.47,.7,0xffffff,.4,1.32,0);
-  bx(1.22,.12,.72,W,.4,1.38,0);bx(1.35,.06,.85,c,.4,1.62,0);
-  bx(.72,.28,.55,0xffffff,.5,1.73,.02);bx(.75,.07,.56,0x4ab5d0,.5,1.82,.04);
-  for(let i=0;i<5;i++)bx(.11,.09,.025,0x48b6d0,-.35+i*.23,1.46,.36);
-  bx(.05,.5,.05,0x9aa7b3,.5,2.0,0);bx(.5,.05,.05,0x9aa7b3,.5,2.2,0);
-  bx(.22,.05,.22,0xfff2cf,-.72,.65,.12);
- }else if(ty===3){ // fishing trawler: working deck, wheelhouse, mast and net boom
-  const hull=bx(1.9,.52,.95,0x2f6577,0,.75,0);
-  bx(1.55,.12,.83,0xe6d6b6,0,1.04,0);bx(.78,.56,.65,0xf5eee0,.3,1.35,0);
-  bx(.8,.12,.68,0x3d596a,.3,1.42,0);bx(.54,.18,.52,0x8fd4df,.3,1.66,.01);
-  bx(.08,.68,.08,0x5a6870,-.6,1.55,0);bx(1.25,.06,.06,0x596a70,-.08,1.88,0);
-  bx(.06,.7,.06,0x7c6950,-.7,1.5,0);bx(.5,.05,.05,0xff765f,-.9,1.82,0);
-  // orange buoys and stacked nets
-  for(let i=0;i<4;i++)bx(.12,.14,.13,0xff765f,-.62+i*.34,1.18,.45);
-  bx(.32,.12,.25,0x315b6d,-.7,1.17,-.34);bx(.32,.12,.25,0x315b6d,-.3,1.17,-.34);
-  windowRow(3,.5,1.56,.34,0x8adce5);
- }else if(ty===4){ // passenger cruise ship, several decks, rows of windows and funnels
-  bx(2.8,.5,1.2,0xffffff,0,.75,0);bx(2.85,.12,1.22,0x243d56,0,.83,0);
-  bx(2.55,.38,1.04,0xf8f5ec,0,1.13,0);bx(2.18,.32,.92,0xffffff,.08,1.48,0);
-  bx(1.75,.28,.78,0xf8f5ec,.12,1.78,0);bx(1.28,.24,.65,0xffffff,.18,2.03,0);
-  // colored promenade bands and port/starboard windows
-  bx(2.57,.045,1.06,0x58bad1,0,1.27,.01);bx(2.2,.045,.94,0x58bad1,.08,1.61,.01);
-  for(let deck=0;deck<4;deck++){let width=[2.42,2.08,1.68,1.2][deck],y=[1.28,1.62,1.91,2.13][deck],n=[14,12,10,7][deck];for(let side of [-1,1])for(let i=0;i<n;i++){let x=-width/2+(i+.5)*width/n;bx(.075,.065,.025,0x42b9d2,x,y,side*([.51,.45,.38,.31][deck]))}}
-  bx(.24,.38,.25,0xd84e43,-.52,2.31,0);bx(.25,.1,.26,0x273f55,-.52,2.52,0);
-  bx(.24,.34,.24,0xf1b74a,-.1,2.28,0);bx(.25,.08,.26,0x273f55,-.1,2.48,0);
-  bx(.5,.08,.25,0xeeeeea,.55,2.18,0);bx(.08,.25,.08,0xeeeeea,.55,2.31,0);
-  // lifeboats along both sides
-  for(let i=0;i<6;i++){bx(.18,.08,.12,0xff8c45,-.9+i*.34,1.04,.61);bx(.18,.08,.12,0xff8c45,-.9+i*.34,1.04,-.61)}
- }else{ // catamaran with two hulls and a wide deck
-  bx(1.7,.34,.34,0xffffff,-.12,.65,-.3);bx(1.7,.34,.34,0xffffff,-.12,.65,.3);
-  bx(1.4,.15,.8,0xe8d5b0,-.12,.86,0);bx(.72,.4,.55,0xffffff,.3,1.15,0);
-  bx(.72,.07,.57,0x4ab5d0,.3,1.25,.02);bx(.04,1.5,.04,0x8a6a44,-.5,1.5,0);
-  bx(.85,.05,.04,0xffffff,-.1,2.0,0);bx(.42,.05,.04,0xffffff,-.45,1.75,0);
- }
- // bow light and stern detail
- bx(.1,.07,.08,0xffd166,s*.38,.65,.1);
- return g
-}
-function mkGuest(){const g=new T.Group();box(.3,.5,.3,PAL[Math.random()*5|0],0,.25,0,g);
- const h=new T.Mesh(new T.SphereGeometry(.17,6,5),M(0xffd9b3));h.position.y=.65;g.add(h);return g}
-function spawn(){const f=[];for(let r=3-ex;r<=8+ex;r++){const k=cells[r][3];if(k&&!k.boat)f.push(k)}
- if(!f.length)return;const k=f[Math.random()*f.length|0];
- // Rotación de flota visible desde el primer nivel: no esconder cruceros por nivel.
- const roll=Math.random();let ty;
- if(roll<.20)ty=0;             // velero con mástil y vela alta
- else if(roll<.38)ty=1;        // lancha corta y rápida
- else if(roll<.60)ty=2;        // yate de lujo con varias cubiertas
- else if(roll<.78)ty=3;        // pesquero con grúa, redes y boyas
- else if(roll<.91)ty=5;        // catamarán de doble casco
- else ty=4;                    // crucero grande, poco frecuente
- const g=mkBoat2(ty);
- const b={g,k,state:'in',fee:[10,16,28,24,75,20][ty],n:[2,3,4,3,8,3][ty],stay:6+Math.random()*2,out:0,ph:Math.random()*6,tx:-.9};
- k.boat=b;g.position.set(6,0,zr(k.r));scene.add(g);boats.push(b)}
-function arrive(b){coin(b.g,b.fee,'🪙',9);
- for(let i=0;i<b.n&&blds.length;i++){const m=mkGuest();m.position.set(-2.4,.25,zr(b.k.r));scene.add(m);
-  guests.push({m,b,t:blds[Math.random()*blds.length|0],st:0,w:0,o:(Math.random()-.5)*.8});b.out++}}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://ahorrafuel.es/",
+    "name": "AhorraFuel",
+    "alternateName": "Ahorra Fuel",
+    "description": "Comparador de precios de gasolina 95, gasolina 98 y diésel (gasoil) en España para encontrar gasolineras más baratas.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "AhorraFuel",
+      "url": "https://ahorrafuel.es/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://ahorrafuel.es/IMG_6106.png"
+      }
+    }
+  }
+  </script>
 
-// monedas y fuegos
-function coin(g,v,e,t,fire,cell){const el=document.createElement('button');el.className='coin'+(fire?' fire':'');el.textContent=e+(v?' +'+v:'');
- document.body.appendChild(el);const o={el,g,v,t,fire,cell};el.onpointerdown=ev=>{ev.stopPropagation();take(o,true)};coins.push(o)}
-function take(o,ok){const i=coins.indexOf(o);if(i<0)return;coins.splice(i,1);o.el.remove();
- if(o.fire){o.cell.fire=false;if(ok)money+=5;else{money=Math.max(0,money-20);toast('El fuego causó daños: -20 🪙')}}
- else if(ok){money+=o.v;earned+=o.v}}
-function toast(t){const e=$('ts');e.textContent=t;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3000)}
+  <link rel="stylesheet" href="/styles.css?v=20261019">
+<link rel="stylesheet" href="/radiator-spring.css?v=20261020">
+<script>if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)document.documentElement.classList.add("is-app")</script>
+</head>
 
-function step(dt){if(!playing)return;
- spawnT-=dt;if(spawnT<=0){spawn();spawnT=Math.max(2.5,6-lvl*.4)*(1-.1*ex)*(.8+Math.random()*.5)}
- fireT-=dt;if(fireT<=0&&blds.length>1){const k=blds[Math.random()*blds.length|0];if(!k.fire){k.fire=true;coin(k.g,0,'🔥',10,true,k)}fireT=35+Math.random()*25}
- for(const b of boats){const p=b.g.position,dx=b.tx-p.x,d=Math.abs(dx);
-  if(d>.05)p.x+=Math.sign(dx)*Math.min(d,(b.state==='out'?4:3)*dt);
-  else if(b.state==='in'){b.state='docked';arrive(b)}else if(b.state==='out')b.state='gone';
-  p.y=Math.sin(time*2+b.ph)*.05;
-  if(b.state==='docked'){b.stay-=dt;if(b.stay<=0&&b.out<=0){b.state='out';b.k.boat=null;b.tx=7;b.g.rotation.y=Math.PI}}}
- boats=boats.filter(b=>{if(b.state==='gone'){scene.remove(b.g);return false}return true});
- for(const q of guests){const p=q.m.position,z0=zr(q.b.k.r),t=q.t,D=TY[t.t];
-  const W=[[-3.9,z0],[COL[t.c]+q.o,zr(t.r)+q.o],0,[-3.9,z0],[-1.6,z0]];
-  if(q.st===2){q.w+=dt;if(q.w>=D.w){coin(t.g,D.s,D.e,9);q.st=3}}
-  else if(q.st<5){const w=W[q.st],dx=w[0]-p.x,dz=w[1]-p.z,d=Math.hypot(dx,dz);
-   if(d<.1)q.st++;else{p.x+=dx/d*2.2*dt;p.z+=dz/d*2.2*dt}}
-  p.y=p.x<-3.6?.6:.25;
-  if(q.st>=5){scene.remove(q.m);q.b.out--;q.done=1}}
- guests=guests.filter(q=>!q.done);
- for(const o of coins.slice()){o.t-=dt;if(o.t<=0)take(o,false)}
- while(earned>=goal){earned-=goal;const bn=50*lvl;money+=bn;toast('¡Objetivo '+lvl+' cumplido! +'+bn+' 🪙');lvl++;goal=goalFor(lvl)}}
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+<symbol id="pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+<symbol id="bars" viewBox="0 0 24 24"><path d="M4 6h16M4 12h11M4 18h6"/></symbol>
+<symbol id="eur" viewBox="0 0 24 24"><path d="M17 6.5A6 6 0 0 0 7 9.5v5a6 6 0 0 0 10 3M5 11h8M5 14h8"/></symbol>
+<symbol id="ph" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+<symbol id="rt" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.5"/></symbol>
+<symbol id="bz" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+<symbol id="sr" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+</defs></svg>
+<div id="cookieOverlay" class="cookie-overlay" role="dialog" aria-modal="true" aria-labelledby="cookieTitle">
+  <div id="cookieBanner" class="cookie-box">
+    <h2 id="cookieTitle" class="cookie-title">🍪 Tu privacidad importa</h2>
+    <p class="cookie-text" data-nosnippet>Usamos almacenamiento necesario para recordar tu elección de cookies y, solo si lo aceptas, Google Analytics para obtener estadísticas de uso y mejorar AhorraFuel. Puedes aceptar, rechazar o configurar las cookies de análisis.</p>
+    <div class="cookie-links"><a href="/cookies.html">Política de cookies</a> · <a href="/privacidad.html">Privacidad</a></div>
+    <div class="cookie-actions">
+      <button id="cookieReject" class="cookie-reject" type="button">Rechazar</button>
+      <button id="cookieConfig" class="cookie-config" type="button">Configurar</button>
+      <button id="cookieAccept" class="cookie-accept" type="button">Aceptar</button>
+    </div>
+  </div>
+  <div id="cookieSettings" class="cookie-box cookie-settings">
+    <h2 class="cookie-title">Configurar cookies</h2>
+    <p class="cookie-text" data-nosnippet>Las cookies necesarias permiten guardar tu decisión. Las cookies de análisis son opcionales y solo se activan si las autorizas.</p>
+    <div class="cookie-setting">
+      <div><strong>Cookies necesarias</strong><small>Guardan tu preferencia de consentimiento y permiten funciones básicas.</small></div>
+      <span class="cookie-required">SIEMPRE ACTIVAS</span>
+    </div>
+    <div class="cookie-setting">
+      <div><strong>Cookies de análisis</strong><small>Google Analytics 4: estadísticas de usuarios, sesiones y uso de la web.</small></div>
+      <button id="analyticsToggle" class="cookie-toggle" type="button" aria-label="Activar cookies de análisis" aria-pressed="false"></button>
+    </div>
+    <div class="cookie-actions">
+      <button id="settingsReject" class="cookie-reject" type="button">Rechazar todas</button>
+      <button id="settingsSave" class="cookie-save" type="button">Guardar selección</button>
+    </div>
+  </div>
+</div>
+<button id="cookieManage" class="cookie-manage" type="button">🍪 Cookies</button>
+<header><div class="wrap"><a class="logo" href="/" aria-label="AhorraFuel inicio"><img class="lg" src="/IMG_6106.png" alt="AhorraFuel" width="48" height="48"><span class="wm">Ahorra<span>Fuel</span></span></a>
+<nav id="afMenu" class="af-menu" aria-label="Menú principal"><a href="/">Inicio</a><a href="#ventajas">Ventajas</a><a href="#como">Cómo funciona</a><a href="#provincias">Provincias</a><a href="#faq">Preguntas</a></nav>
+<a class="btn p sm" href="#buscar">Buscar gasolineras</a><button class="af-menu-button" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="toggleAfMenu()"><span></span><span></span><span></span></button></div></header>
+<main class="app"><section class="hero"><div class="wrap"><div><span class="eye">Encuentra · Compara · Ahorra</span><h1>Gasolineras <em>más baratas</em> en España</h1>
+<p class="lead">Compara gasolina 95, 98 y diésel (gasoil) por provincia o cerca de ti, y ahorra en cada repostaje.</p>
+<div class="af-mascot"><div class="mas" role="img" aria-label="Mascota de AhorraFuel con una manguera de gasolina"></div><div class="af-mascot-bubble" id="afMascotBubble">👋 ¡Hola! Soy la mascota de <strong>AhorraFuel.es</strong><br>⛽ ¿Buscamos la gasolina más barata?</div></div>
+<div class="card lt search-card" id="buscar"><fieldset class="fuels"><legend class="fld">Combustible</legend><label><input type="radio" checked name="f" value="95"><span>Gasolina 95</span></label><label><input type="radio" name="f" value="98"><span>Gasolina 98</span></label><label><input type="radio" name="f" value="diesel"><span>Diésel</span></label></fieldset><select id="fuel" class="sr" tabindex="-1" aria-hidden="true">
 
-// interfaz
-const btns=TK.map(k=>{const b=document.createElement('button');b.onclick=()=>{tool=tool===k?null:k;refresh();ui()};$('bar').appendChild(b);return b});
-const be=document.createElement('button');$('bar').appendChild(be);
-be.onclick=()=>{const c=EX[ex];if(ex<3&&money>=c){money-=c;ex++;HT=HS[ex];refresh();toast('¡Puerto ampliado! Hay terreno y muelles nuevos');ui()}};
-function ui(){TK.forEach((k,i)=>{const b=btns[i],d=TY[k];b.innerHTML='<b>'+d.e+'</b>'+d.n+' '+d.c;b.disabled=money<d.c;b.classList.toggle('on',tool===k)});
- be.innerHTML=ex>=3?'<b>🏝</b>Máx':'<b>🏝</b>Ampliar '+EX[ex];be.disabled=ex>=3||money<EX[ex]}
-function hud(){$('co').textContent='🪙 '+money;$('lv').textContent='NIVEL '+lvl;
- $('gf').style.width=Math.min(100,earned/goal*100)+'%';$('gt').textContent='Objetivo: '+earned+' / '+goal}
-const ray=new T.Raycaster(),mv=new T.Vector2(),pl=new T.Plane(new T.Vector3(0,1,0),-.3),pt=new T.Vector3(),v=new T.Vector3();
-$('c').addEventListener('pointerdown',e=>{if(!playing||!tool)return;
- mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);
- if(!ray.ray.intersectPlane(pl,pt))return;const x=pt.x,r=Math.round(pt.z/2.4+5.5);
- const c=x>=-10.8&&x<-3.6?Math.floor((x+10.8)/2.4):(x>=-3.6&&x<-1.2?3:-1);
- if(c<0||r<3-ex||r>8+ex)return;build(tool,r,c);ui()});
-$('ob').onclick=()=>{$('ov').hidden=true;playing=true;toast('Elige ⚓ Muelle y toca un hueco blanco para construir')};
-build('dock',5,3,true);build('dock',6,3,true);refresh();ui();
-let last=performance.now();
-function loop(n){requestAnimationFrame(loop);const dt=Math.min(.05,(n-last)/1000);last=n;time+=dt;step(dt);
- if(Math.abs(HT-H)>.01){H+=(HT-H)*Math.min(1,dt*3);setCam()}
- for(const o of coins){v.copy(o.g.position);v.y+=o.fire?3:2;v.project(cam);o.el.style.left=((v.x*.5+.5)*innerWidth)+'px';o.el.style.top=((-v.y*.5+.5)*innerHeight)+'px'}
- uiT+=dt;if(uiT>.3){uiT=0;ui()}hud();renderer.render(scene,cam)}
-loop(last);
-})();
-</script></body></html>
+        <option value="95">
+          Gasolina 95
+        </option>
+
+        <option value="98">
+          Gasolina 98
+        </option>
+
+        <option value="diesel">
+          Diésel
+        </option>
+
+      </select>
+<label class="fld" for="province">Provincia</label><select id="province" onchange="modoBusqueda='provincia'; ubicacionUsuario=null; document.getElementById('locationStatus').textContent='';">
+        <option value="" selected disabled>Selecciona tu provincia</option>
+
+        <option value="01">Álava</option>
+        <option value="02">Albacete</option>
+        <option value="03">Alicante</option>
+        <option value="04">Almería</option>
+        <option value="05">Ávila</option>
+        <option value="06">Badajoz</option>
+        <option value="07">Baleares</option>
+        <option value="08">Barcelona</option>
+        <option value="09">Burgos</option>
+        <option value="10">Cáceres</option>
+        <option value="11">Cádiz</option>
+        <option value="12">Castellón</option>
+        <option value="13">Ciudad Real</option>
+        <option value="14">Córdoba</option>
+        <option value="15">A Coruña</option>
+        <option value="16">Cuenca</option>
+        <option value="17">Girona</option>
+        <option value="18">Granada</option>
+        <option value="19">Guadalajara</option>
+        <option value="20">Guipúzcoa</option>
+        <option value="21">Huelva</option>
+        <option value="22">Huesca</option>
+        <option value="23">Jaén</option>
+        <option value="24">León</option>
+        <option value="25">Lleida</option>
+        <option value="26">La Rioja</option>
+        <option value="27">Lugo</option>
+        <option value="28">Madrid</option>
+        <option value="29">Málaga</option>
+        <option value="30">Murcia</option>
+        <option value="31">Navarra</option>
+        <option value="32">Ourense</option>
+        <option value="33">Asturias</option>
+        <option value="34">Palencia</option>
+        <option value="35">Las Palmas</option>
+        <option value="36">Pontevedra</option>
+        <option value="37">Salamanca</option>
+        <option value="38">Santa Cruz de Tenerife</option>
+        <option value="39">Cantabria</option>
+        <option value="40">Segovia</option>
+        <option value="41">Sevilla</option>
+        <option value="42">Soria</option>
+        <option value="43">Tarragona</option>
+        <option value="44">Teruel</option>
+        <option value="45">Toledo</option>
+        <option value="46">Valencia</option>
+        <option value="47">Valladolid</option>
+        <option value="48">Vizcaya</option>
+        <option value="49">Zamora</option>
+        <option value="50">Zaragoza</option>
+        <option value="51">Ceuta</option>
+        <option value="52">Melilla</option>
+
+      </select>
+<div class="acts"><button class="btn p f" id="searchButton" type="button" onclick="buscar()"><svg class="i"><use href="#sr"/></svg>Buscar gasolineras</button>
+<button class="btn s f" id="locationButton" type="button" onclick="usarUbicacion()"><svg class="i"><use href="#pin"/></svg>Cerca de mí</button></div>
+<div id="locationStatus" class="note" role="status"></div><p class="note">Los precios pueden variar en la gasolinera.</p></div>
+<ul class="trust"><li><svg class="i"><use href="#ck"/></svg>Gratis y sin registro</li><li><svg class="i"><use href="#ck"/></svg>52 provincias</li><li><svg class="i"><use href="#ck"/></svg>Ruta en tu mapa</li></ul></div>
+<div class="art" aria-hidden="true"><div class="pv" data-nosnippet><div class="pvh"><b>Gasolina 95</b><span>Vista previa</span></div>
+<div class="pvr best"><i>1</i><div><b>Estación Norte</b><small>Av. Mayor, 12</small></div><strong class="g">1,529</strong></div>
+<div class="pvr"><i>2</i><div><b>Estación Centro</b><small>C/ San Fernando, 8</small></div><strong class="m">1,559</strong></div>
+<div class="pvr"><i>3</i><div><b>Estación Sur</b><small>Ronda Sur, 40</small></div><strong class="b">1,589</strong></div>
+<div class="pvs"><span>Ahorro en 50 L</span><span class="g">3,00 €</span></div></div>
+</div>
+</div><div class="rs-skyline" aria-hidden="true"></div></section>
+<div class="wrap"><div id="afPwaInstallCard" aria-live="polite">
+  <div class="af-pwa-layout">
+    <div>
+      <h2 class="af-pwa-title">Instala <span>AhorraFuel</span>,<br>tu app de gasolineras gratis</h2>
+      <p class="af-pwa-subtitle">Las gasolineras más baratas, siempre a mano desde tu móvil.</p>
+      <div class="af-pwa-benefits">
+        <span><i class="af-pwa-icon-speed" aria-hidden="true"></i> Acceso rápido</span>
+        <span><i class="af-pwa-icon-pin" aria-hidden="true"></i> Siempre a mano</span>
+        <span><i class="af-pwa-icon-chart" aria-hidden="true"></i> Precios actualizados</span>
+      </div>
+    </div>
+    <div class="af-pwa-phone-area" aria-hidden="true">
+      <div class="af-pwa-glow"></div>
+      <div class="af-pwa-arrow">↘</div>
+      <div class="af-pwa-speech">Llévala<br>contigo</div>
+      <div class="af-pwa-phone">
+        <div class="af-pwa-screen">
+          <div class="af-mini-site-head">
+            <img src="/IMG_6106.png" alt="">
+            <div class="af-mini-brand">Ahorra<span>Fuel</span></div>
+            <div class="af-mini-menu"><span></span><span></span><span></span></div>
+          </div>
+          <div class="af-mini-hero">
+            <strong>Gasolineras más baratas<br>en España</strong>
+            <small>ENCUENTRA · COMPARA · AHORRA</small>
+          </div>
+          <div class="af-mini-search-card">
+            <label>📍 PROVINCIA</label>
+            <div class="af-mini-select">Selecciona tu provincia <b>⌄</b></div>
+            <label>⛽ COMBUSTIBLE</label>
+            <div class="af-mini-select">Gasolina 95 <b>⌄</b></div>
+            <div class="af-mini-search-btn">⌕&nbsp; Buscar gasolineras</div>
+            <div class="af-mini-near-btn">⌖&nbsp; Buscar cerca de mí</div>
+          </div>
+          <div class="af-mini-cities-title">Ciudades más buscadas</div>
+          <div class="af-mini-cities">
+            <span>Madrid</span><span>Barcelona</span>
+            <span>Zaragoza</span><span>Las Palmas</span>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="af-pwa-download">⇩</div>
+    </div>
+  </div>
+  <button id="afPwaInstallButton" type="button">⇩&nbsp; Instalar AhorraFuel</button>
+
+  <div id="afPwaInstallModal" class="af-pwa-modal" aria-hidden="true">
+    <div class="af-pwa-modal-backdrop"></div>
+    <div class="af-pwa-modal-box" role="dialog" aria-modal="true" aria-labelledby="afPwaModalTitle">
+      <button id="afPwaModalClose" class="af-pwa-modal-close" type="button" aria-label="Cerrar">×</button>
+      <div id="afPwaModalContent"></div>
+    </div>
+  </div>
+</div>
+
+
+  <div
+    id="results"
+    class="results"
+   aria-live="polite"></div></div>
+<section class="stats web-only"><div class="wrap"><div><b>52</b><span>provincias y ciudades autónomas</span></div><div><b>3</b><span>combustibles</span></div><div><b>30 km</b><span>de radio en «Cerca de mí»</span></div><div><b>0 €</b><span>gratis, sin cuenta</span></div></div></section><section class="wrap sec web-only" id="ventajas"><div class="sh"><span class="eye">Ventajas</span><h2>Todo para repostar más barato</h2><p>Menos vueltas, más ahorro: precios claros y rutas a un toque.</p></div>
+<div class="grid">
+<div class="card"><div class="ic"><svg class="i"><use href="#bars"/></svg></div><h3>Comparador por provincia</h3><p>Ordena las gasolineras por precio y detecta la más barata de un vistazo.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#pin"/></svg></div><h3>Cerca de mí</h3><p>Usa tu ubicación para ver las estaciones que tienes a mano.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#eur"/></svg></div><h3>Ahorro por depósito</h3><p>Calcula cuánto te ahorras entre la más barata y la más cara.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#ph"/></svg></div><h3>Instalable como app</h3><p>Añádela a tu pantalla de inicio y ábrela como una app más.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#rt"/></svg></div><h3>Ruta con un toque</h3><p>Abre la gasolinera elegida directamente en tu aplicación de mapas.</p></div>
+<div class="card"><div class="ic"><svg class="i"><use href="#bz"/></svg></div><h3>Rápido y ligero</h3><p>Resultados al instante, incluso con poca cobertura.</p></div>
+</div></section><section class="alt sec web-only" id="como"><div class="wrap"><div class="sh"><span class="eye">Cómo funciona</span><h2>Ahorra en tres pasos</h2></div>
+<div class="grid">
+<div class="card"><div class="ic">1</div><h3>Elige tu zona</h3><p>Selecciona provincia y combustible, o usa tu ubicación.</p></div>
+<div class="card"><div class="ic">2</div><h3>Compara al instante</h3><p>Consulta precios y la fecha de actualización de los datos.</p></div>
+<div class="card"><div class="ic">3</div><h3>Ve a la más barata</h3><p>Abre la ruta en tu mapa y reposta pagando menos.</p></div>
+</div></div></section>
+<section class="wrap sec web-only" id="provincias"><div class="sh"><span class="eye">Todas las provincias</span><h2>Gasolineras baratas por provincia</h2><p>Consulta el ranking de precios de tu provincia con datos oficiales.</p></div><div class="chips"><a href="/gasolineras-baratas/alava.html">Álava</a><a href="/gasolineras-baratas/albacete.html">Albacete</a><a href="/gasolineras-baratas/alicante.html">Alicante</a><a href="/gasolineras-baratas/almeria.html">Almería</a><a href="/gasolineras-baratas/avila.html">Ávila</a><a href="/gasolineras-baratas/badajoz.html">Badajoz</a><a href="/gasolineras-baratas/baleares.html">Baleares</a><a href="/gasolineras-baratas/barcelona.html">Barcelona</a><a href="/gasolineras-baratas/burgos.html">Burgos</a><a href="/gasolineras-baratas/caceres.html">Cáceres</a><a href="/gasolineras-baratas/cadiz.html">Cádiz</a><a href="/gasolineras-baratas/castellon.html">Castellón</a><a href="/gasolineras-baratas/ciudad-real.html">Ciudad Real</a><a href="/gasolineras-baratas/cordoba.html">Córdoba</a><a href="/gasolineras-baratas/a-coruna.html">A Coruña</a><a href="/gasolineras-baratas/cuenca.html">Cuenca</a><a href="/gasolineras-baratas/girona.html">Girona</a><a href="/gasolineras-baratas/granada.html">Granada</a><a href="/gasolineras-baratas/guadalajara.html">Guadalajara</a><a href="/gasolineras-baratas/guipuzcoa.html">Guipúzcoa</a><a href="/gasolineras-baratas/huelva.html">Huelva</a><a href="/gasolineras-baratas/huesca.html">Huesca</a><a href="/gasolineras-baratas/jaen.html">Jaén</a><a href="/gasolineras-baratas/leon.html">León</a><a href="/gasolineras-baratas/lleida.html">Lleida</a><a href="/gasolineras-baratas/la-rioja.html">La Rioja</a><a href="/gasolineras-baratas/lugo.html">Lugo</a><a href="/gasolineras-baratas/madrid.html">Madrid</a><a href="/gasolineras-baratas/malaga.html">Málaga</a><a href="/gasolineras-baratas/murcia.html">Murcia</a><a href="/gasolineras-baratas/navarra.html">Navarra</a><a href="/gasolineras-baratas/ourense.html">Ourense</a><a href="/gasolineras-baratas/asturias.html">Asturias</a><a href="/gasolineras-baratas/palencia.html">Palencia</a><a href="/gasolineras-baratas/las-palmas.html">Las Palmas</a><a href="/gasolineras-baratas/pontevedra.html">Pontevedra</a><a href="/gasolineras-baratas/salamanca.html">Salamanca</a><a href="/gasolineras-baratas/santa-cruz-de-tenerife.html">Santa Cruz de Tenerife</a><a href="/gasolineras-baratas/cantabria.html">Cantabria</a><a href="/gasolineras-baratas/segovia.html">Segovia</a><a href="/gasolineras-baratas/sevilla.html">Sevilla</a><a href="/gasolineras-baratas/soria.html">Soria</a><a href="/gasolineras-baratas/tarragona.html">Tarragona</a><a href="/gasolineras-baratas/teruel.html">Teruel</a><a href="/gasolineras-baratas/toledo.html">Toledo</a><a href="/gasolineras-baratas/valencia.html">Valencia</a><a href="/gasolineras-baratas/valladolid.html">Valladolid</a><a href="/gasolineras-baratas/vizcaya.html">Vizcaya</a><a href="/gasolineras-baratas/zamora.html">Zamora</a><a href="/gasolineras-baratas/zaragoza.html">Zaragoza</a><a href="/gasolineras-baratas/ceuta.html">Ceuta</a><a href="/gasolineras-baratas/melilla.html">Melilla</a></div><p style="margin:18px 0 0"><a href="/precio-gasolina-hoy.html">Precio de la gasolina hoy en España →</a> · <a href="/gasolineras-baratas.html">Ver todas las provincias →</a></p></section>
+<section class="alt sec web-only" id="faq"><div class="wrap"><div class="sh"><span class="eye">Preguntas frecuentes</span><h2>Resolvemos tus dudas</h2></div>
+<div class="faq">
+<details><summary>¿Es gratis usar AhorraFuel?</summary><p>Sí. Puedes comparar precios sin registrarte ni crear una cuenta.</p></details>
+<details><summary>¿Cómo encuentro las gasolineras más cercanas?</summary><p>Pulsa «Cerca de mí» y permite el acceso a tu ubicación: verás las estaciones de tu zona con sus precios y la distancia.</p></details>
+<details><summary>¿Los precios son exactos?</summary><p>Indicamos la fecha de actualización en cada búsqueda. Los precios pueden variar en la gasolinera, así que conviene confirmarlos antes de repostar.</p></details>
+</div></div></section>
+<section class="wrap sec web-only"><section class="seo-content" aria-label="Información sobre AhorraFuel">
+    <h2>Compara las gasolineras más baratas</h2>
+    <p>AhorraFuel es un comparador de precios de carburantes pensado para ayudarte a encontrar dónde repostar más barato en España. Puedes buscar por provincia o usar tu ubicación para encontrar automáticamente las gasolineras más cercanas.</p>
+
+    <div class="seo-keywords" aria-label="Combustibles disponibles">
+      <button type="button" class="seo-keyword" data-fuel="95">⛽ Gasolina 95</button>
+      <button type="button" class="seo-keyword" data-fuel="98">⛽ Gasolina 98</button>
+      <button type="button" class="seo-keyword" data-fuel="diesel">🚗 Diésel</button>
+      <button type="button" class="seo-keyword" data-near="1">📍 Gasolineras cerca de ti</button>
+    </div>
+
+    <h2>Encuentra gasolina y gasoil (diésel) más baratos</h2>
+    <p>Comparar unos céntimos por litro puede marcar una diferencia importante cuando llenas el depósito. Con AhorraFuel puedes ordenar y revisar las estaciones disponibles para localizar alternativas económicas y decidir dónde repostar.</p>
+
+    <h2>Gasolineras baratas cerca de mí</h2>
+    <p>Si activas tu ubicación, AhorraFuel utiliza la posición de tu dispositivo para buscar gasolineras cercanas y mostrarte las opciones disponibles. No necesitas introducir manualmente una ciudad para utilizar la búsqueda por ubicación.</p>
+
+    <h2>Gasolineras baratas en las ciudades más buscadas</h2>
+    <p>Cada día actualizamos los rankings con los datos oficiales del Ministerio. Mira dónde está hoy la gasolina y el gasoil más baratos en tu zona o consulta el precio medio en toda España.</p>
+    <div class="chips">
+      <a href="/gasolineras-baratas/madrid.html">Gasolineras baratas en Madrid</a>
+      <a href="/gasolineras-baratas/barcelona.html">Gasolineras baratas en Barcelona</a>
+      <a href="/gasolineras-baratas/valencia.html">Gasolineras baratas en Valencia</a>
+      <a href="/gasolineras-baratas/sevilla.html">Gasolineras baratas en Sevilla</a>
+      <a href="/gasolineras-baratas/malaga.html">Gasolineras baratas en Málaga</a>
+      <a href="/gasolineras-baratas/zaragoza.html">Gasolineras baratas en Zaragoza</a>
+      <a href="/gasolineras-baratas/las-palmas.html">Gasolineras baratas en Las Palmas</a>
+      <a href="/precio-gasolina-hoy.html">Precio de la gasolina y el gasoil hoy</a>
+    </div>
+
+    <h2>¿Qué combustible quieres comparar?</h2>
+    <ul>
+      <li><strong>Gasolina 95:</strong> compara las estaciones que ofrecen gasolina sin plomo 95.</li>
+      <li><strong>Gasolina 98:</strong> consulta las opciones disponibles para gasolina 98.</li>
+      <li><strong>Diésel (gasoil):</strong> encuentra y compara los precios del gasóleo A, el gasoil de las gasolineras.</li>
+    </ul>
+
+    <p class="seo-note">Los precios mostrados dependen de los datos disponibles para cada estación y pueden cambiar. Comprueba siempre el precio indicado antes de repostar.</p>
+  </section></section>
+<section class="wrap sec web-only"><div class="cta"><div class="mas" aria-hidden="true"></div><h2>Empieza a ahorrar en tu próximo repostaje</h2><p>Compara precios en segundos y elige la gasolinera más barata.</p><a class="btn w" href="#buscar">Buscar gasolineras</a></div></section></main>
+<footer><div class="wrap"><div class="web-only"><a class="logo" href="/" style="padding:0"><span class="wm">Ahorra<span>Fuel</span></span></a><p>Compara los precios de la gasolina y el diésel en toda España.</p></div><div class="web-only"><h4>Explorar</h4><a href="#ventajas">Ventajas</a><a href="#como">Cómo funciona</a><a href="#provincias">Provincias</a><a href="/gasolineras-baratas.html">Gasolineras por provincia</a><a href="/precio-gasolina-hoy.html">Precio de la gasolina hoy</a></div><div><h4>Legal</h4><a href="/privacidad.html">Privacidad</a><a href="/cookies.html">Cookies</a><a href="/informacion-legal.html">Información legal</a><a href="/condiciones-de-uso.html">Condiciones de uso</a></div><div class="cp">© 2026 AhorraFuel. Los precios pueden variar en la gasolinera.</div></div></footer>
+<script src="/app.js?v=20261018" defer></script>
+</body>
+</html>
